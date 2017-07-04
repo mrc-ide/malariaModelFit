@@ -17,5 +17,9 @@ NULL
 #' dummy1()
 
 dummy1 <- function() {
-    print("dummy1")
+    
+    print("R function working!")
+    
+    dummy1_cpp()
+    
 }

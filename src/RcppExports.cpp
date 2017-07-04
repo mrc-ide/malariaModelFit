@@ -5,19 +5,19 @@
 
 using namespace Rcpp;
 
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP malariaModelFit_rcpp_hello_world() {
+// dummy1_cpp
+Rcpp::List dummy1_cpp();
+RcppExport SEXP malariaModelFit_dummy1_cpp() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
+    rcpp_result_gen = Rcpp::wrap(dummy1_cpp());
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"malariaModelFit_rcpp_hello_world", (DL_FUNC) &malariaModelFit_rcpp_hello_world, 0},
+    {"malariaModelFit_dummy1_cpp", (DL_FUNC) &malariaModelFit_dummy1_cpp, 0},
     {NULL, NULL, 0}
 };
 
