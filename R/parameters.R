@@ -92,3 +92,17 @@ parameters <- function(v){
     
 	return(p)
 }
+
+
+#------------------------------------------------
+#' Default age range
+#'
+#' Returns vector of ages used by default in model fitting.
+#'
+#' @export
+
+age_default <- function() {
+    data(age)
+    names(age)[1] <- "age"
+    return(age)
+}

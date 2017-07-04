@@ -1,12 +1,11 @@
 Package: malariaModelFit
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Re-fits the Griffin malaria transmission model
 Version: 1.0
 Date: 2017-07-04
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full
-         sentences.
+Author: Bob Verity
+Maintainer: Bob Verity <r.verity@imperial.ac.uk>
+Description: Contains functions for re-fitting the model of Griffin et al. 2014 to data using MCMC. (Griffin et al. 2014, Nature Communications 5. "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa").
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.11)
 LinkingTo: Rcpp
