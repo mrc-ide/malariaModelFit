@@ -79,7 +79,7 @@ default_parameters <- function(){
 #'
 #' @export
 
-parameters <- function(v){
+set_parameters <- function(v){
 	
     # start with default parameters
 	p <- default_parameters()
@@ -93,6 +93,86 @@ parameters <- function(v){
 	return(p)
 }
 
+#------------------------------------------------
+#' Draw random parameters
+#'
+#' Set some parameters as default, and draw others from distributions. TODO - find out where these distributions come from.
+#'
+#' @param n nuber of random parameter sets to draw.
+#'
+#' @export
+
+random_parameters <- function(n=1)
+{
+    ret <-list()
+    for(i in 1:n)
+    {
+        p <- list()
+        
+        # age, heterogeneity in exposure
+        p$eta	<-	0.0001305
+        p$rho	<-	0.85
+        p$a0	<-	2920
+        p$s2	<-	1.67
+        
+        # rate of leaving infection states
+        p$rA	<-	0.00512821
+        p$rT	<-	0.2
+        p$rD	<-	0.2
+        p$rU	<-	1/(rlnorm(1,4.0,0.31)*365)
+        p$rP	<-	0.2
+        
+        # human latent period and time lag from asexual parasites to infectiousness
+        p$dE 	<- 12
+        p$tl 	<- 12.5
+        
+        # infectiousness to mosquitoes
+        p$cD	<-	0.0676909
+        p$cT	<-	0.0034482
+        p$cU	<-	0.006203
+        p$g_inf	<-	1.82425
+        p$aA  <-  rbeta(1,1,1)
+        p$aU  <-  rbeta(1,4,1)
+        
+        # anti-parasite immunity
+        p$d1	<-	rbeta(1,10,30)
+        p$dd	<-	3650
+        p$ID0	<-	rlnorm(1,2.38,1.08)
+        p$kd	<-	rlnorm(1,0.50,0.32)
+        p$ud	<-	rlnorm(1,1.40,0.80)
+        p$ad0	<-	rlnorm(1,2.02,0.43)*365
+        p$fd0	<-	rbeta(1,1,1)
+        p$gd	<-	rlnorm(1,0.22,0.64)
+        
+        # anti-infection immunity
+        p$b0	<-	rbeta(1,1.3,1.3)
+        p$b1	<-	0.5
+        p$db	<-	3650
+        p$IB0	<-	rlnorm(1,3.07,0.93)
+        p$kb	<-	rlnorm(1,0.50,0.32)
+        p$ub	<-	rlnorm(1,1.40,0.80)
+        
+        # clinical immunity
+        p$phi0	<-	rbeta(1,8.3,2.1)
+        p$phi1	<-	rbeta(1,1.1,2)
+        p$dc	<-	10950
+        p$IC0	<-	rlnorm(1,3.76,1.02)
+        p$kc	<-	rlnorm(1,0.50,0.32)
+        p$uc	<-	rlnorm(1,1.40,0.80)
+        p$PM	<-	rbeta(1,1,1)
+        p$dm	<-	rlnorm(1,5.26,0.33)
+        
+        # mosquito parameters
+        p$tau	<-	10
+        p$mu	<-	0.132
+        p$f		<-	0.33333333
+        p$Q0	<-	0.92
+        
+        ret[[i]] <- p
+    }
+    
+    return(ret)
+}
 
 #------------------------------------------------
 #' Default age range
@@ -101,8 +181,7 @@ parameters <- function(v){
 #'
 #' @export
 
-age_default <- function() {
+default_age <- function() {
     data(age)
-    names(age)[1] <- "age"
-    return(age)
+    return(as.vector(unlist(age)))
 }

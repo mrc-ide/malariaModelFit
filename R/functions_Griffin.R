@@ -39,12 +39,15 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 	pos_M		<-  vector(length=na, mode="numeric")
 	pos_PCR	<-  vector(length=na, mode="numeric")
 	inc  <-  vector(length=na, mode="numeric")
-	
+    
+    print("foo")
+    print(na)
+    
 	for(i in 1:na){
 		r[i] <- if(i==na) 0 else 1/(age[i+1]-age[i])
 		prop[i] <- (if(i==1) p$eta else r[i-1]*prop[i-1])/(r[i]+p$eta)
 		if(i<na) age[i] <- 0.5*(age[i]+age[i+1])	
-	}	
+	}
 	psi <- 1-p$rho*exp(-age/p$a0)
 	IB <- 0
 	IC <- 0
@@ -63,14 +66,19 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 		q[i] <- p$d1+(1-p$d1)/(1+(ID/p$ID0)^p$kd*(1-(1-p$fd0)/(1+(age[i]/p$ad0)^p$gd)))
 		cA[i] <- p$cU + (p$cD-p$cU)*q[i]^p$g_inf
 	}
-
+    
+    print("bar")
+    
 	IM0 <- ICA[age20]*p$PM
 	ICM[1] <- IM0*(r[1] + p$eta)/(1/p$dm+r[1] + p$eta)
 	for(i in 2:na) ICM[i] <- (r[i] + p$eta)*ICM[i-1]/(1/p$dm+r[i] + p$eta)
 		
 	phi <- p$phi0*(p$phi1+(1-p$phi1)/(1+((ICA+ICM)/p$IC0)^p$kc))
 	
+    print(pos_PCR)
+    
 	for(i in 1:na){
+        print(i)
 		re <- r[i] + p$eta
 		betaS <- FOI[i] + re
 		betaT <- p$rT + re
@@ -97,6 +105,9 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 		S[i] <- Y-A[i]-U[i]
 		
 		pos_M[i] <- D[i] + T[i] + A[i]*q[i] # Microsopy
+        
+        print(q[i])
+        
 		pos_PCR[i] <- D[i] + T[i] + A[i]*(q[i]^p$aA) + U[i]*(q[i]^p$aU) # PCR
 		inc[i] <- phi[i]*FOI[i]*Y
 	}
