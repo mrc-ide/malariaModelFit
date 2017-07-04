@@ -14,8 +14,6 @@ human_equilibrium_noHet(EIR, ft, p, age)
 \item{p}{vector of model parameters}
 
 \item{age}{vector of age groups}
-
-\item{h}{Gauss-Hermite nodes and weights for heterogeneity in biting}
 }
 \description{
 Returns the equilibrium states and R0 for the model of Griffin et al. 2014 Nature Communications 5. "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa". Does not account for biting heterogeneity - see human_equilibrium() for function that takes this into account.

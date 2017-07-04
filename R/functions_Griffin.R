@@ -10,7 +10,6 @@
 #' @param ft proportion of clinical cases effectively treated
 #' @param p vector of model parameters
 #' @param age vector of age groups
-#' @param h Gauss-Hermite nodes and weights for heterogeneity in biting
 #'
 #' @export
 
@@ -126,3 +125,33 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 
 human_equilibrium_noHet_compiled <- cmpfun(human_equilibrium_noHet, options=list(optimize=3))
 
+
+#------------------------------------------------
+#' Equilibrium solution
+#'
+#' Returns the equilibrium states and R0 for the model of Griffin et al. 2014 Nature Communications 5. "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa". Integrates over distribution of biting heterogeneity using Gaussian quadrature.
+#'
+#' Original code due to Jamie Griffin, later modified by Xiaoyu Liu and Bob Verity.
+#'
+#' @param EIR EIR for adults
+#' @param ft proportion of clinical cases effectively treated
+#' @param p vector of model parameters
+#' @param age vector of age groups
+#' @param h Gauss-Hermite nodes and weights for heterogeneity in biting
+#'
+#' @export
+
+human_equilibrium <- function(EIR, ft, p, age, h){
+    nh <- length(h$nodes)
+    E <- matrix() 	# states by age, mean over heterogeneity groups, not weighted by onward biting rate
+    FOIM <- 0 		# overall force of infection on mosquitoes, weighted by onward biting rates
+    for(j in 1:nh){
+        zeta <- exp(-p$s2*0.5 + sqrt(p$s2)*h$nodes[j])
+        Ej <- human_equilibrium_no_het(EIR=EIR*zeta, ft=ft, p=p, age=age)
+        E <- Ej*h$weights[j] + (if(j==1) 0 else E)
+        FOIM <- FOIM + sum(Ej[,"inf"]*Ej[,"psi"])*h$weights[j]*zeta
+    }
+    omega <- 1-p$rho*p$eta/(p$eta+1/p$a0)
+    alpha <- p$f*p$Q0
+    return(list(states=E, FOIM=FOIM*alpha/omega))
+}

@@ -3,6 +3,7 @@
 export(default_age)
 export(default_parameters)
 export(dummy1)
+export(human_equilibrium)
 export(human_equilibrium_noHet)
 export(human_equilibrium_noHet_compiled)
 export(random_parameters)
