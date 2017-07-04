@@ -7,6 +7,8 @@ Author: Bob Verity
 Maintainer: Bob Verity <r.verity@imperial.ac.uk>
 Description: Contains functions for re-fitting the model of Griffin et al. 2014 to data using MCMC. (Griffin et al. 2014, Nature Communications 5. "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa").
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.11)
+Imports:	
+    Rcpp (>= 0.12.11),
+    compiler
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
