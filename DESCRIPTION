@@ -9,6 +9,7 @@ Description: Contains functions for re-fitting the model of Griffin et al. 2014 
 License: GPL (>= 2)
 Imports:	
     Rcpp (>= 0.12.11),
-    compiler
+    compiler,
+    statmod
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.0.1

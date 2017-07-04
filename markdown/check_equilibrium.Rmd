@@ -1,0 +1,44 @@
+---
+title: "check_equilibrium"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into package format by Bob Verity. Here we will compare both sets of code to 1) establish that both sets of code produce the same results, 2) compare code in terms of speed.
+
+## Compare solutions
+
+Start by loading the package. Note that you must have the package installed for this to work.
+
+```{r}
+library(malariaModelFit)
+```
+
+Required inputs when determining the equilibrium solution include; entomological innoculation rate (EIR), treatment coverage (ft), a vector of parameters (p), the age distribution of the population (age), and biting heterogeneity in the form of Gaussian quadrature (h). We will fix age and biting heterogeneity, and the other inputs we will generate at random.
+
+```{r}
+n <- 1e1 # number of random inputs to explore
+
+age <- default_age()
+h <- gauss.quad.prob(9, dist="normal")
+EIR <- runif(n,1,10)
+ft <- runif(n)
+p <- random_parameters(n)
+```
+
+```{r}
+human_equilibrium(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h=h)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

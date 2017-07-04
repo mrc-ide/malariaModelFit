@@ -3,6 +3,7 @@
 
 #' @useDynLib malariaModelFit
 #' @import compiler
+#' @import statmod
 #' @importFrom Rcpp evalCpp
 NULL
 
