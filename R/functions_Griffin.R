@@ -147,7 +147,7 @@ human_equilibrium <- function(EIR, ft, p, age, h){
     FOIM <- 0 		# overall force of infection on mosquitoes, weighted by onward biting rates
     for(j in 1:nh){
         zeta <- exp(-p$s2*0.5 + sqrt(p$s2)*h$nodes[j])
-        Ej <- human_equilibrium_no_het(EIR=EIR*zeta, ft=ft, p=p, age=age)
+        Ej <- human_equilibrium_noHet(EIR=EIR*zeta, ft=ft, p=p, age=age)
         E <- Ej*h$weights[j] + (if(j==1) 0 else E)
         FOIM <- FOIM + sum(Ej[,"inf"]*Ej[,"psi"])*h$weights[j]*zeta
     }

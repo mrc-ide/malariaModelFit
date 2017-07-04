@@ -23,7 +23,7 @@ Required inputs when determining the equilibrium solution include; entomological
 n <- 1e1 # number of random inputs to explore
 
 age <- default_age()
-h <- gauss.quad.prob(9, dist="normal")
+h <- statmod::gauss.quad.prob(9, dist="normal")
 EIR <- runif(n,1,10)
 ft <- runif(n)
 p <- random_parameters(n)
