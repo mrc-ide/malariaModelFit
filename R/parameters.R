@@ -1,0 +1,94 @@
+
+#------------------------------------------------
+#' Default parameters
+#'
+#' Returns list of default parameters, taken from Griffin et al. 2014 Nature Communications 5, "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa". All time units are in days.
+#'
+#' @export
+
+default_parameters <- function(){
+	
+	p <- list()
+	
+	# age, heterogeneity in exposure
+	p$eta	<-	0.0001305
+	p$rho	<-	0.85
+	p$a0	<-	2920
+	p$s2	<-	1.67
+
+	# rate of leaving infection states
+	p$rA	<-	0.00512821
+	p$rT	<-	0.2
+	p$rD	<-	0.2
+	p$rU	<-	0.00906627
+	p$rP	<-	0.2
+	
+	# human latent period and time lag from asexual parasites to infectiousness
+	p$dE 	<- 12
+	p$tl 	<- 12.5
+
+	# infectiousness to mosquitoes
+	p$cD	<-	0.0676909
+	p$cT	<-	0.0034482
+	p$cU	<-	0.006203
+	p$g_inf	<-	1.82425
+
+	# anti-parasite immunity
+	p$d1	<-	0.160527
+	p$dd	<-	3650
+	p$ID0	<-	1.577533
+	p$kd	<-	0.476614
+	p$ud	<-	9.44512
+	p$ad0	<-	8001.99
+	p$fd0	<-	0.007055
+	p$gd	<-	4.8183
+
+	# anti-infection immunity
+	p$b0	<-	0.590076
+	p$b1	<-	0.5
+	p$db	<-	3650
+	p$IB0	<-	43.8787
+	p$kb	<-	2.15506
+	p$ub	<-	7.19919
+
+	# clinical immunity
+	p$phi0	<-	0.791666
+	p$phi1	<-	0.000737
+	p$dc	<-	10950
+	p$IC0	<-	18.02366
+	p$kc	<-	2.36949
+	p$uc	<-	6.06349
+	p$PM	<-	0.774368
+	p$dm	<-	67.6952
+
+	# mosquito parameters
+	p$tau	<-	10
+	p$mu	<-	0.132
+	p$f		<-	0.33333333
+	p$Q0	<-	0.92
+	
+	return(p)
+}
+
+#------------------------------------------------
+#' Set remaining parameters
+#'
+#' Replace some default parameters with values from a parameter vector v.
+#'
+#' @param v vector of parameters, with names corresponding to those returned by default_parameters().
+#'
+#' @export
+
+parameters <- function(v){
+	
+    # start with default parameters
+	p <- default_parameters()
+    
+    # replace values based on parameter name
+	s <- names(v)
+	for(i in 1:length(v)){
+		p[s[i]] <- v[i]
+	}
+    
+	return(p)
+}

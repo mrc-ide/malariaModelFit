@@ -1,10 +1,9 @@
 
-
 #------------------------------------------------
 #' Equilibrium solution without biting heterogeneity
 #'
 #' Returns the equilibrium states and R0 for the model of Griffin et al. 2014 Nature Communications 5. "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa". Does not account for biting heterogeneity - see human_equilibrium() for function that takes this into account.
-
+#'
 #' Original code due to Jamie Griffin, later modified by Xiaoyu Liu and Bob Verity.
 #'
 #' @param EIR EIR for adults
