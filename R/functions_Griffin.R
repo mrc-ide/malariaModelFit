@@ -117,5 +117,12 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 	return(cbind(S=S, T=T, D=D, A=A, U=U, P=P, inf=inf, prop=prop, psi=psi, pos_M=pos_M, pos_PCR=pos_PCR, inc=inc))
 }
 
-#human_equilibrium_no_het <- cmpfun(human_equilibrium0, options=list(optimize=3))
+#------------------------------------------------
+#' Compiled human_equilibrium_no_het
+#'
+#' Compiled version of human_equilibrium_no_het() function - see original function for details.
+#'
+#' @export
+
+human_equilibrium_noHet_compiled <- cmpfun(human_equilibrium_noHet, options=list(optimize=3))
 
