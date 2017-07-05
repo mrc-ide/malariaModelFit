@@ -5,6 +5,7 @@
 #' @import compiler
 #' @import statmod
 #' @importFrom Rcpp evalCpp
+#' @export human_equilibrium_fast
 NULL
 
 #------------------------------------------------
