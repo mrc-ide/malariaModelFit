@@ -35,7 +35,14 @@ p <- random_parameters(n)
 TODO - Run both sets of code
 
 ```{r}
-eq <- human_equilibrium(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h=h)
-find_prev(eq, age0=2, age1=10)
+prev_2_10_method1 <- prev_2_10_method2 <- rep(NA,n)
+for (i in 1:n) {
+  eq1 <- human_equilibrium(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h=h)
+  eq2 <- human_equilibrium_fast(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h$nodes, h$weights)
+  
+  prev_2_10_method1[i] <- find_prev(eq1, 2, 10)
+}
+
+hist(prev_2_10_method1)
 ```
 

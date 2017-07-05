@@ -169,16 +169,14 @@ find_prev <- function(eq, age0, age1, prevType="microscopy") {
     stopifnot(is.list(eq) && !is.data.frame(eq))
     stopifnot(all(names(eq)==c("states","FOIM")))
     
-    # find age range to sum over
-    w1 <- which(eq$states[,"age"]<=age0)
-    w2 <- which(eq$states[,"age"]<=age1)
-    w3 <- w1[length(w1)]:w2[length(w2)]
+    # get weights (proportion of each age bin covered by age range)
+    w <-  breakCoverageTest(eq$states[,"age"], age0, age1)
+    w <- c(w,0)
     
     # get prevalence in this age range
     typeName <- switch(prevType, microscopy="pos_M", PCR="pos_PCR")
-    pos <- sum(eq$states[,typeName][w3])
-    prop <- sum(eq$states[,"prop"][w3])
-    prev <- pos/prop
+    pos <- eq$states[,typeName]
+    prev <- sum(w*pos)
     
     return(prev)
 }
