@@ -7,11 +7,11 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into package format by Bob Verity. Here we will compare both sets of code to 1) establish that both sets of code produce the same results, 2) compare code in terms of speed.
+This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into package format by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) which code set if faster and by how much.
 
 ## Install package
 
-Start by installing and loading the package. Run the following lines, where `my_token` is replaced with your personal Github personal access token (this is required as the package is currently private).
+Start by installing and loading the package. Run the following lines, where the first line is uncommented and `my_token` is replaced with your personal Github personal access token (this is required as the package is currently private).
 
 ```{r}
 # install_github("mrc-ide/malariaModelFit", auth_token=my_token)
@@ -20,7 +20,7 @@ library(malariaModelFit)
 
 ## Compare solutions
 
-Required inputs when determining the equilibrium solution include; entomological innoculation rate (EIR), treatment coverage (ft), a vector of parameters (p), the age distribution of the population (age), and biting heterogeneity in the form of Gaussian quadrature (h). We will fix age and biting heterogeneity, and the other inputs we will generate at random.
+Required inputs when determining the equilibrium solution include; entomological innoculation rate (EIR), treatment coverage (ft), a vector of parameters (p), the age distribution of the population (age), and biting heterogeneity in the form of Gaussian quadrature (h). We will fix age and biting heterogeneity and draw `n` random values for the other inputs.
 
 ```{r}
 n <- 1e1 # number of random inputs to explore

@@ -102,7 +102,9 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 	
 	inf <- p$cD*D + p$cT*T + cA*A + p$cU*U
 
-	return(cbind(S=S, T=T, D=D, A=A, U=U, P=P, inf=inf, prop=prop, psi=psi, pos_M=pos_M, pos_PCR=pos_PCR, inc=inc))
+print(age)
+
+	return(cbind(age=age, S=S, T=T, D=D, A=A, U=U, P=P, inf=inf, prop=prop, psi=psi, pos_M=pos_M, pos_PCR=pos_PCR, inc=inc))
 }
 
 #------------------------------------------------
@@ -131,16 +133,45 @@ human_equilibrium_noHet_compiled <- cmpfun(human_equilibrium_noHet, options=list
 #' @export
 
 human_equilibrium <- function(EIR, ft, p, age, h){
+    print("foobar")
+    return()
+    
     nh <- length(h$nodes)
     E <- matrix() 	# states by age, mean over heterogeneity groups, not weighted by onward biting rate
     FOIM <- 0 		# overall force of infection on mosquitoes, weighted by onward biting rates
     for(j in 1:nh){
         zeta <- exp(-p$s2*0.5 + sqrt(p$s2)*h$nodes[j])
-        Ej <- human_equilibrium_noHet(EIR=EIR*zeta, ft=ft, p=p, age=age)
+        Ej <- human_equilibrium_noHet_compiled(EIR=EIR*zeta, ft=ft, p=p, age=age)
         E <- Ej*h$weights[j] + (if(j==1) 0 else E)
         FOIM <- FOIM + sum(Ej[,"inf"]*Ej[,"psi"])*h$weights[j]*zeta
     }
     omega <- 1-p$rho*p$eta/(p$eta+1/p$a0)
     alpha <- p$f*p$Q0
     return(list(states=E, FOIM=FOIM*alpha/omega))
+}
+
+#------------------------------------------------
+#' find_prev
+#'
+#' Find prevalence by microscopy or PCR in a given age group. Reads in equilibrium solution as input.
+#'
+#' Original code due to Jamie Griffin, later modified by Xiaoyu Liu and Bob Verity.
+#'
+#' @param eq equilibrium solution, as returned by human_equilibrium()
+#' @param age0 lower bound on age range over which to calculate prevalence
+#' @param age1 upper bound on age range over which to calculate prevalence
+#' @param prevType whether to calculate prevalence by "microscopy" or "PCR"
+#'
+#' @export
+
+find_prev <- function(eq, age0, age1, prevType){
+    
+    # check inputs
+    
+    
+    # prevalence by microscopy between ages age0 and age1
+    #E <- human_equilibrium(EIR, ft, p, age, h)
+    #pos <- E$states[,"pos"][age>=age0 & age<age1]
+    #prop <- E$states[,"prop"][age>=age0 & age<age1]
+    #return(sum(pos)/sum(prop))
 }
