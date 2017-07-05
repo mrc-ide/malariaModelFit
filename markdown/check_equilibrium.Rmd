@@ -35,6 +35,7 @@ p <- random_parameters(n)
 TODO - Run both sets of code
 
 ```{r}
-human_equilibrium(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h=h)
+eq <- human_equilibrium(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h=h)
+find_prev(eq, age0=2, age1=10)
 ```
 

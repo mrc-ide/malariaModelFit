@@ -4,7 +4,7 @@
 \alias{find_prev}
 \title{find_prev}
 \usage{
-find_prev(eq, age0, age1, prevType)
+find_prev(eq, age0, age1, prevType = "microscopy")
 }
 \arguments{
 \item{eq}{equilibrium solution, as returned by human_equilibrium()}

@@ -13,9 +13,9 @@
 #'
 #' @export
 
-human_equilibrium_noHet <- function(EIR, ft, p, age){
+human_equilibrium_noHet <- function(EIR, ft, p, age) {
 	na <- length(age)
-	age <- age*365
+	age_days <- age*365
 	EIR <- EIR/365
 	
 	ICA 	<-	vector(length=na, mode="numeric")
@@ -40,17 +40,17 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 	inc  <-  vector(length=na, mode="numeric")
     
 	for(i in 1:na){
-		r[i] <- if(i==na) 0 else 1/(age[i+1]-age[i])
+		r[i] <- if(i==na) 0 else 1/(age_days[i+1]-age_days[i])
 		prop[i] <- (if(i==1) p$eta else r[i-1]*prop[i-1])/(r[i]+p$eta)
-		if(i<na) age[i] <- 0.5*(age[i]+age[i+1])	
+		if(i<na) age_days[i] <- 0.5*(age_days[i]+age_days[i+1])
 	}
-	psi <- 1-p$rho*exp(-age/p$a0)
+	psi <- 1-p$rho*exp(-age_days/p$a0)
 	IB <- 0
 	IC <- 0
 	ID <- 0
 	age20 <- 0
 	for(i in 1:na){
-		if(i<na & age[i]<=20*365 & age[i+1]>20*365) age20 <- i
+		if(i<na & age_days[i]<=20*365 & age_days[i+1]>20*365) age20 <- i
 		re <- r[i] + p$eta
 		IB <- (EIR*psi[i]/(EIR*psi[i]*p$ub+1) + re*IB)/(1/p$db+re)
 		b <- p$b0*(p$b1+(1-p$b1)/(1+(IB/p$IB0)^p$kb))
@@ -102,8 +102,6 @@ human_equilibrium_noHet <- function(EIR, ft, p, age){
 	
 	inf <- p$cD*D + p$cT*T + cA*A + p$cU*U
 
-print(age)
-
 	return(cbind(age=age, S=S, T=T, D=D, A=A, U=U, P=P, inf=inf, prop=prop, psi=psi, pos_M=pos_M, pos_PCR=pos_PCR, inc=inc))
 }
 
@@ -132,13 +130,13 @@ human_equilibrium_noHet_compiled <- cmpfun(human_equilibrium_noHet, options=list
 #'
 #' @export
 
-human_equilibrium <- function(EIR, ft, p, age, h){
-    print("foobar")
-    return()
+human_equilibrium <- function(EIR, ft, p, age, h) {
     
     nh <- length(h$nodes)
     E <- matrix() 	# states by age, mean over heterogeneity groups, not weighted by onward biting rate
     FOIM <- 0 		# overall force of infection on mosquitoes, weighted by onward biting rates
+    
+    # loop through all Gaussian quadrature nodes
     for(j in 1:nh){
         zeta <- exp(-p$s2*0.5 + sqrt(p$s2)*h$nodes[j])
         Ej <- human_equilibrium_noHet_compiled(EIR=EIR*zeta, ft=ft, p=p, age=age)
@@ -164,14 +162,23 @@ human_equilibrium <- function(EIR, ft, p, age, h){
 #'
 #' @export
 
-find_prev <- function(eq, age0, age1, prevType){
+find_prev <- function(eq, age0, age1, prevType="microscopy") {
     
-    # check inputs
+    # check input formats
+    stopifnot(prevType%in%c("microscopy","PCR"))
+    stopifnot(is.list(eq) && !is.data.frame(eq))
+    stopifnot(all(names(eq)==c("states","FOIM")))
     
+    # find age range to sum over
+    w1 <- which(eq$states[,"age"]<=age0)
+    w2 <- which(eq$states[,"age"]<=age1)
+    w3 <- w1[length(w1)]:w2[length(w2)]
     
-    # prevalence by microscopy between ages age0 and age1
-    #E <- human_equilibrium(EIR, ft, p, age, h)
-    #pos <- E$states[,"pos"][age>=age0 & age<age1]
-    #prop <- E$states[,"prop"][age>=age0 & age<age1]
-    #return(sum(pos)/sum(prop))
+    # get prevalence in this age range
+    typeName <- switch(prevType, microscopy="pos_M", PCR="pos_PCR")
+    pos <- sum(eq$states[,typeName][w3])
+    prop <- sum(eq$states[,"prop"][w3])
+    prev <- pos/prop
+    
+    return(prev)
 }
