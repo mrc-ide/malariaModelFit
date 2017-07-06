@@ -44,6 +44,7 @@ human_equilibrium_noHet <- function(EIR, ft, p, age) {
 		prop[i] <- (if(i==1) p$eta else r[i-1]*prop[i-1])/(r[i]+p$eta)
 		if(i<na) age_days[i] <- 0.5*(age_days[i]+age_days[i+1])
 	}
+    
 	psi <- 1-p$rho*exp(-age_days/p$a0)
 	IB <- 0
 	IC <- 0
@@ -59,9 +60,11 @@ human_equilibrium_noHet <- function(EIR, ft, p, age) {
 		IC <- (FOI[i]/(FOI[i]*p$uc+1) + re*IC)/(1/p$dc+re)
 		ICA[i] <- IC
 		ID <- (FOI[i]/(FOI[i]*p$ud+1) + re*ID)/(1/p$dd+re)
-		q[i] <- p$d1+(1-p$d1)/(1+(ID/p$ID0)^p$kd*(1-(1-p$fd0)/(1+(age[i]/p$ad0)^p$gd)))
+        q[i] <- p$d1+(1-p$d1)/(1+(ID/p$ID0)^p$kd*(1-(1-p$fd0)/(1+(age_days[i]/p$ad0)^p$gd)))
 		cA[i] <- p$cU + (p$cD-p$cU)*q[i]^p$g_inf
 	}
+    
+    #return(list(r=r, prop=prop, IB=IB, b=b, FOI=FOI, IC=IC, ICA=ICA, ID=ID, q=q, cA=cA))
     
 	IM0 <- ICA[age20]*p$PM
 	ICM[1] <- IM0*(r[1] + p$eta)/(1/p$dm+r[1] + p$eta)

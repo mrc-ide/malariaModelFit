@@ -15,6 +15,9 @@ public:
     
     // PUBLIC OBJECTS
     
+    // TODO - BOB DELETE
+    arma::vec test1;
+    
     double EIR; // annualised EIR
     //double dEIR; // daily EIR. TODO - delete?
     double ft;

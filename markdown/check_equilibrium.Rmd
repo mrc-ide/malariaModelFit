@@ -23,12 +23,12 @@ library(malariaModelFit)
 Required inputs when determining the equilibrium solution include; entomological innoculation rate (EIR), treatment coverage (ft), a vector of parameters (p), the age distribution of the population (age), and biting heterogeneity in the form of Gaussian quadrature (h). We will fix age and biting heterogeneity and draw `n` random values for the other inputs.
 
 ```{r}
-n <- 1e1 # number of random inputs to explore
+n <- 1e2 # number of random inputs to explore
 
 age <- default_age()
 h <- statmod::gauss.quad.prob(9, dist="normal")
-EIR <- runif(n,1,10)
-ft <- runif(n)
+EIR <- runif(n,1,100)
+ft <- runif(n,0.5,0.5)
 p <- random_parameters(n)
 ```
 
@@ -37,12 +37,14 @@ TODO - Run both sets of code
 ```{r}
 prev_2_10_method1 <- prev_2_10_method2 <- rep(NA,n)
 for (i in 1:n) {
-  eq1 <- human_equilibrium(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h=h)
-  eq2 <- human_equilibrium_fast(EIR=EIR[1], ft=ft[1], p=p[[1]], age=age, h$nodes, h$weights)
+  eq1 <- human_equilibrium(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h=h)
+  eq2 <- human_equilibrium_fast(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h$nodes, h$weights)
   
   prev_2_10_method1[i] <- find_prev(eq1, 2, 10)
+  prev_2_10_method2[i] <- find_prev(eq2, 2, 10)
 }
 
-hist(prev_2_10_method1)
+plot(EIR, prev_2_10_method1)
+points(EIR, prev_2_10_method2, pch=20, cex=0.5)
 ```
 

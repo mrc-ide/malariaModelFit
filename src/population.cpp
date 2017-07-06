@@ -93,7 +93,7 @@ void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
     
     FOIM = 0.0;
     
-    zeta = exp(-p.s2*0.5 + sqrt(p.s2)*ghnodes);
+    zeta = exp( 0*( -p.s2*0.5 + sqrt(p.s2)*ghnodes) ); // TODO - remove 0*
     
     arma::vec dage = age*365; // age in days
     arma::vec dEIR = zeta*EIR/365; // daily EIR
@@ -132,7 +132,6 @@ void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
         }
     }
     
-    
     psi = 1-p.rho*exp(-dage/p.a0);
     IB.fill(0.0);
     IC.fill(0.0);
@@ -162,6 +161,8 @@ void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
         mcA.col(i) = p.cU + (p.cD-p.cU)*pow(mq.col(i),p.g_inf);
         
     }
+    
+    //return;
     
     arma::vec IM0 = mICA.col(age20)*p.PM;
     mICM.col(0) = IM0*(r[0] + p.eta)/(1/p.dm + r[0] + p.eta);
