@@ -93,7 +93,8 @@ void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
     
     FOIM = 0.0;
     
-    zeta = exp( 0*( -p.s2*0.5 + sqrt(p.s2)*ghnodes) ); // TODO - remove 0*
+    zeta = exp(-p.s2*0.5 + sqrt(p.s2)*ghnodes);
+    //zeta = exp( 0*( -p.s2*0.5 + sqrt(p.s2)*ghnodes) ); // TODO - remove 0*
     
     arma::vec dage = age*365; // age in days
     arma::vec dEIR = zeta*EIR/365; // daily EIR
