@@ -7,7 +7,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into package format by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) which code set is faster and by how much.
+This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into the malariaModelFit package by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) which code set is faster and by how much.
 
 ## Install package
 
@@ -23,15 +23,13 @@ library(malariaModelFit)
 Required inputs when determining the equilibrium solution include; entomological innoculation rate (EIR), treatment coverage (ft), a vector of parameters (p), the age distribution of the population (age), and Gaussian quadrature parameters capturing biting heterogeneity (h). We will fix age and biting heterogeneity and draw `n` random values for the other inputs.
 
 ```{r}
-n <- 1e1 # number of random inputs to explore
+n <- 1e2 # number of random inputs to explore
 
 age <- default_age()
 h <- statmod::gauss.quad.prob(9, dist="normal")
 EIR <- runif(n,1,100)
 ft <- runif(n)
 p <- random_parameters(n)
-
-plot_nice1(rnorm(10))
 ```
 
 Now calculate equilibrium solution under both methods, and check that results are equal using `all.equal`, which checks for "near equality".
@@ -62,7 +60,7 @@ We will compare speed with the `microbenchmark` package. Here we compare evaluat
 ```{r}
 library(microbenchmark)
 
-repeats <- 1e0  # number of times to repeat evaluation for each parameter set
+repeats <- 1  # number of times to repeat evaluation for each parameter set
 
 # loop over parameter sets
 res <- NULL
@@ -94,15 +92,17 @@ or we can dig deeper into timings by plotting evaluation time against EIR or tre
 
 ```{r}
 # plot evalutation time against EIR
-par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
-plot(0, type='n', xlim=range(EIR), ylim=c(0,max(res_median)), xlab="EIR", ylab='evaluation time', main='evaluation time against EIR')
-points(EIR, res_median[,1], col=2, pch=20)
-points(EIR, res_median[,2], col=3, pch=20)
-legend(x='topright', inset=c(-0.5,0), legend=functionNames, col=c(2,3), pch=20)
+plot_nice1(x=EIR, list(res_median[,1], y=res_median[,2]), col=list(2,3), pch=20, 
+           ylab="evaluation time", main="evaluation time against EIR", legend=TRUE,
+           legend_title="Function", legend_label=functionNames)
 
 # plot evalutation time against treatment rate
-plot(0, type='n', xlim=c(0,1), ylim=c(0,max(res_median)), xlab="treatment rate", ylab='evaluation time', main='evaluation time against treatment rate')
-points(ft, res_median[,1], col=2, pch=20)
-points(ft, res_median[,2], col=3, pch=20)
-legend(x='topright', legend=functionNames, col=c(2,3), pch=20)
+plot_nice1(x=ft, list(res_median[,1], y=res_median[,2]), col=list(2,3), pch=20, 
+           ylab="evaluation time", main="evaluation time against treatment rate", 
+           legend=TRUE, legend_title="Function", legend_label=functionNames)
 ```
+
+
+
+(Rmarkdown last evaluated: `r format(Sys.time(), '%d %B, %Y')`)
+(Rmarkdown last evaluated: `r Sys.time()`)

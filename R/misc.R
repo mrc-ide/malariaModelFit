@@ -20,3 +20,18 @@ breakCoverageTest <- function(breaks, range_min, range_max) {
     
     return(ret)
 }
+
+
+# -----------------------------------
+#' breakCoverage
+#'
+#' Return node values and weights from Gaussian quadrature of normal distribution with n nodes.
+#'
+#' @param n number of nodes
+#'
+#' @export
+
+gq_normal <- function(n) {
+    ret <- statmod::gauss.quad.prob(n, dist="normal")
+    return(ret)
+}
