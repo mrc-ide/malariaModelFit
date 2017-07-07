@@ -4,6 +4,7 @@
 #' @useDynLib malariaModelFit
 #' @import compiler
 #' @import statmod
+#' @import ggplot2
 #' @importFrom Rcpp evalCpp
 #' @export human_equilibrium_fast
 NULL

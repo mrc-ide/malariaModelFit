@@ -64,8 +64,6 @@ human_equilibrium_noHet <- function(EIR, ft, p, age) {
 		cA[i] <- p$cU + (p$cD-p$cU)*q[i]^p$g_inf
 	}
     
-    #return(list(r=r, prop=prop, IB=IB, b=b, FOI=FOI, IC=IC, ICA=ICA, ID=ID, q=q, cA=cA))
-    
 	IM0 <- ICA[age20]*p$PM
 	ICM[1] <- IM0*(r[1] + p$eta)/(1/p$dm+r[1] + p$eta)
 	for(i in 2:na) ICM[i] <- (r[i] + p$eta)*ICM[i-1]/(1/p$dm+r[i] + p$eta)

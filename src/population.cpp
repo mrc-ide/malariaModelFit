@@ -67,7 +67,6 @@ population::population(const arma::vec& age0, const arma::vec& ghn0, const arma:
     ID = arma::vec(nh); ID.fill(0.0);
     b = arma::vec(nh); b.fill(0.0);
     
-    //double betaT, betaD, betaP; // TODO - delete?
     betaS = arma::vec(nh); betaS.fill(0.0);
     betaA = arma::vec(nh); betaA.fill(0.0);
     betaU = arma::vec(nh); betaU.fill(0.0);
@@ -94,7 +93,6 @@ void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
     FOIM = 0.0;
     
     zeta = exp(-p.s2*0.5 + sqrt(p.s2)*ghnodes);
-    //zeta = exp( 0*( -p.s2*0.5 + sqrt(p.s2)*ghnodes) ); // TODO - remove 0*
     
     arma::vec dage = age*365; // age in days
     arma::vec dEIR = zeta*EIR/365; // daily EIR
@@ -162,8 +160,6 @@ void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
         mcA.col(i) = p.cU + (p.cD-p.cU)*pow(mq.col(i),p.g_inf);
         
     }
-    
-    //return;
     
     arma::vec IM0 = mICA.col(age20)*p.PM;
     mICM.col(0) = IM0*(r[0] + p.eta)/(1/p.dm + r[0] + p.eta);

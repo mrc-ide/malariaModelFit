@@ -19,21 +19,6 @@ Rcpp::List human_equilibrium_fast(double EIR, double ft, const Rcpp::List& p, ar
     // set to equilibrium
     pop.set_equilibrium(EIR, ft, par);
     
-    
-    Rcpp::List ret = Rcpp::List::create(Rcpp::_["r"]=pop.r,
-                                        Rcpp::_["prop"]=pop.prop,
-                                        Rcpp::_["IB"]=pop.IB,
-                                        Rcpp::_["b"]=pop.b,
-                                        Rcpp::_["FOI"]=pop.mFOI,
-                                        Rcpp::_["IC"]=pop.IC,
-                                        Rcpp::_["ICA"]=pop.mICA,
-                                        Rcpp::_["ID"]=pop.ID,
-                                        Rcpp::_["q"]=pop.mq,
-                                        Rcpp::_["cA"]=pop.mcA
-                                        );
-    //Rcpp::List ret = Rcpp::List::create(Rcpp::_["r"]=-9);
-    //return(ret);
-    
     // process output
     Rcpp::NumericMatrix E = Rcpp::cbind(tonv(age0), tonv(pop.S), tonv(pop.T), tonv(pop.D), tonv(pop.A), tonv(pop.U), tonv(pop.P), tonv(pop.inf), tonv(pop.prop), tonv(pop.psi), tonv(pop.pos_M), tonv(pop.pos_PCR), tonv(pop.inc));
     colnames(E) = Rcpp::CharacterVector::create("age","S","T","D","A","U","P","inf","prop","psi","pos_M","pos_PCR","inc");
