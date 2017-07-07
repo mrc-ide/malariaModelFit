@@ -9,5 +9,5 @@ plot_nice1(x, y, col = 1, xlab = NULL, ylab = NULL, main = NULL,
   legend_title = "legend_title", legend_label = NULL)
 }
 \description{
-Simple plotting function for producing plot similar to base plot(), but in ggplot2. Has the advantage of being able to specify legends outside of plotting area more easily.
+Produces plot similar to base plot() function, but in ggplot2. Has the advantage of being able to specify legends outside of plotting area more easily. Multiple x, y and col arguments can be specified using lists of values.
 }

@@ -11,7 +11,7 @@ This package contains two sets of code for returning the equilibrium solution to
 
 ## Install package
 
-Start by installing and loading the package. Run the following lines, uncommenting the first line replacing `my_token` with your personal Github personal access token (this is required as the package is currently private).
+Start by installing and loading the package. Run the following lines, uncommenting the first line and replacing `my_token` with your personal Github personal access token (this is required as the package is currently private).
 
 ```{r}
 # install_github("mrc-ide/malariaModelFit", auth_token=my_token)
@@ -30,6 +30,8 @@ h <- statmod::gauss.quad.prob(9, dist="normal")
 EIR <- runif(n,1,100)
 ft <- runif(n)
 p <- random_parameters(n)
+
+plot_nice1(rnorm(10))
 ```
 
 Now calculate equilibrium solution under both methods, and check that results are equal using `all.equal`, which checks for "near equality".
