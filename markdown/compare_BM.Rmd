@@ -1,0 +1,109 @@
+---
+title: "Compare equilibrium solution with Berkeley Madonna output"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Note, BM output is produced using 164 age categories and 5 heterogeneity categories. Same values and breaks are used here for equilibrium solution.
+
+## Title
+
+Words
+
+```{r, echo=FALSE}
+# hard-coded to install package from Github or from file
+rm(list=ls())
+library(devtools)
+if (FALSE) {
+  install_github("mrc-ide/malariaModelFit", auth_token=my_token)  # use your own Github personal access token as my_token here. This step is required as the package is currently private.
+  library(malariaModelFit)
+} else {
+  setwd('~/Dropbox/Bob/Work/My Programs/Personal packages/malariaModelFit')
+  load_all('malariaModelFit')
+  #document('malariaModelFit')
+}
+```
+
+Text
+
+```{r}
+# define treatment levels corresponding to BM output files
+ft <- c("0.0", "0.2", "0.4")
+
+# read in BM output as list
+BM_list <- list()
+for (i in 1:length(ft)) {
+  name <- paste0("BM_output/BM_ft",ft[i],".csv")
+  BM_list[[i]] <- read.csv(malariaModelFit_file(name))
+}
+
+# get EIR range
+EIR <- BM_list[[1]]$EIRY_eq
+```
+
+```{r}
+# load parameters
+age <- default_age()
+h <- gq_normal(5)
+p <- load_parameters("parameters_Griffin2014.txt")
+
+# save solution to list
+eqList <- list()
+for (i in 1:length(ft)) {
+  eqList[[i]] <- list()
+  for (j in 1:length(EIR)) {
+      eqList[[i]][[j]] <- human_equilibrium_fast(EIR[j], as.numeric(ft[i]), p, age, h$nodes, h$weights)
+  }
+}
+
+# save state proportions in array
+stateNames <- c("S", "T", "D", "A", "U", "P")
+m <- array(0, dim=c(length(ft), length(EIR), length(stateNames)))
+for (i in 1:length(eqList)) {
+  for (j in 1:length(eqList[[i]])) {
+    m[i,j,] <- colSums(subset(eqList[[i]][[j]]$states, select=stateNames))
+  }
+}
+
+```
+
+Produce plots
+
+```{r, echo=FALSE, fig.width=8, fig.height=4}
+# plot BM output and equilibrium solutions on same plot
+for (i in 1:length(ft)) {
+  BM_states <- as.list(BM_list[[i]])[-1]
+  plot1 <- plot_nice1(EIR, BM_states, type='l',
+                      col=as.list(1:length(stateNames)), ylim=c(0,1), legend_col=TRUE,
+                      main=paste0("treatment rate ft = ", ft[i]), legend_col_title="Model state",
+                      legend_col_label=stateNames, ylab="proportion", logx=TRUE)
+  
+  plotList1 <- as.list(as.data.frame(m[i,,]))
+  plot1 <- points_nice1(plot1, EIR, plotList1, col=as.list(1:length(plotList1)), pch=20, cex=0.5)
+  
+  print(plot1)
+}
+```
+
+Produce plots
+
+```{r, echo=FALSE, fig.width=8, fig.height=4}
+# plot BM output and equilibrium solutions on same plot
+for (i in 1:length(ft)) {
+  BM_states <- as.list(BM_list[[i]])$D
+  plot1 <- plot_nice1(EIR, BM_states, type='l',
+                      col=1, legend_col=TRUE,
+                      main=paste0("treatment rate ft = ", ft[i]), legend_col_title="Model state",
+                      legend_col_label="D", ylab="proportion", logx=TRUE)
+  
+  plotList1 <- as.list(as.data.frame(m[i,,which(stateNames=="D")]))
+  plot1 <- points_nice1(plot1, EIR, plotList1, col=1, pch=20, cex=0.5)
+  
+  print(plot1)
+}
+```
+
+(Rmarkdown last evaluated: `r Sys.time()`)

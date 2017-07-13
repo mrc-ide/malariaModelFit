@@ -7,5 +7,5 @@
 default_parameters()
 }
 \description{
-Returns list of default parameters, taken from Griffin et al. 2014 Nature Communications 5, "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa". All time units are in days.
+TODO - is this needed?
 }

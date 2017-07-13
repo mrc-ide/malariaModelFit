@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{gq_normal}
 \alias{gq_normal}
-\title{breakCoverage}
+\title{Gaussian quadrature of normal density}
 \usage{
 gq_normal(n)
 }

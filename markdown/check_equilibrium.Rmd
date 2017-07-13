@@ -1,5 +1,5 @@
 ---
-title: "check_equilibrium"
+title: "Check equilibrium solutions"
 output: pdf_document
 ---
 
@@ -9,30 +9,37 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into the malariaModelFit package by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) which code set is faster and by how much.
 
-## Install package
-
-Start by installing and loading the package. Run the following lines, uncommenting the first line and replacing `my_token` with your personal Github personal access token (this is required as the package is currently private).
-
-```{r}
-# install_github("mrc-ide/malariaModelFit", auth_token=my_token)
-library(malariaModelFit)
-```
 
 ## Compare solutions
 
 Required inputs when determining the equilibrium solution include; entomological innoculation rate (EIR), treatment coverage (ft), a vector of parameters (p), the age distribution of the population (age), and Gaussian quadrature parameters capturing biting heterogeneity (h). We will fix age and biting heterogeneity and draw `n` random values for the other inputs.
 
+```{r, echo=FALSE}
+# hard-coded to install package from Github or from file
+rm(list=ls())
+library(devtools)
+if (FALSE) {
+  install_github("mrc-ide/malariaModelFit", auth_token=my_token)  # use your own Github personal access token as my_token here. This step is required as the package is currently private.
+  library(malariaModelFit)
+} else {
+  setwd('~/Dropbox/Bob/Work/My Programs/Personal packages/malariaModelFit')
+  load_all('malariaModelFit')
+  #document('malariaModelFit')
+}
+```
+
+
 ```{r}
-n <- 1e2 # number of random inputs to explore
+n <- 1e3 # number of random inputs to explore
 
 age <- default_age()
-h <- statmod::gauss.quad.prob(9, dist="normal")
+h <- gq_normal(9)
 EIR <- runif(n,1,100)
 ft <- runif(n)
 p <- random_parameters(n)
 ```
 
-Now calculate equilibrium solution under both methods, and check that results are equal using `all.equal`, which checks for "near equality".
+Now calculate equilibrium solution using both functions, and check that results are equal using `all.equal`, which checks for "near equality".
 
 ```{r}
 is_equal <- rep(NA,n)
@@ -55,7 +62,7 @@ Hopefully you got good news when running the above, otherwise check your code fo
 
 ## Compare speed
 
-We will compare speed with the `microbenchmark` package. Here we compare evaluation time for each of the `n` parameter sets generated above, repeating the evaluation `repeats` times in each case. Overall results are stored in the list `res`, and the median over repeats is stored in the matrix `res_median`.
+We will compare speed with the `microbenchmark` package. Here we compare evaluation time for each of the `n` parameter sets generated above, repeating the evaluation `repeats` times in each case. Results are stored in the list `res`, and the median over repeats is stored in the matrix `res_median`.
 
 ```{r}
 library(microbenchmark)
@@ -88,21 +95,22 @@ functionNames <- c("human_equilibrium","human_equilibrium_fast")
 boxplot(split(res$time, f=res$expr), names=functionNames, ylab="evaluation time")
 ```
 
-or we can dig deeper into timings by plotting evaluation time against EIR or treatment rate:
+**Result:** `r cm<-colMeans(res_median); w<-which.min(cm); paste0("In this evaluation ", functionNames[w], " was ", round(cm[-w]/cm[w], 2), " times faster than ", functionNames[-w], ".")`
 
-```{r}
+We can also dig deeper into timings by plotting evaluation time against EIR or treatment rate:
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
 # plot evalutation time against EIR
-plot_nice1(x=EIR, list(res_median[,1], y=res_median[,2]), col=list(2,3), pch=20, 
-           ylab="evaluation time", main="evaluation time against EIR", legend=TRUE,
-           legend_title="Function", legend_label=functionNames)
+plot_nice1(x=EIR, as.list(as.data.frame(res_median)), col=list(2,3), pch=20, 
+           ylab="evaluation time", main="evaluation time against EIR", legend_col=TRUE,
+           legend_col_title="Function", legend_col_label=functionNames)
 
 # plot evalutation time against treatment rate
-plot_nice1(x=ft, list(res_median[,1], y=res_median[,2]), col=list(2,3), pch=20, 
+plot_nice1(x=ft, as.list(as.data.frame(res_median)), col=list(2,3), pch=20, 
            ylab="evaluation time", main="evaluation time against treatment rate", 
-           legend=TRUE, legend_title="Function", legend_label=functionNames)
+           legend_col=TRUE, legend_col_title="Function", legend_col_label=functionNames)
 ```
 
+Neither plot shows any strong relationship with evaluation time.
 
-
-(Rmarkdown last evaluated: `r format(Sys.time(), '%d %B, %Y')`)
 (Rmarkdown last evaluated: `r Sys.time()`)

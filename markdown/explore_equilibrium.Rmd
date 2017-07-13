@@ -1,0 +1,174 @@
+---
+title: "Explore relationships at equilibrium"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Here we will explore fundamental relationships in the transmission model, such as the proportion of the population in each model state and the relationship between EIR, prevalence and incidence at equilibrium.
+
+
+## Proportion in each model state
+
+We can use the equilibrium solution to explore what proportion of the human population are in each model compartment. We will use default parameters:
+
+```{r, echo=FALSE}
+# hard-coded to install package from Github or from file
+rm(list=ls())
+library(devtools)
+if (FALSE) {
+  install_github("mrc-ide/malariaModelFit", auth_token=my_token)  # use your own Github personal access token as my_token here. This step is required as the package is currently private.
+  library(malariaModelFit)
+} else {
+  setwd('~/Dropbox/Bob/Work/My Programs/Personal packages/malariaModelFit')
+  load_all('malariaModelFit')
+  #document('malariaModelFit')
+}
+```
+
+```{r}
+age <- default_age()
+h <- gq_normal(9)
+p <- load_parameters("parameters_Xiaoyu.txt")
+```
+
+We will explore a range of EIR (in log space), and several treatment levels:
+
+```{r}
+# explore a range of EIR and treatment levels
+EIR <- exp(seq(log(0.1), log(1000), length=51))
+ft <- c(0, 0.2, 0.4, 1)
+
+# save solution to list
+eqList <- list()
+for (i in 1:length(ft)) {
+  eqList[[i]] <- list()
+  for (j in 1:length(EIR)) {
+    eqList[[i]][[j]] <- human_equilibrium_fast(EIR[j], ft[i], p, age, h$nodes, h$weights)
+  }
+}
+```
+
+Save state proportions in array
+
+```{r}
+# save state proportions in array
+stateNames <- c("S", "T", "D", "A", "U", "P")
+m <- array(0, dim=c(length(ft), length(EIR), length(stateNames)))
+for (i in 1:length(eqList)) {
+  for (j in 1:length(eqList[[i]])) {
+    m[i,j,] <- colSums(subset(eqList[[i]][[j]]$states, select=stateNames))
+  }
+}
+```
+
+Produce plots
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+for (i in 1:length(ft)) {
+  plotList1 <- as.list(as.data.frame(m[i,,]))
+  
+  plot1 <- plot_nice1(EIR, plotList1, type='l',
+                      col=as.list(1:length(stateNames)), ylim=c(0,1), legend_col=TRUE,
+                      main=paste0("treatment rate ft = ", ft[i]), legend_col_title="Model state",
+                      legend_col_label=stateNames, ylab="proportion", logx=TRUE)
+  print(plot1)
+}
+```
+
+
+Notice that the greatest proportion of the population is in the susceptible compartment at low EIR, and the asymptomatic compartment at high EIR, with relatively few individuals being clinically infected at any point. We can explore this by focussing on clinically diseased individuals (i.e. those in state D or state T):
+
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+plotList2 <- list()
+for (i in 1:length(ft)) {
+  plotList2[[i]] <- rowSums(m[i,,which(stateNames%in%c("D","T"))])
+}
+
+plot1 <- plot_nice1(EIR, plotList2, type='l',
+                    col=3, lty=as.list(1:length(plotList2)), legend_lty=TRUE,
+                    main="Proportion clinically diseased (states D & T) vs. EIR",
+                    legend_lty_title="Treatment rate",
+                    legend_lty_label=paste0("ft = ",ft),
+                    ylab="proportion clinically diseased", logx=TRUE)
+print(plot1)
+```
+
+Even at very high transmission the proportion of clinically diseased individuals rarely goes a long way over 1%.
+
+
+\newpage
+## EIR, prevalence, incidence and R0
+
+Text
+
+```{r}
+# calculate prevalence for a range of treatment rates
+prev_allAges <- prev_2_10 <- list()
+for (i in 1:length(ft)) {
+  prev_allAges[[i]] <- mapply(find_prev, eqList[[i]], 0, Inf)
+  prev_2_10[[i]] <- mapply(find_prev, eqList[[i]], 2, 10)
+}
+```
+
+Produce plots
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+plot_nice1(EIR, prev_allAges, type='l', col=2, lty=as.list(1:length(prev_2_10)), ylim=c(0,1), 
+                    legend_lty=TRUE, main="EIR vs. prevalence (all ages)", 
+                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
+                    ylab="PfPR (all ages)", logx=TRUE)
+
+```
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+plot_nice1(EIR, prev_2_10, type='l', col=2, lty=as.list(1:length(prev_2_10)), ylim=c(0,1), 
+                    legend_lty=TRUE, main="EIR vs. prevalence in 2-10 year olds", 
+                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
+                    ylab="PfPR 2-10", logx=TRUE)
+
+```
+
+Text
+
+```{r}
+# calculate incidence for a range of treatment rates
+inc_allAges <- inc_0_5 <- list()
+for (i in 1:length(ft)) {
+  inc_allAges[[i]] <- mapply(find_inc, eqList[[i]], 0, Inf)
+  inc_0_5[[i]] <- mapply(find_inc, eqList[[i]], 0, 5)
+}
+```
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+plot_nice1(EIR, inc_allAges, type='l', col=2, lty=as.list(1:length(inc_allAges)), 
+                    legend_lty=TRUE, main="EIR vs. clinical incidence (all ages)", 
+                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
+                    ylab="clinical incidence (all ages)", logx=TRUE)
+
+```
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+plot_nice1(EIR, inc_0_5, type='l', col=2, lty=as.list(1:length(inc_0_5)), 
+                    legend_lty=TRUE, main="EIR vs. clinical incidence in 0-5 year olds", 
+                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
+                    ylab="clinical incidence 0-5", logx=TRUE)
+
+```
+
+Demonstrate why prevalence vs. incidence plots can be confusing.
+
+```{r, echo=FALSE, fig.width=7, fig.height=3}
+plot_nice1(prev_2_10, inc_0_5, type='l', col=2, xlim=c(0,1),
+                    lty=as.list(1:length(inc_0_5)), 
+                    legend_lty=TRUE, main="prevalence in 2-10 year olds vs.\n clinical incidence in 0 to 5 year olds", 
+                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
+                    xlab="PfPR 2-10", ylab="clinical incidence 0-5")
+
+```
+
+(Rmarkdown last evaluated: `r Sys.time()`)

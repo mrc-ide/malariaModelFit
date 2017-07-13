@@ -10,5 +10,5 @@ random_parameters(n = 1)
 \item{n}{nuber of random parameter sets to draw.}
 }
 \description{
-Set some parameters as default, and draw others from distributions. TODO - find out where these distributions come from.
+Set some parameters as default, and draw others from distributions. TODO - find out where these distributions and values came from.
 }

@@ -4,9 +4,12 @@
 \alias{plot_nice1}
 \title{plot_nice1}
 \usage{
-plot_nice1(x, y, col = 1, xlab = NULL, ylab = NULL, main = NULL,
-  pch = 1, cex = 1, legend = FALSE, legend_position = "right",
-  legend_title = "legend_title", legend_label = NULL)
+plot_nice1(x, y, col = 1, lty = 1, pch = 1, cex = 1, type = "p",
+  xlim = NULL, ylim = NULL, xlab = NULL, ylab = NULL, main = NULL,
+  legend_position = "right", legend_col = FALSE,
+  legend_col_title = "legend_col_title", legend_col_label = NULL,
+  legend_lty = FALSE, legend_lty_title = "legend_lty_title",
+  legend_lty_label = NULL, logx = FALSE, logy = FALSE)
 }
 \description{
 Produces plot similar to base plot() function, but in ggplot2. Has the advantage of being able to specify legends outside of plotting area more easily. Multiple x, y and col arguments can be specified using lists of values.
