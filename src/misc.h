@@ -2,11 +2,15 @@
 #ifndef __MRCfellowship__misc__
 #define __MRCfellowship__misc__
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 
 //------------------------------------------------
 // define very small number for catching underflow problems
 #define UNDERFLO   1e-100
+
+//------------------------------------------------
+// dummy function to check Rcpp working correctly
+void dummy1_cpp();
 
 //------------------------------------------------
 // basic sum over elements in a vector (templated for different data types).
@@ -127,5 +131,9 @@ std::vector< std::vector< std::vector<double> > > Rcpp_to_array_double(Rcpp::Lis
 //------------------------------------------------
 // converts input from Rcpp::List format to vector<vector<vector<int>>> format.
 std::vector< std::vector< std::vector<int> > > Rcpp_to_array_int(Rcpp::List x);
+
+//------------------------------------------------
+// convert arma::vec object to NumericVector object
+Rcpp::NumericVector tonv(arma::vec& v1);
 
 #endif

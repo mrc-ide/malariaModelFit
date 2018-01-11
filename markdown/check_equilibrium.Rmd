@@ -7,7 +7,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into the malariaModelFit package by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) which code set is faster and by how much.
+This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into the malariaModelFit package by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) what speed gain we achieve by moving the R function to Rcpp.
 
 
 ## Compare solutions
@@ -24,7 +24,6 @@ if (FALSE) {
 } else {
   setwd('~/Dropbox/Bob/Work/My Programs/Personal packages/malariaModelFit')
   load_all('malariaModelFit')
-  #document('malariaModelFit')
 }
 ```
 
@@ -45,7 +44,7 @@ Now calculate equilibrium solution using both functions, and check that results 
 is_equal <- rep(NA,n)
 for (i in 1:n) {
   eq1 <- human_equilibrium(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h=h)
-  eq2 <- human_equilibrium_fast(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h$nodes, h$weights)
+  eq2 <- human_equilibrium_cpp(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h$nodes, h$weights)
   is_equal[i] <- all.equal(eq1,eq2)
 }
 
@@ -77,7 +76,7 @@ for (i in 1:n) {
   # benchmark functions
   res_i <- microbenchmark(
     human_equilibrium(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h=h),
-    human_equilibrium_fast(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h$nodes, h$weights),
+    human_equilibrium_cpp(EIR=EIR[i], ft=ft[i], p=p[[i]], age=age, h$nodes, h$weights),
     times=repeats
   )
   

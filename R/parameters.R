@@ -125,7 +125,7 @@ parameter_definitions <- function() {
 #------------------------------------------------
 #' Default parameters
 #'
-#' TODO - is this needed?
+#' Load the current default parameter set.
 #'
 #' @export
 
@@ -142,14 +142,14 @@ default_parameters <- function() {
 #'
 #' @export
 
-set_parameters <- function(v){
+set_parameters <- function(v) {
 	
     # start with default parameters
 	p <- default_parameters()
     
     # replace values based on parameter name
 	s <- names(v)
-	for(i in 1:length(v)){
+	for (i in 1:length(v)) {
 		p[s[i]] <- v[i]
 	}
     
@@ -165,11 +165,9 @@ set_parameters <- function(v){
 #'
 #' @export
 
-random_parameters <- function(n=1)
-{
+random_parameters <- function(n=1) {
     ret <-list()
-    for(i in 1:n)
-    {
+    for(i in 1:n) {
         p <- list()
         
         # age, heterogeneity in exposure

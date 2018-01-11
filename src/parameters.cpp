@@ -84,8 +84,8 @@ parameters::parameters(const Rcpp::List& p)
     ad0 = Rcpp::as<double>(p["ad0"]);
     fd0 = Rcpp::as<double>(p["fd0"]);
     gd = Rcpp::as<double>(p["gd"]);
-    aA = Rcpp::as<double>(p["aA"]); // TODO find
-    aU = Rcpp::as<double>(p["aU"]); // TODO find
+    aA = Rcpp::as<double>(p["aA"]);
+    aU = Rcpp::as<double>(p["aU"]);
     b0 = Rcpp::as<double>(p["b0"]);
     b1 = Rcpp::as<double>(p["b1"]);
     db = Rcpp::as<double>(p["db"]);

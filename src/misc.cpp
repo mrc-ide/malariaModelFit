@@ -8,6 +8,14 @@ using namespace std;
 // DEFINED IN HEADER
 
 //------------------------------------------------
+// dummy function to check Rcpp working correctly
+
+// [[Rcpp::export]]
+void dummy1_cpp() {
+    print("Rcpp function working!");
+}
+
+//------------------------------------------------
 // basic sum over elements in a vector (templated for different data types)
 // DEFINED IN HEADER
 
@@ -155,4 +163,11 @@ vector< vector< vector<double> > > Rcpp_to_array_double(Rcpp::List x) {
         }
     }
     return(ret);
+}
+
+//------------------------------------------------
+// convert arma::vec object to NumericVector object
+Rcpp::NumericVector tonv(arma::vec& v1) {
+    Rcpp::NumericVector v(v1.begin(),v1.end());
+    return(v);
 }
