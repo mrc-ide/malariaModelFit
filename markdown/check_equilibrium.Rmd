@@ -1,5 +1,5 @@
 ---
-title: "Check equilibrium solutions"
+title: "Check that internal equilibrium solutions are identical"
 output: pdf_document
 ---
 
@@ -7,7 +7,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in R by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into the malariaModelFit package by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) what speed gain we achieve by moving the R function to Rcpp.
+This package contains two sets of code for returning the equilibrium solution to the Griffin et al. 2014 transmission model. The first was written in compiled R code by Jamie Griffin, and the second was written in Rcpp by Xiaoyu Li, before being adapted into the malariaModelFit package by Bob Verity. Here we will compare both sets of code to establish 1) that both sets of code produce the same results, 2) what speed gain we achieve by moving the complied R function to Rcpp.
 
 
 ## Compare solutions
@@ -90,7 +90,7 @@ for (i in 1:n) {
 We can now produce a box-plot over all results:
 
 ```{r}
-functionNames <- c("human_equilibrium","human_equilibrium_fast")
+functionNames <- c("human_equilibrium","human_equilibrium_cpp")
 boxplot(split(res$time, f=res$expr), names=functionNames, ylab="evaluation time")
 ```
 
@@ -98,16 +98,13 @@ boxplot(split(res$time, f=res$expr), names=functionNames, ylab="evaluation time"
 
 We can also dig deeper into timings by plotting evaluation time against EIR or treatment rate:
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
-# plot evalutation time against EIR
-plot_nice1(x=EIR, as.list(as.data.frame(res_median)), col=list(2,3), pch=20, 
-           ylab="evaluation time", main="evaluation time against EIR", legend_col=TRUE,
-           legend_col_title="Function", legend_col_label=functionNames)
+```{r, echo=FALSE, fig.width=8, fig.height=8}
+par(mfrow=c(2,1))
 
-# plot evalutation time against treatment rate
-plot_nice1(x=ft, as.list(as.data.frame(res_median)), col=list(2,3), pch=20, 
-           ylab="evaluation time", main="evaluation time against treatment rate", 
-           legend_col=TRUE, legend_col_title="Function", legend_col_label=functionNames)
+mplot(EIR, as.list(as.data.frame(res_median)), type="p", col=list(2,3), pch=20, ymin=0, xlab="EIR", ylab="evaluation time", main="evaluation time against EIR", legend_margin=10, legend_inset=0.5, legend1_title="Function", legend1_label=c("human_equilibrium", "human_equilibrium_cpp"), legend1_lty=0, legend1_pch=20, legend1_col=c(2,3))
+
+mplot(ft, as.list(as.data.frame(res_median)), type="p", col=list(2,3), pch=20, ymin=0, xlab="treatment rate", ylab="evaluation time", main="evaluation time against treatment rate", legend_margin=10, legend_inset=0.5, legend1_title="Function", legend1_label=c("human_equilibrium", "human_equilibrium_cpp"), legend1_lty=0, legend1_pch=20, legend1_col=c(2,3))
+
 ```
 
 Neither plot shows any strong relationship with evaluation time.

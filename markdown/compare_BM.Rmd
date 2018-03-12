@@ -7,11 +7,14 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Note, BM output is produced using 164 age categories and 5 heterogeneity categories. Same values and breaks are used here for equilibrium solution.
+If the equilibrium solution in this package is correct then it should be an exact match to the output of the Berkeley Madonna (BM) model run to equilibrium. Here we check this by importing BM model output for a range of EIR and treatment levels, calculating the equivalent quantities using the internal equilibrium solution, and comparing the two with some simple plots. 
 
-## Title
+Note that the BM output was produced using 164 age categories and 5 heterogeneity categories, and so the same values and breaks are used in the equilibrium solution.
 
-Words
+
+## All model states
+
+Here we explore the proportion of individuals in each model state as a function of EIR and treatment. First, read in BM output.
 
 ```{r, echo=FALSE}
 # hard-coded to install package from Github or from file
@@ -23,11 +26,8 @@ if (FALSE) {
 } else {
   setwd('~/Dropbox/Bob/Work/My Programs/Personal packages/malariaModelFit')
   load_all('malariaModelFit')
-  #document('malariaModelFit')
 }
 ```
-
-Text
 
 ```{r}
 # define treatment levels corresponding to BM output files
@@ -44,6 +44,8 @@ for (i in 1:length(ft)) {
 EIR <- BM_list[[1]]$EIRY_eq
 ```
 
+Now simulate the same output directly from the equilibrium solution.
+
 ```{r}
 # load parameters
 age <- default_age()
@@ -55,7 +57,7 @@ eqList <- list()
 for (i in 1:length(ft)) {
   eqList[[i]] <- list()
   for (j in 1:length(EIR)) {
-      eqList[[i]][[j]] <- human_equilibrium_fast(EIR[j], as.numeric(ft[i]), p, age, h$nodes, h$weights)
+      eqList[[i]][[j]] <- human_equilibrium_cpp(EIR[j], as.numeric(ft[i]), p, age, h$nodes, h$weights)
   }
 }
 
@@ -70,39 +72,36 @@ for (i in 1:length(eqList)) {
 
 ```
 
-Produce plots
+We can eyeball the two solutions by overlaying lines from the BM solution (solid) and from the internal equilibrium solution (dashed):
 
-```{r, echo=FALSE, fig.width=8, fig.height=4}
+```{r, echo=FALSE, fig.width=8, fig.height=12}
 # plot BM output and equilibrium solutions on same plot
+par(mfrow=c(3,1))
 for (i in 1:length(ft)) {
   BM_states <- as.list(BM_list[[i]])[-1]
-  plot1 <- plot_nice1(EIR, BM_states, type='l',
-                      col=as.list(1:length(stateNames)), ylim=c(0,1), legend_col=TRUE,
-                      main=paste0("treatment rate ft = ", ft[i]), legend_col_title="Model state",
-                      legend_col_label=stateNames, ylab="proportion", logx=TRUE)
+  eq_states <- as.list(as.data.frame(m[i,,]))
   
-  plotList1 <- as.list(as.data.frame(m[i,,]))
-  plot1 <- points_nice1(plot1, EIR, plotList1, col=as.list(1:length(plotList1)), pch=20, cex=0.5)
+  ns <- length(stateNames)
+  s <- as.list(rep(c(1,2),times=rep(ns,2)))
   
-  print(plot1)
+  mplot(EIR, c(BM_states, eq_states), type="l", col=as.list(rep(1:ns,2)), lwd=s, lty=s, ymin=0, ymax=1, xlab="EIR", ylab="proportion", main=paste0("ft = ",ft[i]), legend_margin=8, legend1_title="Model state", legend1_label=stateNames, legend1_col=1:length(stateNames), legend1_pch=NULL, legend2_title="Simulation type", legend2_label=c("BM","equilibrium"), legend2_lty=c(1,2), legend2_lwd=c(1,2), legend2_pch=NULL, log="x")
 }
 ```
 
-Produce plots
+Some proportions are too small to see cleary, so here are equivalent plots for the diseased state only:
 
-```{r, echo=FALSE, fig.width=8, fig.height=4}
+```{r, echo=FALSE, fig.width=8, fig.height=10}
 # plot BM output and equilibrium solutions on same plot
+par(mfrow=c(3,1))
 for (i in 1:length(ft)) {
+  
   BM_states <- as.list(BM_list[[i]])$D
-  plot1 <- plot_nice1(EIR, BM_states, type='l',
-                      col=1, legend_col=TRUE,
-                      main=paste0("treatment rate ft = ", ft[i]), legend_col_title="Model state",
-                      legend_col_label="D", ylab="proportion", logx=TRUE)
+  eq_states <- as.data.frame(m[i,,])
+  names(eq_states) <- stateNames
+  eq_states <- eq_states$D
   
-  plotList1 <- as.list(as.data.frame(m[i,,which(stateNames=="D")]))
-  plot1 <- points_nice1(plot1, EIR, plotList1, col=1, pch=20, cex=0.5)
+  mplot(EIR, list(BM_states, eq_states), type="l", col=2, lwd=list(1,2), lty=list(1,2), ymin=0, ymax=0.015, xlab="EIR", ylab="proportion", main=paste0("ft = ",ft[i]), legend_margin=8, legend1_title="Model state", legend1_label="D", legend1_col=2, legend1_pch=NULL, legend2_title="Simulation type", legend2_label=c("BM","equilibrium"), legend2_lty=c(1,2), legend2_lwd=c(1,2), legend2_pch=NULL, log="x")
   
-  print(plot1)
 }
 ```
 

@@ -7,7 +7,7 @@
 #' @export
 
 default_age <- function() {
-    age <- read.table(malariaModelFit_file("age.txt"))
+    age <- read.table(malariaModelFit_file("age_distributions/age.txt"))
     return(as.vector(unlist(age)))
 }
 

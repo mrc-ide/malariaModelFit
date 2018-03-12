@@ -1,17 +1,14 @@
 
 # -----------------------------------
-#' plot_nice1
+#' mplot
 #'
-#' Produces plot similar to base plot() function, but in ggplot2. Has the advantage of being able to specify legends outside of plotting area more easily. Multiple x, y and col arguments can be specified using lists of values.
+#' Convenient function for plotting multiple lines/points on the same graph. Multiple x, y, col etc. arguments can be specified using lists of values. Two legends can also be specified manually.
 #'
 #' @export
 
-plot_nice1 <- function(x, y, col=1, lty=1, pch=1, cex=1, type="p", xlim=NULL, ylim=NULL, xlab=NULL, ylab=NULL, main=NULL, legend_position="right", legend_col=FALSE, legend_col_title="legend_col_title", legend_col_label=NULL, legend_lty=FALSE, legend_lty_title="legend_lty_title", legend_lty_label=NULL, logx=FALSE, logy=FALSE) {
-    
-    # check input formats
-    stopifnot(type%in%c("p","l"))
-    
-    # if no y variable then first argument becomes y
+mplot <- function(x, y, type="l", col=1, lty=1, lwd=1, pch=1, cex=1, xmin=NULL, xmax=NULL, ymin=NULL, ymax=NULL, xlab=NULL, ylab=NULL, legend_margin=5, legend_inset=0.2, legend1_title="legend1_title", legend1_pos="topright", legend1_label=NULL, legend1_col=1, legend1_lty=1, legend1_lwd=1, legend1_pch=NULL, legend1_cex=1, legend1_boxOn=FALSE, legend2_title="legend2_title", legend2_pos="right", legend2_label=NULL, legend2_col=1, legend2_lty=1, legend2_lwd=1, legend2_pch=NULL, legend2_cex=1, legend2_boxOn=FALSE, ...) {
+	
+	# if no y variable then first argument becomes y, and x becomes sequential numbers of same length
     if (missing(y)) {
         y <- x
         if (is.list(y)) {
@@ -21,7 +18,7 @@ plot_nice1 <- function(x, y, col=1, lty=1, pch=1, cex=1, type="p", xlim=NULL, yl
         }
     }
     
-    # try to set axis names automatically
+    # try to set axis names automatically from names of input arguments
     if (is.null(xlab) && !is.list(x)) {
         xlab <- substitute(x)
     }
@@ -39,18 +36,29 @@ plot_nice1 <- function(x, y, col=1, lty=1, pch=1, cex=1, type="p", xlim=NULL, yl
         x <- replicate(length(y), x, simplify=FALSE)
     }
     
-    # replicate col over list
+    # replicate other attributes over list
+    if (!is.list(type)) {
+        type <- replicate(length(y), type, simplify=FALSE)
+    }
     if (!is.list(col)) {
         col <- replicate(length(y), col, simplify=FALSE)
     }
-    
-    # replicate lty over list
     if (!is.list(lty)) {
         lty <- replicate(length(y), lty, simplify=FALSE)
     }
+    if (!is.list(lwd)) {
+        lwd <- replicate(length(y), lwd, simplify=FALSE)
+    }
+    if (!is.list(pch)) {
+        pch <- replicate(length(y), pch, simplify=FALSE)
+    }
+    if (!is.list(cex)) {
+        cex <- replicate(length(y), cex, simplify=FALSE)
+    }
     
     # check that all lists same length
-    if(!(length(x)==length(y) & length(x)==length(col) & length(x)==length(lty))) {
+    l <- c(length(x), length(y), length(type), length(col), length(lty), length(lwd), length(pch), length(cex))
+    if(length(unique(l))!=1) {
         stop("input lists are of different lengths")
     }
     
@@ -59,154 +67,61 @@ plot_nice1 <- function(x, y, col=1, lty=1, pch=1, cex=1, type="p", xlim=NULL, yl
         stop("x and y inputs must be corresponding lengths")
     }
     
-    # add each list element to data frame
-    df1 <- NULL
-    for (i in 1:length(x)) {
-        
-        # if col is numeric then convert to default colours
-        if (is.numeric(col[[i]])) {
-            col[[i]] <- (col[[i]]-1)%%8+1	# recycle colours
-            col[[i]] <- palette()[col[[i]]]
-        }
-        
-        # if lty is numeric then convert to string
-        if (is.numeric(lty[[i]])) {
-            lty_strings <- c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash", "1F", "F1", "4C88C488", "12345678")
-            lty[[i]] <- lty_strings[lty[[i]]]
-        }
-        
-        # create data frame
-        col[[i]] <- rep(col[[i]], length(x[[i]]))
-        lty[[i]] <- as.factor(rep(lty[[i]], length(x[[i]])))
-        df1 <- rbind(df1, data.frame(x=x[[i]], y=y[[i]], col=col[[i]], lty=lty[[i]], group=i))
+    # define min and max functions that return NA if all values are NA
+    safeMin <- function(x) {
+    	if (all(is.na(x))) {
+    		return(NA)
+    	} else {
+    		return(min(x,na.rm=TRUE))
+    	}
     }
-    
-    # get unique colour levels
-    col_levels <- levels(df1$col)
-    
-    # get unique linetype levels
-    lty_levels <- levels(df1$lty)
+    safeMax <- function(x) {
+    	if (all(is.na(x))) {
+    		return(NA)
+    	} else {
+    		return(max(x,na.rm=TRUE))
+    	}
+    }
     
     # set default plotting limits
-    if (is.null(xlim)) {
-        xlim <- range(df1$x, na.rm=TRUE)
+    if (is.null(xmin)) {
+    	xmin <- safeMin(mapply(safeMin, x))
     }
-    if (is.null(ylim)) {
-        ylim <- range(df1$y, na.rm=TRUE)
+    if (is.null(xmax)) {
+    	xmax <- safeMax(mapply(safeMax, x))
     }
-    
-    # create default legend labels (not necessarily used)
-    if (is.null(legend_col_label)) {
-        legend_col_label <- paste0("legend_col_label", 1:length(col_levels))
+    if (is.null(ymin)) {
+    	ymin <- safeMin(mapply(safeMin, y))
     }
-    
-    # --------------------
-    
-    # create plot and theme
-    plot1 <- ggplot()
-    plot1 <- plot1 + theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank())
-    plot1 <- plot1 + theme(panel.background=element_blank())
-    plot1 <- plot1 + theme(axis.line=element_line(colour="black", size=0.25))
-    plot1 <- plot1 + theme(plot.title=element_text(hjust=0.5))
-    
-    # set plotting limits
-    plot1 <- plot1 + coord_cartesian(xlim=xlim, ylim=ylim)
-    
-    # add legends
-    plot1 <- plot1 + theme(legend.position=legend_position, legend.key = element_blank())
-    if (!legend_col) {
-        plot1 <- plot1 + guides(colour=FALSE)
-    }
-    if (!legend_lty) {
-        plot1 <- plot1 + guides(lty=FALSE)
-    }
-    plot1 <- plot1 + scale_colour_manual(labels=legend_col_label, values=col_levels, name=legend_col_title)
-    plot1 <- plot1 + scale_linetype_manual(labels=legend_lty_label, values=lty_levels, name=legend_lty_title)
-    
-    # add points or lines
-    if (type=="p") {
-        plot1 <- plot1 + geom_point(aes(x, y, colour=col, group=group), shape=pch, size=2*cex, data=df1)
-    } else if (type=="l") {
-        plot1 <- plot1 + geom_line(aes(x, y, colour=col, linetype=lty, group=group), data=df1)
+    if (is.null(ymax)) {
+    	ymax <- safeMax(mapply(safeMax, y))
     }
     
-    # add titles
-    plot1 <- plot1 + labs(x=xlab, y=ylab)
-    plot1 <- plot1 + ggtitle(main)
-    
-    # log axes
-    if (logx) {
-        plot1 <- plot1 + scale_x_continuous(trans='log10')
+    # change margins
+    oldmar <- newmar <- par(mar=rep(0,4), xpd=TRUE)
+    anyLegend <- (!is.null(legend1_label) | !is.null(legend2_label))
+    if (anyLegend) {
+    	newmar$mar[4] <- newmar$mar[4] + legend_margin
+    	newmar$xpd <- TRUE
     }
-    if (logy) {
-        plot1 <- plot1 + scale_y_continuous(trans='log10')
-    }
+    par(newmar)
     
-    # return plot
-    plot1
-}
-
-# -----------------------------------
-#' points_nice1
-#'
-#' Add points to plot_nice1.
-#'
-#' @export
-
-points_nice1 <- function(plot1, x, y, col=1, pch=1, cex=1) {
-    
-    # if no y variable then first argument becomes y
-    if (missing(y)) {
-        y <- x
-        if (is.list(y)) {
-            x <- mapply(function(x){1:length(x)}, y, SIMPLIFY=FALSE)
-        } else {
-            x <- 1:length(y)
-        }
-    }
-    
-    # force y to list
-    if (!is.list(y)) {
-        y <- list(y)
-    }
-    
-    # replicate x over list
-    if (!is.list(x)) {
-        x <- replicate(length(y), x, simplify=FALSE)
-    }
-    
-    # replicate col over list
-    if (!is.list(col)) {
-        col <- replicate(length(y), col, simplify=FALSE)
-    }
-    
-    # check that all lists same length
-    if(!(length(x)==length(y) & length(x)==length(col))) {
-        stop("input lists are of different lengths")
-    }
-    
-    # check that x and y inputs same length
-    if (!all(mapply(length,x)==mapply(length,y))) {
-        stop("x and y inputs must be corresponding lengths")
-    }
-    
-    # add each list element to data frame
-    df1 <- NULL
+    # produce empty plot and add lines
+	plot(0, type="n", xlim=c(xmin,xmax), ylim=c(ymin,ymax), xlab=xlab, ylab=ylab, ...)
     for (i in 1:length(x)) {
-        
-        # if col is numeric then convert to default colours
-        if (is.numeric(col[[i]])) {
-            col[[i]] <- (col[[i]]-1)%%8+1	# recycle colours
-            col[[i]] <- palette()[col[[i]]]
-        }
-        
-        # create data frame
-        col[[i]] <- rep(col[[i]], length(x[[i]]))
-        df1 <- rbind(df1, data.frame(x=x[[i]], y=y[[i]], col=col[[i]], group=i))
+    	lines(x[[i]], y[[i]], type=type[[i]], col=col[[i]], lty=lty[[i]], lwd=lwd[[i]], pch=pch[[i]], cex=cex[[i]])
     }
-    
-    plot1 <- plot1 + geom_point(aes(x, y, colour=col, group=group), shape=pch, size=2*cex, data=df1)
-    
-    # return plot
-    plot1
+	
+	# add first legend
+	if (!is.null(legend1_label)) {		
+		legend(x=legend1_pos, legend=legend1_label, col=legend1_col, lty=legend1_lty, lwd=legend1_lwd, pch=legend1_pch, cex=legend1_cex, inset=c(-legend_inset,0), title=legend1_title, title.adj=1, bty=switch(legend1_boxOn+1,"n","o"))
+	}
+	
+	# add second legend
+	if (!is.null(legend2_label)) {
+		legend(x=legend2_pos, legend=legend2_label, col=legend2_col, lty=legend2_lty, lwd=legend2_lwd, pch=legend2_pch, cex=legend2_cex, inset=c(-legend_inset,0), title=legend2_title, title.adj=1, bty=switch(legend2_boxOn+1,"n","o"))
+	}
+	
+	# change margins back
+    par(oldmar)
 }

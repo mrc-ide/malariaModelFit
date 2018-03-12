@@ -25,7 +25,6 @@ if (FALSE) {
 } else {
   setwd('~/Dropbox/Bob/Work/My Programs/Personal packages/malariaModelFit')
   load_all('malariaModelFit')
-  #document('malariaModelFit')
 }
 ```
 
@@ -47,7 +46,7 @@ eqList <- list()
 for (i in 1:length(ft)) {
   eqList[[i]] <- list()
   for (j in 1:length(EIR)) {
-    eqList[[i]][[j]] <- human_equilibrium_fast(EIR[j], ft[i], p, age, h$nodes, h$weights)
+    eqList[[i]][[j]] <- human_equilibrium_cpp(EIR[j], ft[i], p, age, h$nodes, h$weights)
   }
 }
 ```
@@ -67,44 +66,36 @@ for (i in 1:length(eqList)) {
 
 Produce plots
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
+```{r, echo=FALSE, fig.width=8, fig.height=15}
+par(mfrow=c(4,1))
 for (i in 1:length(ft)) {
   plotList1 <- as.list(as.data.frame(m[i,,]))
+  ns <- length(stateNames)
   
-  plot1 <- plot_nice1(EIR, plotList1, type='l',
-                      col=as.list(1:length(stateNames)), ylim=c(0,1), legend_col=TRUE,
-                      main=paste0("treatment rate ft = ", ft[i]), legend_col_title="Model state",
-                      legend_col_label=stateNames, ylab="proportion", logx=TRUE)
-  print(plot1)
+  mplot(EIR, plotList1, col=as.list(1:ns), ymin=0, ymax=1, xlab="EIR", ylab="proportion", main=paste0("treatment rate ft = ", ft[i]), legend_margin=8, legend_inset=0.2, legend1_title="Model state", legend1_label=stateNames, legend1_col=1:ns, log="x")
 }
 ```
 
 
-Notice that the greatest proportion of the population is in the susceptible compartment at low EIR, and the asymptomatic compartment at high EIR, with relatively few individuals being clinically infected at any point. We can explore this by focussing on clinically diseased individuals (i.e. those in state D or state T):
+Notice that the greatest proportion of the population is in the susceptible compartment at low EIR, and in the asymptomatic compartment at high EIR, with relatively few individuals being clinically infected at any point. We can explore this by focussing on clinically diseased individuals (i.e. those in state D or state T):
 
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
+```{r, echo=FALSE, fig.width=10, fig.height=5}
 plotList2 <- list()
 for (i in 1:length(ft)) {
   plotList2[[i]] <- rowSums(m[i,,which(stateNames%in%c("D","T"))])
 }
 
-plot1 <- plot_nice1(EIR, plotList2, type='l',
-                    col=3, lty=as.list(1:length(plotList2)), legend_lty=TRUE,
-                    main="Proportion clinically diseased (states D & T) vs. EIR",
-                    legend_lty_title="Treatment rate",
-                    legend_lty_label=paste0("ft = ",ft),
-                    ylab="proportion clinically diseased", logx=TRUE)
-print(plot1)
+mplot(EIR, plotList2, col=3, lty=as.list(1:length(ft)), ymin=0, xlab="EIR", ylab="proportion", main="EIR vs. Proportion clinically diseased (states D & T)", legend_margin=8, legend_inset=0.2, legend1_title="Treatment rate", legend1_label=ft, legend1_col=3, legend1_lty=1:length(ft), log="x")
 ```
 
-Even at very high transmission the proportion of clinically diseased individuals rarely goes a long way over 1%.
+Even at very high transmission the proportion of clinically diseased individuals rarely goes much over 1%. This is due to the buildup of immunity, which causes individuals to become asymptomatically infected later in life.
 
 
 \newpage
-## EIR, prevalence, incidence and R0
+## EIR, prevalence and incidence
 
-Text
+We can use the equilibrium model output to calculate prevalence and incidence in any given age bands.
 
 ```{r}
 # calculate prevalence for a range of treatment rates
@@ -115,25 +106,19 @@ for (i in 1:length(ft)) {
 }
 ```
 
-Produce plots
+```{r, echo=FALSE, fig.width=10, fig.height=5}
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
-plot_nice1(EIR, prev_allAges, type='l', col=2, lty=as.list(1:length(prev_2_10)), ylim=c(0,1), 
-                    legend_lty=TRUE, main="EIR vs. prevalence (all ages)", 
-                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
-                    ylab="PfPR (all ages)", logx=TRUE)
+mplot(EIR, prev_allAges, col=3, lty=as.list(1:length(ft)), ymin=0, xlab="EIR", ylab="PfPR all ages", main="EIR vs. prevalence (all ages)", legend_margin=8, legend_inset=0.2, legend1_title="Treatment rate", legend1_label=ft, legend1_col=3, legend1_lty=1:length(ft), log="x")
 
 ```
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
-plot_nice1(EIR, prev_2_10, type='l', col=2, lty=as.list(1:length(prev_2_10)), ylim=c(0,1), 
-                    legend_lty=TRUE, main="EIR vs. prevalence in 2-10 year olds", 
-                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
-                    ylab="PfPR 2-10", logx=TRUE)
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+mplot(EIR, prev_2_10, col=3, lty=as.list(1:length(ft)), ymin=0, xlab="EIR", ylab="PfPR 2-10", main="EIR vs. prevalence in 2-10 year olds", legend_margin=8, legend_inset=0.2, legend1_title="Treatment rate", legend1_label=ft, legend1_col=3, legend1_lty=1:length(ft), log="x")
 
 ```
 
-Text
+And similarly for incidence:
 
 ```{r}
 # calculate incidence for a range of treatment rates
@@ -144,31 +129,26 @@ for (i in 1:length(ft)) {
 }
 ```
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
-plot_nice1(EIR, inc_allAges, type='l', col=2, lty=as.list(1:length(inc_allAges)), 
-                    legend_lty=TRUE, main="EIR vs. clinical incidence (all ages)", 
-                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
-                    ylab="clinical incidence (all ages)", logx=TRUE)
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+mplot(EIR, inc_allAges, col=2, lty=as.list(1:length(ft)), ymin=0, xlab="EIR", ylab="clinical incidence (all ages)", main="EIR vs. incidence (all ages)", legend_margin=8, legend_inset=0.2, legend1_title="Treatment rate", legend1_label=ft, legend1_col=2, legend1_lty=1:length(ft), log="x")
 
 ```
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
-plot_nice1(EIR, inc_0_5, type='l', col=2, lty=as.list(1:length(inc_0_5)), 
-                    legend_lty=TRUE, main="EIR vs. clinical incidence in 0-5 year olds", 
-                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
-                    ylab="clinical incidence 0-5", logx=TRUE)
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+mplot(EIR, inc_0_5, col=2, lty=as.list(1:length(ft)), ymin=0, xlab="EIR", ylab="clinical incidence (all ages)", main="EIR vs. incidence in 0-5 year olds", legend_margin=8, legend_inset=0.2, legend1_title="Treatment rate", legend1_label=ft, legend1_col=2, legend1_lty=1:length(ft), log="x")
 
 ```
 
-Demonstrate why prevalence vs. incidence plots can be confusing.
+Note that plots of prevalence vs. incidence can be counter-intunitive at first, because incidence appears to go up with increasing treatment. This is because a prevalence of 50% with high treatment implies that transmission is extremely high to maintain this prevalence, whereas prevalence of 50% with low treatment implies lower transmission, and so lower clinical incidence.
 
-```{r, echo=FALSE, fig.width=7, fig.height=3}
-plot_nice1(prev_2_10, inc_0_5, type='l', col=2, xlim=c(0,1),
-                    lty=as.list(1:length(inc_0_5)), 
-                    legend_lty=TRUE, main="prevalence in 2-10 year olds vs.\n clinical incidence in 0 to 5 year olds", 
-                    legend_lty_title="Treatment rate", legend_lty_label=paste("ft =",ft), 
-                    xlab="PfPR 2-10", ylab="clinical incidence 0-5")
+```{r, echo=FALSE, fig.width=10, fig.height=5}
+
+mplot(prev_2_10, inc_0_5, col=4, lty=as.list(1:length(ft)), ymin=0, xlab="PfPR 2-10", ylab="clinical incidence 0-5", main="prevalence in 2-10 year olds vs.\n clinical incidence in 0 to 5 year olds", legend_margin=8, legend_inset=0.2, legend1_title="Treatment rate", legend1_label=ft, legend1_col=4, legend1_lty=1:length(ft))
 
 ```
+
+## (TO DO - breakdown by age)
 
 (Rmarkdown last evaluated: `r Sys.time()`)
