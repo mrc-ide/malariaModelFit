@@ -1,4 +1,4 @@
-Notes	tab-delimited file. Empty lines in this file are fine, but any non-empty lines must contain two columns. Only valid parameter names will be used by the package.
+Notes	tab-delimited file. Empty lines in this file are fine, but any non-empty lines must contain two columns. Only valid parameter names will be used by the package, meaning notes like this will be ignored.
 
 Notes	Parameter values used by Xiaoyu. Very similar to Griffin 2014 values (possibly true fitted values from Jamie?), with the exception of rP which is much larger (0.2 compared with 0.04).
 

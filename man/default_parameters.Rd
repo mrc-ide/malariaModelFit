@@ -7,5 +7,5 @@
 default_parameters()
 }
 \description{
-TODO - is this needed?
+Load the current default parameter set.
 }

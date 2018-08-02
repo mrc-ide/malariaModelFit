@@ -10,5 +10,6 @@ gq_normal(n)
 \item{n}{number of nodes}
 }
 \description{
-Return node values and weights from Gaussian quadrature of normal distribution with n nodes.
+Return node values and weights from Gaussian quadrature of
+  normal distribution with n nodes.
 }

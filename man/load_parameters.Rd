@@ -7,8 +7,10 @@
 load_parameters(name = "parameters_Griffin2014.txt")
 }
 \arguments{
-\item{setName}{name of parameter set to load}
+\item{name}{name of parameter set to load}
 }
 \description{
-Load a named parameter set from the inst/parameter_sets folder of this package. Input is filtered to relevant parameters only, and returned as a named list.
+Load a named parameter set from the inst/parameter_sets folder
+  of this package. Input is filtered to relevant parameters only, and
+  returned as a named list.
 }

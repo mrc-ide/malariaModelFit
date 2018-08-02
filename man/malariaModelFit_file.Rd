@@ -7,8 +7,9 @@
 malariaModelFit_file(name)
 }
 \arguments{
-\item{n}{number of nodes}
+\item{name}{name of file}
 }
 \description{
-Load and return file from within the inst folder of this package.
+Load and return file from within the inst folder of this
+  package.
 }

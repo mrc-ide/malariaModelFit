@@ -7,8 +7,10 @@
 set_parameters(v)
 }
 \arguments{
-\item{v}{vector of parameters, with names corresponding to those returned by default_parameters().}
+\item{v}{vector of parameters, with names corresponding to those returned by
+\code{default_parameters()}.}
 }
 \description{
-Replace some default parameters with values from a parameter vector v.
+Replace some default parameters with values from a parameter
+  vector v.
 }

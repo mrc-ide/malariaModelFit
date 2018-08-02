@@ -1,4 +1,4 @@
-Notes	tab-delimited file. Empty lines in this file are fine, but any non-empty lines must contain two columns. Only valid parameter names will be used by the package.
+Notes	tab-delimited file. Empty lines in this file are fine, but any non-empty lines must contain two columns. Only valid parameter names will be used by the package, meaning notes like this will be ignored.
 
 Notes	All human parameters match exactly the values in supplementary material of Griffin et al 2014 (Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa). All mosquito parameters (tau, mu, f, Q0) are taken from the earlier 2010 Griffin et al paper (Reducing Plasmodium falciparum Malaria Transmission in Africa: A Model-Based Evaluation of Intervention Strategies).
 
