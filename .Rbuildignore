@@ -2,3 +2,4 @@ ignore/
 R_ignore/
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$
