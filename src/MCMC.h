@@ -1,6 +1,5 @@
-
-#ifndef __malariaModelFit__MCMC__
-#define __malariaModelFit__MCMC__
+/*
+#pragma once
 
 #include <RcppArmadillo.h>
 
@@ -176,4 +175,4 @@ public:
     //void update_loglik_gh();
 };
 
-#endif
+*/

@@ -3,255 +3,248 @@
 
 using namespace std;
 
-
 //------------------------------------------------
-// population::
-// default constructor for population class
-population::population() {}
-
-//------------------------------------------------
-// population::
-// informed constructor for population class
-population::population(const arma::vec& age0, const arma::vec& ghn0, const arma::vec& ghw0)
-{
-    // initialise a population given age groups (age0) and Gauss-Hermit nodes (ghn0) and
-    // the associated weights (ghw0)
-    
-    na = age0.n_rows;
-    age = age0;
-    ghnodes = ghn0;
-    ghweights = ghw0;
-    
-    S = arma::vec(na); S.fill(0.0);
-    T = arma::vec(na); T.fill(0.0);
-    D = arma::vec(na); D.fill(0.0);
-    A = arma::vec(na); A.fill(0.0);
-    U = arma::vec(na); U.fill(0.0);
-    P = arma::vec(na); P.fill(0.0);
-    inf = arma::vec(na); inf.fill(0.0);
-    prop = arma::vec(na); prop.fill(0.0);
-    psi = arma::vec(na); psi.fill(0.0);
-    pos_M = arma::vec(na); pos_M.fill(0.0);
-    pos_PCR = arma::vec(na); pos_PCR.fill(0.0);
-    inc = arma::vec(na); inc.fill(0.0);
-    
-    FOIM = 0.0;
-    
-    nh = ghnodes.n_rows;
-    zeta = arma::vec(nh); zeta.fill(0.0);
-    
-    mICA = arma::mat(nh, na); mICA.fill(0.0);
-    mICM = arma::mat(nh, na); mICM.fill(0.0);
-    
-    mS = arma::mat(nh, na); mS.fill(0.0);
-    mA = arma::mat(nh, na); mA.fill(0.0);
-    mT = arma::mat(nh, na); mT.fill(0.0);
-    mD = arma::mat(nh, na); mD.fill(0.0);
-    mU = arma::mat(nh, na); mU.fill(0.0);
-    mP = arma::mat(nh, na); mP.fill(0.0);
-    
-    r = arma::vec(na); r.fill(0.0);
-    
-    mFOI = arma::mat(nh, na); mFOI.fill(0.0);
-    mphi = arma::mat(nh, na); mphi.fill(0.0);
-    mq = arma::mat(nh, na); mq.fill(0.0);
-    
-    mcA = arma::mat(nh, na); mcA.fill(0.0);
-    mpos_M = arma::mat(nh, na); mpos_M.fill(0.0);
-    mpos_PCR = arma::mat(nh, na); mpos_PCR.fill(0.0);
-    minc = arma::mat(nh, na); minc.fill(0.0);
-    minf = arma::mat(nh, na); minf.fill(0.0);
-    
-    IB = arma::vec(nh); IB.fill(0.0);
-    IC = arma::vec(nh); IC.fill(0.0);
-    ID = arma::vec(nh); ID.fill(0.0);
-    b = arma::vec(nh); b.fill(0.0);
-    
-    betaS = arma::vec(nh); betaS.fill(0.0);
-    betaA = arma::vec(nh); betaA.fill(0.0);
-    betaU = arma::vec(nh); betaU.fill(0.0);
-    
-    aT = arma::vec(nh); aT.fill(0.0);
-    bT = arma::vec(nh); bT.fill(0.0);
-    aD = arma::vec(nh); aD.fill(0.0);
-    bD = arma::vec(nh); bD.fill(0.0);
-    aP = arma::vec(nh); aP.fill(0.0);
-    bP = arma::vec(nh); bP.fill(0.0);
-    
-    Y = arma::vec(nh); Y.fill(0.0);
+// initialise a population given age groups (age) and Gauss-Hermit nodes (ghnodes) and
+// the associated weights (ghweights)
+population::population(const vector<double>& age_, const vector<double>& ghnodes_, const vector<double>& ghweights_) {
+  
+  // basic inputs
+  age = age_;
+  na = age.size();
+  ghnodes = ghnodes_;
+  ghweights = ghweights_;
+  nh = ghnodes.size();
+  
+  // get age in days
+  age_days = vector<double>(na);
+  for (int i=0; i<na; ++i) {
+    age_days[i] = age[i]*365;
+  }
+  
+  // get midpoint of age range
+  age_days_midpoint = vector<double>(na);
+  for (int i=0; i<na; ++i) {
+    age_days_midpoint[i] = (i==(na-1)) ? age_days[i] : (age_days[i]+age_days[i+1])*0.5;
+  }
+  
+  // calculate age group of 20 year old
+  age20 = 0;
+  for (int i=0; i<na; ++i) {
+    if (i<(na-1) && age_days_midpoint[i]<=20*365 && age_days_midpoint[i+1]>20*365) {
+      age20 = i;
+      break;
+    }
+  }
+  
+  // get rate of ageing in each group
+  r = vector<double>(na);
+  for (int i=0; i<na; ++i) {
+    r[i] = (i==(na-1)) ? 0 : 1/double(age_days[i+1]-age_days[i]);
+  }
+  
+  // EIR scaling
+  zeta = vector<double>(nh);
+  
+  // force of infection on mosquitoes
+  FOIM = 0;
+  
+  // model states
+  S = vector<double>(na);
+  T = vector<double>(na);
+  D = vector<double>(na);
+  A = vector<double>(na);
+  U = vector<double>(na);
+  P = vector<double>(na);
+  
+  prop = vector<double>(na);
+  psi = vector<double>(na);
+  phi = vector<double>(na);
+  inf = vector<double>(na);
+  pos_M = vector<double>(na);
+  pos_PCR = vector<double>(na);
+  inc = vector<double>(na);
+  
+  ICA = vector<double>(na);
+  FOI = vector<double>(na);
+  q = vector<double>(na);
+  cA = vector<double>(na);
+  ICM = vector<double>(na);
+  
+  // sums over nodes
+  S_sum = vector<double>(na);
+  T_sum = vector<double>(na);
+  D_sum = vector<double>(na);
+  A_sum = vector<double>(na);
+  U_sum = vector<double>(na);
+  P_sum = vector<double>(na);
+  
+  inf_sum = vector<double>(na);
+  pos_M_sum = vector<double>(na);
+  pos_PCR_sum = vector<double>(na);
+  inc_sum = vector<double>(na);
+  
 }
 
 //------------------------------------------------
-// population::
-// find equilibrium solution given EIR (EIR0), proportion treated (ft) and model parameters. Translated from Jamie's R code.
-void population::set_equilibrium(double EIR0, double ft0, const parameters& p)
-{
-    // define starting parameters
-    EIR = EIR0;
-    ft = ft0;
+// find equilibrium solution given EIR (EIR0), proportion treated (ft) and model
+// parameters.
+void population::set_equilibrium(double EIR, double ft, const parameters& p) {
+  
+  // calculate proportion and relative biting rate in each age group
+  for (int i=0; i<na; ++i) {
+    prop[i] = (i==0) ? p.eta/(r[i]+p.eta) : r[i-1]*prop[i-1]/(r[i]+p.eta);
+    psi[i] = 1 - p.rho*exp(-age_days_midpoint[i]/p.a0);
+  }
+  
+  // calculate EIR scaling factor over Gaussian quadrature nodes
+  for (int i=0; i<nh; ++i) {
+    zeta[i] = exp(-p.s2*0.5 + sqrt(p.s2)*ghnodes[i]);
+  }
+  
+  // zero vectors for storing sums over Gausian quadrature nodes
+  fill(S_sum.begin(), S_sum.end(), 0);
+  fill(T_sum.begin(), T_sum.end(), 0);
+  fill(D_sum.begin(), D_sum.end(), 0);
+  fill(A_sum.begin(), A_sum.end(), 0);
+  fill(U_sum.begin(), U_sum.end(), 0);
+  fill(P_sum.begin(), P_sum.end(), 0);
+  
+  fill(inf_sum.begin(), inf_sum.end(), 0);
+  fill(pos_M_sum.begin(), pos_M_sum.end(), 0);
+  fill(pos_PCR_sum.begin(), pos_PCR_sum.end(), 0);
+  fill(inc_sum.begin(), inc_sum.end(), 0);
+  
+  // loop through Gaussian quadrature nodes
+  FOIM = 0;
+  for (int i=0; i<nh; ++i) {
     
-    FOIM = 0.0;
-    
-    zeta = exp(-p.s2*0.5 + sqrt(p.s2)*ghnodes);
-    
-    arma::vec dage = age*365; // age in days
-    arma::vec dEIR = zeta*EIR/365; // daily EIR
-    
-    mICA.fill(0.0);
-    mICM.fill(0.0);
-    
-    mS.fill(0.0);
-    mA.fill(0.0);
-    mT.fill(0.0);
-    mD.fill(0.0);
-    mU.fill(0.0);
-    mP.fill(0.0);
-    
-    prop.fill(0.0);
-    r.fill(0.0);
-    
-    mFOI.fill(0.0);
-    mphi.fill(0.0);
-    mq.fill(0.0);
-    
-    mcA.fill(0.0);
-    mpos_M.fill(0.0);
-    mpos_PCR.fill(0.0);
-    minc.fill(0.0);
-    minf.fill(0.0);
-    
-    
-    for(int i = 0; i < na; ++i)
-    {
-        r[i] = (i==(na-1) ? 0 : 1/(dage[i+1]-dage[i]));
-        prop[i] = (i==0 ? p.eta : r[i-1]*prop[i-1])/(r[i]+p.eta);
-        if(i < (na-1))
-        {
-            dage[i] = (dage[i]+dage[i+1])*0.5;
-        }
+    // calculate immunity functions and onward infectiousness at equilibrium for 
+    // all age groups
+    double IB = 0, IC = 0, ID = 0;
+    for (int j=0; j<na; ++j) {
+      
+      // rate of ageing plus death
+      double re = r[j] + p.eta;
+      
+      // update pre-erythrocytic immunity IB
+      double eps = zeta[i] * EIR/365 * psi[j];
+      IB = (eps/(eps*p.ub+1) + re*IB)/(1/p.db+re);
+      
+      // calculate probability of infection from pre-erythrocytic immunity IB via
+      // Hill function
+      double b = p.b0*(p.b1 + (1-p.b1)/(1+pow(IB/p.IB0,p.kb)));
+      
+      // calculate force of infection (lambda)
+      FOI[j] = b*eps;
+      
+      // update clinical immunity IC
+      IC = (FOI[j]/(FOI[j]*p.uc+1) + re*IC)/(1/p.dc + re);
+      ICA[j] = IC;
+      
+      // update detection immunity ID
+      ID = (FOI[j]/(FOI[j]*p.ud+1) + re*ID)/(1/p.dd + re);
+      
+      // calculate probability that an asymptomatic infection (state A) will be
+      // detected by microscopy
+      double fd = 1 - (1-p.fd0)/(1+pow(age_days_midpoint[j]/p.ad0, p.gd));
+      q[j] = p.d1 + (1-p.d1)/(1+pow(ID/p.ID0,p.kd)*fd);
+      
+      // calculate onward infectiousness to mosquitoes
+      cA[j] = p.cU + (p.cD-p.cU)*pow(q[j],p.g_inf);
     }
     
-    psi = 1-p.rho*exp(-dage/p.a0);
-    IB.fill(0.0);
-    IC.fill(0.0);
-    ID.fill(0.0);
-    b.fill(0.0);
-    int age20 = 0;
-    double re;
-    
-    for(int i = 0; i < na; ++i)
-    {
-        if(i < (na-1) && dage[i] <= 20*365 && dage[i+1] > 20*365)
-        {
-            age20 = i;
-        }
-        
-        
-        re = r[i] + p.eta;
-        IB = (dEIR*psi[i]/(dEIR*psi[i]*p.ub+1) + re*IB)/(1/p.db+re);
-        b = p.b0*(p.b1+(1-p.b1)/(1+pow(IB/p.IB0,p.kb)));
-        mFOI.col(i) = dEIR%b*psi[i];
-        
-        
-        IC = (mFOI.col(i)/(mFOI.col(i)*p.uc+1) + re*IC)/(1/p.dc+re);
-        mICA.col(i) = IC;
-        ID = (mFOI.col(i)/(mFOI.col(i)*p.ud+1) + re*ID)/(1/p.dd+re);
-        mq.col(i)= p.d1+(1-p.d1)/(1+pow(ID/p.ID0,p.kd)*(1-(1-p.fd0)/(1+pow(dage[i]/p.ad0,p.gd))));
-        mcA.col(i) = p.cU + (p.cD-p.cU)*pow(mq.col(i),p.g_inf);
-        
+    // calculate maternal clinical immunity, assumed to be at birth a proportion
+    // of the acquired immunity of a 20 year old
+    double IM0 = ICA[age20]*p.PM;
+    for (int j=0; j<na; ++j) {
+      
+      // rate of ageing plus death
+      double re = r[j] + p.eta;
+      
+      // maternal clinical immunity decays from birth
+      double ICM_prev = (j==0) ? IM0 : ICM[j-1];
+      ICM[j] = ICM_prev*re/(1/p.dm + re);
     }
     
-    arma::vec IM0 = mICA.col(age20)*p.PM;
-    mICM.col(0) = IM0*(r[0] + p.eta)/(1/p.dm + r[0] + p.eta);
-    for(int i = 1; i < na; ++i)
-    {
-        mICM.col(i) = (r[i] + p.eta)*mICM.col(i-1)/(1/p.dm + r[i] + p.eta);
+    // calculate probability of acquiring clinical disease as a function of 
+    // different immunity types
+    for (int j=0; j<na; ++j) {
+      phi[j] = p.phi0*(p.phi1 + (1-p.phi1)/(1+pow((ICA[j]+ICM[j])/p.IC0, p.kc)));
     }
     
-    mphi = p.phi0*(p.phi1+(1-p.phi1)/(1+pow((mICA+mICM)/p.IC0,p.kc)));
-    
-    betaS.fill(0.0);
-    betaA.fill(0.0);
-    betaU.fill(0.0);
-    
-    aT.fill(0.0);
-    bT.fill(0.0);
-    aD.fill(0.0);
-    bD.fill(0.0);
-    aP.fill(0.0);
-    bP.fill(0.0);
-    
-    Y.fill(0.0);
-    
-    for(int i = 0; i < na; ++i)
-    {
-        re = r[i] + p.eta;
-        betaS = mFOI.col(i) + re;
-        betaT = p.rT + re;
-        betaD = p.rD + re;
-        betaA = mphi.col(i)%mFOI.col(i)+ p.rA + re;
-        betaU = mFOI.col(i)+ p.rU + re;
-        betaP = p.rP + re;
-        
-        aT = ft*mphi.col(i)%mFOI.col(i)/betaT;
-        if(i!=0) bT = r[i-1]*mT.col(i-1)/betaT;
-        aD = (1-ft)*mphi.col(i)%mFOI.col(i)/betaD;
-        if(i!=0) bD = r[i-1]*mD.col(i-1)/betaD;
-        aP = p.rT*aT/betaP;
-        if(i==0)
-        {
-            bP = p.rT*bT/betaP;
-        }
-        else
-        {
-            bP = (p.rT*bT + r[i-1]*mP.col(i-1))/betaP;
-        }
-        
-        Y = (prop[i]-(bT+bD+bP))/(1+aT+aD+aP);
-        
-        mT.col(i) = aT%Y + bT;
-        mD.col(i) = aD%Y + bD;
-        mP.col(i) = aP%Y + bP;
-        
-        if(i==0)
-        {
-            mA.col(i) = ((1-mphi.col(i))%mFOI.col(i)%Y + p.rD*mD.col(i))/(betaA+(1-mphi.col(i))%mFOI.col(i));
-        }
-        else
-        {
-            mA.col(i) = (r[i-1]*mA.col(i-1) + (1-mphi.col(i))%mFOI.col(i)%Y + p.rD*mD.col(i))/(betaA+(1-mphi.col(i))%mFOI.col(i));
-        }
-        
-        if(i==0)
-        {
-            mU.col(i) = (p.rA*mA.col(i))/betaU;
-        }
-        else
-        {
-            mU.col(i) = (p.rA*mA.col(i)+r[i-1]*mU.col(i-1))/betaU;
-        }
-        mS.col(i) = Y-mA.col(i)-mU.col(i);
-        
-        mpos_M.col(i) = mD.col(i) + mT.col(i) + mA.col(i)%mq.col(i); // Microsopy
-        mpos_PCR.col(i) = mD.col(i) + mT.col(i) + mA.col(i)%pow(mq.col(i),p.aA) + mU.col(i)%pow(mq.col(i),p.aU); // PCR
-        minc.col(i) = mphi.col(i)%mFOI.col(i)%Y;
+    // calculate equilibrium solution of all model states. Again, see references
+    // above for details
+    for (int j=0; j<na; ++j) {
+      
+      // rate of ageing plus death
+      double re = r[j] + p.eta;
+      
+      // calculate beta values
+      double betaT = p.rT + re;
+      double betaD = p.rD + re;
+      double betaA = FOI[j]*phi[j] + p.rA + re;
+      double betaU = FOI[j] + p.rU + re;
+      double betaP = p.rP + re;
+      
+      // calculate a and b values
+      double aT = ft*phi[j]*FOI[j]/betaT;
+      double bT = (j==0) ? 0 : r[j-1]*T[j-1]/betaT;
+      double aD = (1-ft)*phi[j]*FOI[j]/betaD;
+      double bD = (j==0) ? 0 : r[j-1]*D[j-1]/betaD;
+      double aP = p.rT*aT/betaP;
+      double bP = (p.rT*bT + ((j==0) ? 0 : r[j-1]*P[j-1]))/betaP;
+      
+      // calculate Y
+      double Y = (prop[j] - (bT+bD+bP))/(1+aT+aD+aP);
+      
+      // calculate final {T,D,P} solution
+      T[j] = aT*Y+bT;
+      D[j] = aD*Y+bD;
+      P[j] = aP*Y+bP;
+                
+      // calculate final {A, U, S} solution
+      double rA = 0, rU = 0;
+      if (j>0) {
+        rA = r[j-1]*A[j-1];
+        rU = r[j-1]*U[j-1];
+      }
+      A[j] = (rA + (1-phi[j])*Y*FOI[j] + p.rD*D[j])/(betaA + (1-phi[j])*FOI[j]);
+      U[j] = (rU + p.rA*A[j])/betaU;
+      S[j] = Y - A[j] - U[j];
+                
+      // calculate proportion detectable by mocroscopy and PCR
+      pos_M[j] = D[j] + T[j] + A[j]*q[j];
+      pos_PCR[j] = D[j] + T[j] + A[j]*pow(q[j], p.aA) + U[j]*pow(q[j], p.aU);
+      
+      // calculate clinical incidence
+      inc[j] = Y*FOI[j]*phi[j];
+      
+      // calculate incidence of infection
+      inf[j] = p.cD*D[j] + p.cT*T[j] + cA[j]*A[j] + p.cU*U[j];
     }
     
-    minf = p.cD*mD + p.cT*mT + mcA%mA + p.cU*mU;
+    // add to sums over nodes
+    double delta_FOIM = 0;
+    for (int j=0; j<na; ++j) {
+      S_sum[j] += ghweights[i]*S[j];
+      T_sum[j] += ghweights[i]*T[j];
+      D_sum[j] += ghweights[i]*D[j];
+      A_sum[j] += ghweights[i]*A[j];
+      U_sum[j] += ghweights[i]*U[j];
+      P_sum[j] += ghweights[i]*P[j];
+      
+      inf_sum[j] += ghweights[i]*inf[j];
+      pos_M_sum[j] += ghweights[i]*pos_M[j];
+      pos_PCR_sum[j] += ghweights[i]*pos_PCR[j];
+      inc_sum[j] += ghweights[i]*inc[j];
+      
+      delta_FOIM += inf[j]*psi[j];
+    }
+    FOIM += delta_FOIM*ghweights[i]*zeta[i];
     
-    arma::mat mFOIM = (psi.t()*minf.t())*(ghweights%zeta);
-    double omega = 1-p.rho*p.eta/(p.eta+1/p.a0);
-    double alpha = p.f*p.Q0;
-    
-    S = mS.t()*ghweights;
-    T = mT.t()*ghweights;
-    D = mD.t()*ghweights;
-    A = mA.t()*ghweights;
-    U = mU.t()*ghweights;
-    P = mP.t()*ghweights;
-    inf = minf.t()*ghweights;
-    pos_M = mpos_M.t()*ghweights;
-    pos_PCR = mpos_PCR.t()*ghweights;
-    inc = minc.t()*ghweights;
-    FOIM = mFOIM(0,0)*alpha/omega;
+  }  // end loop over nodes
+  
+  // complete overall force of infection on mosquitoes
+  FOIM *= p.f*p.Q0/(1 - p.rho*p.eta/(p.eta+1/p.a0));
+  
 }

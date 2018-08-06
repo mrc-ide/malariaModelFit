@@ -7,54 +7,36 @@
 using namespace Rcpp;
 
 // human_equilibrium_cpp
-Rcpp::List human_equilibrium_cpp(double EIR, double ft, const Rcpp::List& p, arma::vec& age0, const arma::vec& ghnodes, const arma::vec& ghweights);
-RcppExport SEXP _malariaModelFit_human_equilibrium_cpp(SEXP EIRSEXP, SEXP ftSEXP, SEXP pSEXP, SEXP age0SEXP, SEXP ghnodesSEXP, SEXP ghweightsSEXP) {
+Rcpp::List human_equilibrium_cpp(double EIR, double ft, const Rcpp::List& p, const Rcpp::NumericVector& age_, const Rcpp::List& h);
+RcppExport SEXP _malariaModelFit_human_equilibrium_cpp(SEXP EIRSEXP, SEXP ftSEXP, SEXP pSEXP, SEXP age_SEXP, SEXP hSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type EIR(EIRSEXP);
     Rcpp::traits::input_parameter< double >::type ft(ftSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type age0(age0SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type ghnodes(ghnodesSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type ghweights(ghweightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(human_equilibrium_cpp(EIR, ft, p, age0, ghnodes, ghweights));
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type age_(age_SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type h(hSEXP);
+    rcpp_result_gen = Rcpp::wrap(human_equilibrium_cpp(EIR, ft, p, age_, h));
     return rcpp_result_gen;
 END_RCPP
 }
-// runMCMC
-Rcpp::List runMCMC(int nrep, Rcpp::DataFrame& data_key, Rcpp::List& datasets, const arma::vec& age0, const arma::vec& ghnodes0, const arma::vec& ghweights0, const Rcpp::NumericVector& ghnodes1, const Rcpp::NumericVector& ghweights1, const std::vector<Rcpp::IntegerVector>& update_blocks);
-RcppExport SEXP _malariaModelFit_runMCMC(SEXP nrepSEXP, SEXP data_keySEXP, SEXP datasetsSEXP, SEXP age0SEXP, SEXP ghnodes0SEXP, SEXP ghweights0SEXP, SEXP ghnodes1SEXP, SEXP ghweights1SEXP, SEXP update_blocksSEXP) {
+// log_sum
+double log_sum(double logA, double logB);
+RcppExport SEXP _malariaModelFit_log_sum(SEXP logASEXP, SEXP logBSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nrep(nrepSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type data_key(data_keySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List& >::type datasets(datasetsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type age0(age0SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type ghnodes0(ghnodes0SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type ghweights0(ghweights0SEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ghnodes1(ghnodes1SEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ghweights1(ghweights1SEXP);
-    Rcpp::traits::input_parameter< const std::vector<Rcpp::IntegerVector>& >::type update_blocks(update_blocksSEXP);
-    rcpp_result_gen = Rcpp::wrap(runMCMC(nrep, data_key, datasets, age0, ghnodes0, ghweights0, ghnodes1, ghweights1, update_blocks));
+    Rcpp::traits::input_parameter< double >::type logA(logASEXP);
+    Rcpp::traits::input_parameter< double >::type logB(logBSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_sum(logA, logB));
     return rcpp_result_gen;
-END_RCPP
-}
-// dummy1_cpp
-void dummy1_cpp();
-RcppExport SEXP _malariaModelFit_dummy1_cpp() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    dummy1_cpp();
-    return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_malariaModelFit_human_equilibrium_cpp", (DL_FUNC) &_malariaModelFit_human_equilibrium_cpp, 6},
-    {"_malariaModelFit_runMCMC", (DL_FUNC) &_malariaModelFit_runMCMC, 9},
-    {"_malariaModelFit_dummy1_cpp", (DL_FUNC) &_malariaModelFit_dummy1_cpp, 0},
+    {"_malariaModelFit_human_equilibrium_cpp", (DL_FUNC) &_malariaModelFit_human_equilibrium_cpp, 5},
+    {"_malariaModelFit_log_sum", (DL_FUNC) &_malariaModelFit_log_sum, 2},
     {NULL, NULL, 0}
 };
 

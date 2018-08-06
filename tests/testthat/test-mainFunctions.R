@@ -1,7 +1,7 @@
 context("test-mainFunctions.R")
 
 #------------------------------------------------
-test_that("human_equilibrium_no_het produces correct results", {
+test_that("human_equilibrium_no_het() produces correct results", {
   
   # define parameters
   EIR <- 1
@@ -21,7 +21,7 @@ test_that("human_equilibrium_no_het produces correct results", {
 })
 
 #------------------------------------------------
-test_that("human_equilibrium produces correct results", {
+test_that("human_equilibrium() produces correct results", {
   
   # define parameters
   EIR <- 1
@@ -39,4 +39,24 @@ test_that("human_equilibrium produces correct results", {
   
   # compare solutions
   expect_equal(eq1, saved_solution)
+})
+
+#------------------------------------------------
+test_that("human_equilibrium() and human_equilibrium_cpp() produce same results", {
+  
+  # define parameters
+  EIR <- 1
+  ft <- 0.4
+  age <- default_age()
+  h <- gq_normal(5)
+  p <- load_parameters("parameters_Griffin2014.txt")
+  
+  # calculate equilibrium solution in R
+  eq1 <- human_equilibrium(EIR, ft, p, age, h)
+  
+  # calculate equilibrium solution in Rcpp
+  eq2 <- human_equilibrium_cpp(EIR, ft, p, age, h)
+  
+  # compare solutions
+  expect_equivalent(eq1, eq2)
 })

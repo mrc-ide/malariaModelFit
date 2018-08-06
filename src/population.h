@@ -1,105 +1,85 @@
 
-#ifndef __malariaModelFit__population__
-#define __malariaModelFit__population__
+#pragma once
 
-#include <RcppArmadillo.h>
 #include "parameters.h"
-
+#include "misc.h"
 
 //------------------------------------------------
-// population::
 // class of population states
 class population {
-    
+  
 public:
-    
-    // PUBLIC OBJECTS
-    
-    double EIR; // annualised EIR
-    double ft;
-    
-    arma::vec age; // age groups in years
-    arma::vec dage; // age groups in days
-    
-    // different states
-    arma::vec S;
-    arma::vec T;
-    arma::vec D;
-    arma::vec A;
-    arma::vec U;
-    arma::vec P;
-    arma::vec inf;
-    arma::vec prop;
-    arma::vec psi;
-    arma::vec pos_M;
-    arma::vec pos_PCR;
-    arma::vec inc;
-    
-    double FOIM;
-    
-    // intermediate quantities needed to set equilibrium solution
-    int nh;
-    int na;
-    arma::vec ghnodes;
-    arma::vec ghweights;
-    
-    arma::vec zeta;
-    
-    arma::mat mICA;
-    arma::mat mICM;
-    
-    arma::mat mS;
-    arma::mat mA;
-    arma::mat mT;
-    arma::mat mD;
-    arma::mat mU;
-    arma::mat mP;
-    
-    arma::vec r;
-    
-    arma::mat mFOI;
-    arma::mat mphi;
-    arma::mat mq;
-    arma::mat mcA;
-    arma::mat mpos_M;
-    arma::mat mpos_PCR;
-    arma::mat minc;
-    arma::mat minf;
-    
-    arma::vec IB;
-    arma::vec IC;
-    arma::vec ID;
-    arma::vec b;
-    
-    double betaT, betaD, betaP;
-    arma::vec betaS;
-    arma::vec betaA;
-    arma::vec betaU;
-    
-    arma::vec aT;
-    arma::vec bT;
-    arma::vec aD;
-    arma::vec bD;
-    arma::vec aP;
-    arma::vec bP;
-    
-    arma::vec Y;
-    
-    
-    // PUBLIC FUNCTIONS
-    
-    // constructors
-    population(); // default constructor
-    population(const arma::vec& age0, const arma::vec& ghn0, const arma::vec& ghw0);
-    
-    // find equilibrium solution given EIR (EIR0), proportion treated (ft) and model parameters. Translated from Jamie's R code.
-    void set_equilibrium(double EIR0, double ft0, const parameters& p);
-    // get the annual incidence rate between age0 and age1
-    //double get_inc(double age0, double age1);
-    // get the prevalence between age0 and age1 by Microscopy or PCR
-    //double get_prev_M(double age0, double age1);
-    //double get_prev_PCR(double age0, double age1);
+  // PUBLIC OBJECTS
+  
+  // basic inputs
+  std::vector<double> age;
+  std::vector<double> ghnodes;
+  std::vector<double> ghweights;
+  int na;
+  int nh;
+  int age20;
+  
+  // ageing
+  std::vector<double> age_days;
+  std::vector<double> age_days_midpoint;
+  std::vector<double> r;
+  
+  // EIR scaling
+  std::vector<double> zeta;
+  
+  // force of infection on mosquitoes
+  double FOIM;
+  
+  // model states
+  std::vector<double> S;
+  std::vector<double> T;
+  std::vector<double> D;
+  std::vector<double> A;
+  std::vector<double> U;
+  std::vector<double> P;
+  
+  std::vector<double> prop;
+  std::vector<double> psi;
+  std::vector<double> phi;
+  std::vector<double> inf;
+  std::vector<double> pos_M;
+  std::vector<double> pos_PCR;
+  std::vector<double> inc;
+  
+  std::vector<double> ICA;
+  std::vector<double> FOI;
+  std::vector<double> q;
+  std::vector<double> cA;
+  std::vector<double> ICM;
+  
+  // sums over nodes
+  std::vector<double> S_sum;
+  std::vector<double> T_sum;
+  std::vector<double> D_sum;
+  std::vector<double> A_sum;
+  std::vector<double> U_sum;
+  std::vector<double> P_sum;
+  
+  std::vector<double> inf_sum;
+  std::vector<double> pos_M_sum;
+  std::vector<double> pos_PCR_sum;
+  std::vector<double> inc_sum;
+  
+  
+  // PUBLIC FUNCTIONS
+  
+  // constructors
+  population() {};
+  population(const std::vector<double>& age_, const std::vector<double>& ghnodes_, const std::vector<double>& ghweights_);
+  
+  // find equilibrium solution given EIR (EIR), proportion treated (ft) and
+  // model parameters (p)
+  void set_equilibrium(double EIR, double ft, const parameters& p);
+  
+  // get the annual incidence rate between age0 and age1
+  //double get_inc(double age0, double age1);
+  // get the prevalence between age0 and age1 by Microscopy or PCR
+  //double get_prev_M(double age0, double age1);
+  //double get_prev_PCR(double age0, double age1);
     
 };
-
-#endif

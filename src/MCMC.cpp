@@ -1,4 +1,4 @@
-
+/*
 #include "MCMC.h"
 
 using namespace std;
@@ -243,7 +243,7 @@ all_data::all_data(Rcpp::DataFrame& data_key, Rcpp::List& datasets, const Rcpp::
     
     nsites = datasets.size();
     Rcpp::IntegerVector cd = Rcpp::as<Rcpp::IntegerVector>(data_key[7]); // case detection id
-    /*
+    
     Rcpp::IntegerVector si = Rcpp::as<Rcpp::IntegerVector>(data_key[8]); // study id
     study_ids = unique(si);
     nstudies = study_ids.size();
@@ -321,5 +321,6 @@ all_data::all_data(Rcpp::DataFrame& data_key, Rcpp::List& datasets, const Rcpp::
     loglik_inc_gh_copy = loglik_inc_gh;
     loglik_prev_gh_copy = loglik_prev_gh;
     loglik_studies_copy = Rcpp::NumericVector(nstudies, 0.0);
-    */
+    
 }
+*/

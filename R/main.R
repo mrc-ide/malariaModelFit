@@ -68,7 +68,7 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   # mass leaking out of all categories with death rate eta, making the 
   # distribution stable.
   prop <- r <- rep(0,n_age)
-	for(i in 1:n_age){
+	for (i in 1:n_age) {
 	  
     # r[i] can be thought of as the rate of ageing in this age group, i.e.
     # 1/r[i] is the duration of this group
@@ -92,7 +92,9 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   
   # calculate midpoint of age range
   age_days_midpoint <- c((age_days[-n_age]+age_days[-1])/2, age_days[n_age])
-  age20 <- which.min(abs(age_days_midpoint-(20*365)))  # age category that represents a 20 year old woman
+  
+  # get age category that represents a 20 year old woman
+  age20 <- which.min(abs(age_days_midpoint-(20*365)))
   
   # relative biting rate for each age group
   psi <- 1 - p$rho*exp(-age_days_midpoint/p$a0)
@@ -118,7 +120,7 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
     FOI[i] <- b*eps
     
     # update clinical immunity IC
-    IC <- (FOI[i]/(FOI[i]*p$uc+1) + re*IC)/( 1/p$dc + re)
+    IC <- (FOI[i]/(FOI[i]*p$uc+1) + re*IC)/(1/p$dc + re)
     ICA[i] <- IC
     
     # update detection immunity ID
@@ -150,12 +152,10 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   # calculate probability of acquiring clinical disease as a function of 
   # different immunity types
 	phi <- p$phi0*(p$phi1 + (1-p$phi1)/(1+((ICA+ICM)/p$IC0)^p$kc))
-  
-	#return(cbind(r,FOI,phi))
 	
 	# calculate equilibrium solution of all model states. Again, see references
 	# above for details
-	FOIM <- pos_M <- pos_PCR <- inc <- rep(0,n_age)
+  pos_M <- pos_PCR <- inc <- rep(0,n_age)
 	S <- T <- P <- D <- A <- U <- rep(0,n_age)
   for (i in 1:n_age) {
     
@@ -225,22 +225,6 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
 }
 
 #------------------------------------------------
-#' @title Compiled human_equilibrium_no_het
-#'
-#' @description Compiled version of human_equilibrium_no_het() function - see
-#'   original function for details.
-#'
-#' @param EIR EIR for adults
-#' @param ft proportion of clinical cases effectively treated
-#' @param p vector of model parameters
-#' @param age vector of age groups
-#'
-#' @export
-
-human_equilibrium_no_het_compiled <- cmpfun(human_equilibrium_no_het, options=list(optimize=3))
-
-
-#------------------------------------------------
 #' @title Equilibrium solution
 #'
 #' @description Returns the equilibrium states for the model of Griffin et al.
@@ -282,7 +266,7 @@ human_equilibrium <- function(EIR, ft, p, age, h) {
   # loop through all Gaussian quadrature nodes
   for (j in 1:nh) {
     zeta <- exp(-p$s2*0.5 + sqrt(p$s2)*h$nodes[j])
-    Ej <- human_equilibrium_no_het_compiled(EIR=EIR*zeta, ft=ft, p=p, age=age)
+    Ej <- human_equilibrium_no_het(EIR=EIR*zeta, ft=ft, p=p, age=age)
     E <- Ej*h$weights[j] + (if(j==1) 0 else E)
     FOIM <- FOIM + sum(Ej[,"inf"]*Ej[,"psi"])*h$weights[j]*zeta
   }
