@@ -248,3 +248,39 @@ void population::set_equilibrium(double EIR, double ft, const parameters& p) {
   FOIM *= p.f*p.Q0/(1 - p.rho*p.eta/(p.eta+1/p.a0));
   
 }
+
+//------------------------------------------------
+// get annual incidence between age0 and age1 in equilibrium population
+double population::get_inc(double age0, double age1) {
+  double sum_inc = 0.0;
+  double sum_prop = 0.0;
+  for (int i=0; i<na; ++i) {
+    sum_inc += (age[i]>=age0 && age[i]<age1) ? inc[i] : 0.0;
+    sum_prop += (age[i]>=age0 && age[i]<age1) ? prop[i] : 0.0;
+  }
+  return(365*sum_inc/sum_prop);
+}
+
+//------------------------------------------------
+// get prevalence by microscopy between age0 and age1 in equilibrium population
+double population::get_prev_M(double age0, double age1) {
+  double sum_pos = 0.0;
+  double sum_prop = 0.0;
+  for(int i=0; i<na; ++i) {
+    sum_pos += (age[i]>=age0 && age[i]<age1) ? pos_M[i] : 0.0;
+    sum_prop += (age[i]>=age0 && age[i]<age1) ? prop[i] : 0.0;
+  }
+  return(sum_pos/sum_prop);
+}
+
+//------------------------------------------------
+// get prevalence by PCR between age0 and age1 in equilibrium population
+double population::get_prev_PCR(double age0, double age1) {
+  double sum_pos = 0.0;
+  double sum_prop = 0.0;
+  for(int i=0; i<na; ++i) {
+    sum_pos += (age[i]>=age0 && age[i]<age1) ? pos_PCR[i] : 0.0;
+    sum_prop += (age[i]>=age0 && age[i]<age1) ? prop[i] : 0.0;
+  }
+  return(sum_pos/sum_prop);
+}

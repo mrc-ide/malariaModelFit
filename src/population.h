@@ -76,10 +76,9 @@ public:
   // model parameters (p)
   void set_equilibrium(double EIR, double ft, const parameters& p);
   
-  // get the annual incidence rate between age0 and age1
-  //double get_inc(double age0, double age1);
-  // get the prevalence between age0 and age1 by Microscopy or PCR
-  //double get_prev_M(double age0, double age1);
-  //double get_prev_PCR(double age0, double age1);
+  // get the incidence or prevalence between age0 and age1
+  double get_inc(double age0, double age1);
+  double get_prev_M(double age0, double age1);
+  double get_prev_PCR(double age0, double age1);
     
 };

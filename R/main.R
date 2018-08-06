@@ -13,18 +13,6 @@
 NULL
 
 #------------------------------------------------
-#' @title Dummy function
-#'
-#' @description Simple dummy function to check that R and Rcpp are talking to each other.
-#'
-#' @export
-
-dummy1 <- function() {
-  cat("R function working!\n")
-  dummy1_cpp()
-}
-
-#------------------------------------------------
 #' @title Equilibrium solution without biting heterogeneity
 #' 
 #' @description Returns the equilibrium states for the model of Griffin et al.

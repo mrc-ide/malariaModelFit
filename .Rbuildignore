@@ -1,5 +1,6 @@
 ignore/
 R_ignore/
+^README.Rmd
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$
