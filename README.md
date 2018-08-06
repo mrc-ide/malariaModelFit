@@ -3,7 +3,7 @@
 malariaModelFit
 ===============
 
-[![Travis build status](https://travis-ci.org/mrc-ide/malariaModelFit.svg?branch=master)](https://travis-ci.org/mrc-ide/malariaModelFit)
+[![Travis build status](https://travis-ci.org/mrc-ide/malariaModelFit.svg?branch=master)](https://travis-ci.org/mrc-ide/malariaModelFit) [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/mrc-ide/malariaModelFit?branch=master&svg=true)](https://ci.appveyor.com/project/mrc-ide/malariaModelFit)
 
 Rcpp package containing code for fitting the malaria model by MCMC.
 
