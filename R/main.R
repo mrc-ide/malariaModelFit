@@ -298,9 +298,9 @@ human_equilibrium <- function(EIR, ft, p, age, h = gq_normal(10)) {
 }
 
 #------------------------------------------------
-#' @title Find Prevalence from Equilibrium Output
+#' @title Get prevalence from equilibrium output
 #'
-#' @description Find prevalence by microscopy or PCR in a given age range, using
+#' @description Get prevalence by microscopy or PCR in a given age range, using
 #'   pre-computed equilibrium solution as input.
 #'
 #' @param eq equilibrium solution, as returned by \code{human_equilibrium()}.
@@ -310,7 +310,7 @@ human_equilibrium <- function(EIR, ft, p, age, h = gq_normal(10)) {
 #'
 #' @export
 
-find_prev <- function(eq, age0, age1, prev_type = "microscopy") {
+get_prev <- function(eq, age0, age1, prev_type = "microscopy") {
   
   # check input formats
   assert_in("states", names(eq))
@@ -319,9 +319,9 @@ find_prev <- function(eq, age0, age1, prev_type = "microscopy") {
   assert_length(prev_type, 1)
   assert_in(prev_type, c("microscopy", "PCR"))
   if (prev_type == "microscopy") {
-    assert_in(c("age", "pos_M", "prop"), names(eq$states))
+    assert_in(c("age", "pos_M", "prop"), colnames(eq$states))
   } else {
-    assert_in(c("age", "pos_PCR", "prop"), names(eq$states))
+    assert_in(c("age", "pos_PCR", "prop"), colnames(eq$states))
   }
   
   # get weights (proportion of each age bin covered by age range)
@@ -340,9 +340,9 @@ find_prev <- function(eq, age0, age1, prev_type = "microscopy") {
 }
 
 #------------------------------------------------
-#' @title Find Incidence from Equilibrium Output
+#' @title Get incidence from equilibrium output
 #' 
-#' @description Find incidence in a given age range, using pre-computed
+#' @description Get incidence in a given age range, using pre-computed
 #'   equilibrium solution as input.
 #'
 #' @param eq equilibrium solution, as returned by \code{human_equilibrium()}.
@@ -351,11 +351,11 @@ find_prev <- function(eq, age0, age1, prev_type = "microscopy") {
 #'
 #' @export
 
-find_inc <- function(eq, age0, age1) {
+get_inc <- function(eq, age0, age1) {
   
   # check input formats
   assert_in("states", names(eq))
-  assert_in(c("age", "inc", "prop"), names(eq$states))
+  assert_in(c("age", "inc", "prop"), colnames(eq$states))
   assert_pos(age0)
   assert_pos(age1)
   
