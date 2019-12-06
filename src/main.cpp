@@ -1,15 +1,14 @@
 
 #include "main.h"
-#include "misc.h"
 #include "parameters.h"
 #include "population.h"
+#include "probability_v10.h"
 
 using namespace std;
 
 //------------------------------------------------
 // Exportable function to find equilibrium solution of the transmission model.
 // Equivalent to the R-version "human_equilibrium()"
-// [[Rcpp::export]]
 Rcpp::List human_equilibrium_cpp(double EIR, double ft, const Rcpp::List& p, const Rcpp::NumericVector& age_,
            const Rcpp::List& h) {
   

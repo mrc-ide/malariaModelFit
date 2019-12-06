@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include <Rcpp.h>
-#include "misc.h"
+#include "misc_v9.h"
 
 //------------------------------------------------
 // class containing all model parameters

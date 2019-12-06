@@ -1,13 +1,31 @@
+#------------------------------------------------
+#' Pipe operator
+#'
+#' See \code{magrittr::\link[magrittr]{\%>\%}} for details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+NULL
 
 #------------------------------------------------
-# check that all required_names are in names
-# (not exported)
-#' @noRd
-check_names <- function(names, required_names) {
-  if (!all(required_names %in% names)) {
-    missing_params <- setdiff(required_names, names)
-    stop(sprintf("missing parameters: {%s}", paste(missing_params, collapse = ", ")))
-  }
+#' @title Load sytem file for this package
+#'
+#' @description Load and return file from within the inst folder of this
+#'   package.
+#'
+#' @param name name of file
+#'
+#' @export
+
+mmfit_file <- function(name) {
+  
+  # load file from inst/extdata folder
+  name_full <- system.file("extdata/", name, package = 'malariaModelFit', mustWork = TRUE)
+  ret <- readRDS(name_full)
 }
 
 # -----------------------------------
@@ -21,7 +39,8 @@ check_names <- function(names, required_names) {
 #' @param breaks vector of breaks
 #' @param range_min minimum value of range of interest
 #' @param range_max maximum value of range of interest
-#'
+#' 
+#' @importFrom stats punif
 #' @export
 
 break_coverage <- function(breaks, range_min, range_max) {
@@ -31,7 +50,9 @@ break_coverage <- function(breaks, range_min, range_max) {
   breaks1 <- breaks[-1]
   
   # get total proportion of each break covered
-  ret <- punif(range_min, breaks0, breaks1, lower.tail=F) - punif(range_max, breaks0, breaks1, lower.tail=F)
+  p0 <- punif(range_min, breaks0, breaks1, lower.tail = FALSE)
+  p1 <- punif(range_max, breaks0, breaks1, lower.tail = FALSE)
+  ret <- p0 - p1
   
   return(ret)
 }
@@ -47,21 +68,7 @@ break_coverage <- function(breaks, range_min, range_max) {
 #' @export
 
 gq_normal <- function(n) {
-    ret <- statmod::gauss.quad.prob(n, dist="normal")
-    return(ret)
+    statmod::gauss.quad.prob(n, dist = "normal")
 }
 
-#------------------------------------------------
-#' @title Load sytem file for this package
-#'
-#' @description Load and return file from within the inst folder of this
-#'   package.
-#'
-#' @param name name of file
-#'
-#' @export
-
-malariaModelFit_file <- function(name) {
-    system.file(name, package="malariaModelFit", mustWork=TRUE)
-}
 

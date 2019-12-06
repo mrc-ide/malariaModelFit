@@ -7,25 +7,28 @@
 human_equilibrium_no_het(EIR, ft, p, age)
 }
 \arguments{
-\item{EIR}{EIR for adults}
+\item{EIR}{EIR for adults, in units of infectious bites per person per year}
 
 \item{ft}{proportion of clinical cases effectively treated}
 
 \item{p}{vector of model parameters}
 
-\item{age}{vector of age groups}
+\item{age}{vector of age groups, in units of years}
 }
 \description{
 Returns the equilibrium states for the model of Griffin et al.
-  2014 Nature Communications 5. "Estimates of the changing age-burden of
-  Plasmodium falciparum malaria disease in sub-Saharan Africa". For
-  derivation of equilibrium solutions see Griffin 2016 Malaria Journal "Is a
-  reproduction number of one a threshold for Plasmodium falciparum malaria
-  elimination?" supplementary material.
+  (2014). A derivation of the equilibrium solutions can be found in Griffin
+  (2016).
   
-  This function does not account for biting heterogeneity - see 
-  human_equilibrium() for function that takes this into account.
+  This function does not account for biting heterogeneity - see
+  \code{human_equilibrium()} for function that takes this into account.
+}
+\references{
+Griffin et. al. (2014). Estimates of the changing age-burden of
+  Plasmodium falciparum malaria disease in sub-Saharan Africa.
+  doi:10.1038/ncomms4136
   
-  Original code due to Jamie Griffin, later modified by Xiaoyu Liu and Bob 
-  Verity.
+  Griffin (2016). Is a reproduction number of one a threshold for Plasmodium
+  falciparum malaria elimination? doi:10.1186/s12936-016-1437-9 (see
+  supplementary material)
 }

@@ -2,21 +2,18 @@
 % Please edit documentation in R/main.R
 \name{find_inc}
 \alias{find_inc}
-\title{find_inc}
+\title{Find Incidence from Equilibrium Output}
 \usage{
 find_inc(eq, age0, age1)
 }
 \arguments{
-\item{eq}{equilibrium solution, as returned by \code{human_equilibrium()}}
+\item{eq}{equilibrium solution, as returned by \code{human_equilibrium()}.}
 
-\item{age0}{lower bound on age range over which to calculate incidence}
+\item{age0}{lower bound on age range.}
 
-\item{age1}{upper bound on age range over which to calculate incidence}
+\item{age1}{upper bound on age range.}
 }
 \description{
-Find incidence in a given age group, using pre-computed
+Find incidence in a given age range, using pre-computed
   equilibrium solution as input.
-
-Original code due to Jamie Griffin, later modified by Xiaoyu Liu and Bob 
-Verity.
 }

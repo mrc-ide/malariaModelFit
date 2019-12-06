@@ -2,23 +2,20 @@
 % Please edit documentation in R/main.R
 \name{find_prev}
 \alias{find_prev}
-\title{find_prev}
+\title{Find Prevalence from Equilibrium Output}
 \usage{
 find_prev(eq, age0, age1, prev_type = "microscopy")
 }
 \arguments{
-\item{eq}{equilibrium solution, as returned by \code{human_equilibrium()}}
+\item{eq}{equilibrium solution, as returned by \code{human_equilibrium()}.}
 
-\item{age0}{lower bound on age range over which to calculate prevalence}
+\item{age0}{lower bound on age range.}
 
-\item{age1}{upper bound on age range over which to calculate prevalence}
+\item{age1}{upper bound on age range.}
 
-\item{prev_type}{whether to calculate prevalence by "microscopy" or "PCR"}
+\item{prev_type}{whether to calculate prevalence by "microscopy" or "PCR".}
 }
 \description{
-Find prevalence by microscopy or PCR in a given age group, using
+Find prevalence by microscopy or PCR in a given age range, using
   pre-computed equilibrium solution as input.
-
-Original code due to Jamie Griffin, later modified by Xiaoyu Liu and Bob 
-Verity.
 }

@@ -1,18 +1,28 @@
 Package: malariaModelFit
 Type: Package
-Title: Re-fits the Griffin malaria transmission model
-Version: 0.0
-Date: 2017-07-04
-Author: Bob Verity
-Maintainer: Bob Verity <r.verity@imperial.ac.uk>
-Description: Contains functions for re-fitting the model of Griffin et al. 2014 to data using MCMC. (Griffin et al. 2014, Nature Communications 5. "Estimates of the changing age-burden of Plasmodium falciparum malaria disease in sub-Saharan Africa").
-License: GPL (>= 2)
+Title: Fits the Griffin malaria transmission model
+Version: 0.1.0
+Authors@R: as.person(c(
+    "Bob Verity <r.verity@imperial.ac.uk> [aut, cre]", 
+    "Xiaoyu Liu [aut]"
+  ))
+Description: Contains functions for re-fitting the model of Griffin et al. 2014
+    to data using MCMC. (Griffin et al. 2014, Nature Communications 5. "Estimates
+    of the changing age-burden of Plasmodium falciparum malaria disease in
+    sub-Saharan Africa").
+BugReports: https://github.com/mrc-ide/malariaModelFit/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 6.1.1
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
 Imports: 
     Rcpp (>= 0.12.11),
-    compiler,
     statmod,
-    ggplot2
-LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.0.1
+    magrittr,
+    knitr
+SystemRequirements: C++11
 Suggests: 
     testthat
+VignetteBuilder: knitr

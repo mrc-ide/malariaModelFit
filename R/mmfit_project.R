@@ -1,0 +1,73 @@
+#------------------------------------------------
+#' @title Define new project
+#'
+#' @description Define a new fitting project. This project is essentially a
+#'   list, with slots for holding the following information:
+#'   \itemize{
+#'     \item \code{description}: an optional character string giving a
+#'     description of the fitting exercise.
+#'     \item \code{model_priors}: a dataframe specifying parameter names,
+#'     definitions, ranges and prior distributions for all parameters used
+#'     within the Griffin et. al. (2014) transmission model. Note that some of
+#'     these parameters do not influence the behaviour of the model at
+#'     equilibrium, and hence do not contribute to the fitting when using the
+#'     likelihood derived from the equilibrium solution, but these parameters
+#'     are included anyway for completeness.
+#'     \item \code{fitting_priors}: a dataframe as above, but for parameters
+#'     used exclusively in model fitting (for example random effects).
+#'     \item \code{data}: a complete copy of the data used in model fitting.
+#'     This data must be in a standardised format (see \code{load_data()}).
+#'     \item \code{output_raw}: the complete MCMC output produced by running the
+#'     \pkg{drjacoby} package on the above parameters and data. This output can
+#'     be explored and visualised using internal \pkg{drjacoby} functions.
+#'     \item \code{model_posteriors}: summary information of posterior model
+#'     parameter estimates derived from the raw MCMC output. Formatted
+#'     analogously to \code{model_parameter_inputs} for ease of direct
+#'     comparison.
+#'     \item \code{fitting_posteriors}: as above, but for parameters used in
+#'     model fitting.
+#'   }
+#'
+#' @references Griffin et. al. (2014). Estimates of the changing age-burden of
+#'   Plasmodium falciparum malaria disease in sub-Saharan Africa.
+#'   doi:10.1038/ncomms4136
+#'
+#' @export
+
+mmfit_project <- function() {
+  
+  # create empty project
+  project <- list(description = NULL,
+                  model_priors = NULL,
+                  fitting_priors = NULL,
+                  data = NULL,
+                  output_raw = NULL,
+                  model_posteriors = NULL,
+                  fitting_posteriors = NULL)
+  
+  # return as custom class
+  class(project) <- "mmfit_project"
+  invisible(project)
+}
+
+#------------------------------------------------
+# overload print() function for mmfit_project
+#' @noRd
+print.mmfit_project <- function(x, ...) {
+  
+  # print summary
+  summary(x)
+  
+  # return invisibly
+  invisible(x)
+}
+
+#------------------------------------------------
+# overload summary() function for mmfit_project
+#' @noRd
+summary.mmfit_project <- function(x, ...) {
+  
+  message("TODO - some default print method")
+  
+}
+

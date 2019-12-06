@@ -21,22 +21,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// log_sum
-double log_sum(double logA, double logB);
-RcppExport SEXP _malariaModelFit_log_sum(SEXP logASEXP, SEXP logBSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type logA(logASEXP);
-    Rcpp::traits::input_parameter< double >::type logB(logBSEXP);
-    rcpp_result_gen = Rcpp::wrap(log_sum(logA, logB));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_malariaModelFit_human_equilibrium_cpp", (DL_FUNC) &_malariaModelFit_human_equilibrium_cpp, 5},
-    {"_malariaModelFit_log_sum", (DL_FUNC) &_malariaModelFit_log_sum, 2},
     {NULL, NULL, 0}
 };
 

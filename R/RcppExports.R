@@ -2,10 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 human_equilibrium_cpp <- function(EIR, ft, p, age_, h) {
-    .Call('_malariaModelFit_human_equilibrium_cpp', PACKAGE = 'malariaModelFit', EIR, ft, p, age_, h)
-}
-
-log_sum <- function(logA, logB) {
-    .Call('_malariaModelFit_log_sum', PACKAGE = 'malariaModelFit', logA, logB)
+    .Call(`_malariaModelFit_human_equilibrium_cpp`, EIR, ft, p, age_, h)
 }
 
