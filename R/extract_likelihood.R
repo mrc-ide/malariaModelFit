@@ -8,14 +8,25 @@
 #' @param address File address
 #'
 #' @return function as string
-#' @example An example .cpp file may look like:
-#' # // Model likelihood file
-#' # #include <Rcpp.h>
+#' @examples An example likelihood file (example.cpp) may look like:
+#' # include <Rcpp.h>
 #' # [[Rcpp::export]]
-#' # SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
-#' #    likelihood calculations
+#' # SEXP loglikelihood(std::vector<double> params, std::vector<double> x){        
+#' #   // extract parameters
+#' #   double mu = params[0];
+#' #   double sigma = params[1];#'
+#' #   // sum log-likelihood over all data
+#' #   double ret = 0.0;
+#' #   for (size_t i = 0; i < sizeof(x); ++i) {
+#' #     ret += -0.5*log(2*M_PI*sigma*sigma) - (x[i] - mu)*(x[i] - mu)/(2*sigma*sigma);
+#' #    }
+#' #   // return as SEXP
+#' #   return Rcpp::wrap(ret);
 #' # }
 #' # // loglikelihood_end
+#' 
+#' Add we could convert it by:
+#' # function_to_string("src/example.cpp")
 #' @export
 function_to_string <- function(address){
   assert_string(address)
@@ -44,6 +55,3 @@ function_to_string <- function(address){
   # Create string of function
   paste(t1[f_start:(f_end - 1)], collapse =  "\n")
 }
-
-
-function_to_string("src/loglikelihood_diarrhoea.cpp")

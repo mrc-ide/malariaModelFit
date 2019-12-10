@@ -21,7 +21,8 @@ Imports:
     Rcpp (>= 0.12.11),
     statmod,
     magrittr,
-    knitr
+    knitr,
+    readr
 SystemRequirements: C++11
 Suggests: 
     testthat
