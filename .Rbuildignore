@@ -1,3 +1,4 @@
+^data-raw$
 ignore/
 R_ignore/
 ^README.Rmd

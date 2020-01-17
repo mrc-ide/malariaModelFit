@@ -1,0 +1,48 @@
+study,country,eir_mean,eir)sd,place_index,treated_alpha,treated_beta,clinical_case_detection,study_index
+garki_grouped_cluster_1,Nigeria,2.926739,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_2,Nigeria,3.401197,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_3,Nigeria,4.882802,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_4,Nigeria,3.871201,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_5,Nigeria,2.890372,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_6,Nigeria,4.219508,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_7,Nigeria,4.859812,0.4,0,0.9375001,24.0625,-1,19
+garki_grouped_cluster_8,Nigeria,4.158883,0.4,0,0.9375001,24.0625,-1,19
+Tanzania_Schellenberg_Ifakara,Tanzania,4.60517,0.6,1,11.25,13.75,2,15
+tanz_no_sev_1,Tanzania,3.8712,0.8,1,11.25,13.75,-1,18
+tanz_no_sev_2,Tanzania,1.4088,0.8,1,11.25,13.75,-1,18
+tanz_no_sev_3,Tanzania,-1.9553,0.8,1,11.25,13.75,-1,18
+tanz_no_sev_4,Tanzania,5.0948,0.8,1,11.25,13.75,-1,18
+tanz_no_sev_5,Tanzania,1.3575,0.8,1,11.25,13.75,-1,18
+tanz_no_sev_6,Tanzania,-1.7261,0.8,1,11.25,13.75,-1,18
+Tanzania_Lusingu_Mgome,Tanzania,5.0948,0.8,1,11.25,13.75,6,29
+Tanzania_Lusingu_Ubiri,Tanzania,1.3575,0.8,1,11.25,13.75,6,29
+Tanzania_Lusingu_Magamba,Tanzania,-1.7261,0.8,1,11.25,13.75,6,29
+Kenya_Mwangi_Chonyi,Kenya,3.637586,0.3,2,7.5,17.5,2,5
+Kenya_Mwangi_Ngerebya,Kenya,2.302585,0.3,2,7.5,17.5,2,5
+Mumias_Kenya_58,Kenya,3.86073,0.3,2,7.5,17.5,-1,26
+ofulla,Kenya,5.560297,0.5,2,7.5,17.5,-1,27
+Ghana_Chandramohan_KND,Ghana,6.035481,0.4,3,11.25,13.75,6,3
+KassenaNankanaDistrict_Ghana_49_50,Ghana,6.035481,0.4,3,11.25,13.75,-1,23
+owusu,Ghana,5.703783,0.5,3,11.25,13.75,-1,24
+Ivory_coast_Henry_R0_all_ages,Ivory Coast,5.06,0.5,4,6.5625,18.4375,1,4
+Ivory_coast_Henry_R1_all_ages,Ivory Coast,4.93,0.5,4,6.5625,18.4375,1,4
+Ivory_coast_Henry_R2_all_ages,Ivory Coast,5.04,0.5,4,6.5625,18.4375,1,4
+Karangasso_BurkinaFaso_12,Burkina Faso,5.572154,0.3,5,2.8125,22.1875,-1,21
+Tago_BurkinaFaso_15,Burkina Faso,4.486387,0.3,5,2.8125,22.1875,-1,22
+Cameroon_Bonnet_Ebolakonou,Cameroon,2.873565,0.3,6,11.25,13.75,1,1
+Cameroon_Bonnet_Koundou,Cameroon,5.171052,0.3,6,11.25,13.75,1,1
+dielmo,Senegal,5.298317,0.3,7,16.875,8.125,1,2
+ndiop,Senegal,2.995732,0.3,7,16.875,8.125,1,2
+Kilifitown_Kenya_52,Kenya,0.4054651,0.3,8,5.625,19.375,-1,20
+Sokoke_Kenya_52,Kenya,2.079442,0.3,8,5.625,19.375,-1,20
+Mali_Dicko_Doneguebougou,Mali,4.955827,0.3,9,7.5,17.5,2,6
+Mali_Dicko_Sotuba,Mali,2.079442,0.3,9,7.5,17.5,2,6
+Mozambique_Saute_Manhica,Mozambique,2.70805,0.3,10,1.875,23.125,2,7
+Mozambique_Thompson_Matola,Mozambique,2.484907,0.3,10,1.875,23.125,1,8
+Senegal_Diallo_Dakar_central,Senegal,-2.995732,0.8,11,4.6875,20.3125,2,11
+Senegal_Diallo_Dakar_south,Senegal,-2.995732,0.8,11,4.6875,20.3125,2,11
+Muheza_near_Tanzania_96,Tanzania,5.939118,0.3,12,9.375,15.625,-1,28
+Burkina_faso_Ye_Nouna,Burkina Faso,5.438079,0.8,13,8.4375,16.5625,2,0
+Saradidi_Kenya_56_59,Kenya,5.633002,0.3,14,4.6875,20.3125,-1,25
+Mozambique_Guinovart_Manhica,Mozambique,3.64,0.3,15,2.8125,22.1875,6,9
+Tanzania_Henning_Ifakara,Tanzania,4.60517,0.6,16,10.3125,14.6875,6,13
