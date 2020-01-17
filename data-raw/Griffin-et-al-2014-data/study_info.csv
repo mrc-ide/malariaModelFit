@@ -1,4 +1,4 @@
-study,country,eir_mean,eir)sd,place_index,treated_alpha,treated_beta,clinical_case_detection,study_index
+study,country,eir_mean,eir_sd,place_index,treated_alpha,treated_beta,clinical_case_detection,study_index
 garki_grouped_cluster_1,Nigeria,2.926739,0.4,0,0.9375001,24.0625,-1,19
 garki_grouped_cluster_2,Nigeria,3.401197,0.4,0,0.9375001,24.0625,-1,19
 garki_grouped_cluster_3,Nigeria,4.882802,0.4,0,0.9375001,24.0625,-1,19
