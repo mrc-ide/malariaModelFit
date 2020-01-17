@@ -17,6 +17,7 @@ RoxygenNote: 6.1.1
 LinkingTo:
     Rcpp,
     RcppArmadillo
+Depends: R (>= 3.1.0)
 Imports: 
     Rcpp (>= 0.12.11),
     statmod,
