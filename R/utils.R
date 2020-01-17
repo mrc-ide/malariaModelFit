@@ -68,7 +68,24 @@ break_coverage <- function(breaks, range_min, range_max) {
 #' @export
 
 gq_normal <- function(n) {
-    statmod::gauss.quad.prob(n, dist = "normal")
+  statmod::gauss.quad.prob(n, dist = "normal")
+}
+
+# -----------------------------------
+#' @title Draw from inverse gamma distribution
+#'
+#' @description Draw from inverse gamma distribution with given shape and scale
+#'   parameters. This is equivalent to 1/X, where X is drawn from
+#'   \code{rgamma(1, shape = shape, rate = scale)} (note that the *rate* of the
+#'   gamma draw becomes the *scale* of the inverse gamma draw).
+#'
+#' @param n number of observations.
+#' @param shape,scale shape and scale parameters of the distribution.
+#'
+#' @export
+
+rinvgamma <- function(n, shape, scale) {
+  1/rgamma(n, shape = shape, rate = scale)
 }
 
 
