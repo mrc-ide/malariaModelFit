@@ -60,7 +60,6 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   n_age <- length(age)
   age_days <- age*365
   EIR <- EIR/365
-  
   # produce population age distribution using eta, which is defined as 1/average
   # age. The population distribution can be envisioned as an exponential
   # distribution, with mass feeding in from the left due to birth at rate eta,
@@ -89,7 +88,6 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
 	    prop[i] <- prop[i-1]*r[i-1]/(r[i] + p$eta)
 	  }
 	}
-  
   # calculate midpoint of age range. There is no midpoint for the final age
   # group, so use beginning of range instead
   age_days_midpoint <- c((age_days[-n_age] + age_days[-1])/2, age_days[n_age])
@@ -105,25 +103,19 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   IB <- IC <- ID <- 0
   ICA <- FOI <- q <- cA <- rep(0, n_age)
   for (i in 1:n_age) {
-    
     # rate of ageing plus death
     re <- r[i] + p$eta
-    
     # update pre-erythrocytic immunity IB
     eps <- EIR*psi[i]
     IB <- (eps/(eps*p$ub + 1) + re*IB)/(1/p$db + re)
-    
     # calculate probability of infection from pre-erythrocytic immunity IB via
     # Hill function
     b <- p$b0*(p$b1 + (1-p$b1)/(1+(IB/p$IB0)^p$kb))
-    
     # calculate force of infection (lambda)
     FOI[i] <- b*eps
-    
     # update clinical immunity IC
     IC <- (FOI[i]/(FOI[i]*p$uc + 1) + re*IC)/(1/p$dc + re)
     ICA[i] <- IC
-    
     # update detection immunity ID
     ID <- (FOI[i]/(FOI[i]*p$ud + 1) + re*ID)/(1/p$dd + re)
     
@@ -141,7 +133,6 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   IM0 <- ICA[age20]*p$PM
   ICM <- rep(0, n_age)
   for (i in 1:n_age) {
-    
     # rate of ageing plus death
     re <- r[i] + p$eta
     
@@ -157,7 +148,6 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
   # calculate probability of acquiring clinical disease as a function of 
   # different immunity types
 	phi <- p$phi0*(p$phi1 + (1-p$phi1)/(1 + ((ICA+ICM)/p$IC0)^p$kc))
-	
 	# calculate equilibrium solution of all model states. Again, see
 	# doi:10.1186/s12936-016-1437-9 for details
   pos_M <- pos_PCR <- inc <- rep(0, n_age)
@@ -171,6 +161,7 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
     betaT <- p$rT + re
     betaD <- p$rD + re
     betaA <- FOI[i]*phi[i] + p$rA + re
+    if(i == 4) message("::: ", p$rA)
     betaU <- FOI[i] + p$rU + re
     betaP <- p$rP + re
     
@@ -204,7 +195,6 @@ human_equilibrium_no_het <- function(EIR, ft, p, age) {
     A[i] <- (rA + (1-phi[i])*Y*FOI[i] + p$rD*D[i])/(betaA + (1-phi[i])*FOI[i])
     U[i] <- (rU + p$rA*A[i])/betaU
     S[i] <- Y - A[i] - U[i]
-    
     # calculate proportion detectable by mocroscopy and PCR
     pos_M[i] <- D[i] + T[i] + A[i]*q[i]
     pos_PCR[i] <- D[i] + T[i] + A[i]*(q[i]^p$aA) + U[i]*(q[i]^p$aU)
