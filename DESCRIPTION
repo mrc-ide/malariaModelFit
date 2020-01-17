@@ -22,7 +22,9 @@ Imports:
     statmod,
     magrittr,
     knitr,
-    readr
+    readr,
+    ggplot2,
+    dplyr
 SystemRequirements: C++11
 Suggests: 
     testthat
