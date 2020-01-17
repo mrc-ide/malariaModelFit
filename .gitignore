@@ -1,18 +1,7 @@
-# Compiled source #
-###################
-*.o
-*.so
-*.dll
-*.exe
-
-# OS generated files #
-######################
-.DS_Store
-
-# specific files and folders #
-##############################
-ignore
-^.*\.Rproj$
-^\.Rproj\.user$
+doc
+inst/doc
 .Rproj.user
-pkgname.Rproj
+.Rhistory
+.RData
+.Ruserdata
+ignore/
