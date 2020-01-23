@@ -9,7 +9,7 @@
 #'
 #' @return Vector of data in correct format
 #' @export
-prepare_data <- function(data, p, output_type = "ll", nh = 5){
+prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output_type = "ll", nh = 5){
   ot <- 0
   if(output_type == "eq"){
     ot <- 1
@@ -22,7 +22,7 @@ prepare_data <- function(data, p, output_type = "ll", nh = 5){
   names(group_n) <- paste0("group_n_", 1:site_n)
   # Age inputs
   ages <- lapply(site_list, function(x){
-    age_prep(c(x$age0[1], x$age1), eta = p$eta, rho = p$rho, a0 = p$a0)
+    age_prep(c(x$age0[1], x$age1), eta = eta, rho = rho, a0 = a0)
   })
   prop <- unlist(lapply(ages, "[[", "prop"))
   names(prop) <- paste0("prop", 1:length(prop))
