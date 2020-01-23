@@ -7,7 +7,6 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // Output type
       // Site number
       // Vector of site group number
-      // Vector of number of age categories
       // List of age groups for each site
       // List of age prop for each site
       // List of age r for each site
@@ -32,54 +31,55 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     int site_n = x[di];
     di++;
     // Site group number
-    std::vector<int> site_group_n(site_n);
+    std::vector<int> ng(site_n);
     for(int i = 0; i < site_n; ++i){
-      site_group_n[i] = x[di];
+      ng[i] = x[di];
       di++;
     }
-    // Number of age categories for each site
-    std::vector<int> na(site_n);
+
+    // Empty template site_n X group_n
+    std::vector<std::vector<double>> template_dbl(site_n);
     for(int i = 0; i < site_n; ++i){
-      na[i] = x[di];
-      di++;
+      template_dbl[i].resize(ng[i]);
     }
+    
     // Age groups for each site
-    std::vector<std::vector<double>> age(site_n, std::vector<double>());
+    std::vector<std::vector<double>> age = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < na[i]; ++j){
-        age[i].push_back(x[di]);
+      for(int j = 0; j < ng[i]; ++j){
+        age[i][j] = x[di];
         di++;
       } 
     }
     // Age prop for each site
-    std::vector<std::vector<double>> prop(site_n, std::vector<double>());
+    std::vector<std::vector<double>> prop = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < na[i]; ++j){
-        prop[i].push_back(x[di]);
+      for(int j = 0; j < ng[i]; ++j){
+        prop[i][j] = x[di];
         di++;
       } 
     }
     // Age r for each site
-    std::vector<std::vector<double>> r(site_n, std::vector<double>());
+    std::vector<std::vector<double>> r = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < na[i]; ++j){
-        r[i].push_back(x[di]);
+      for(int j = 0; j < ng[i]; ++j){
+        r[i][j] = x[di];
         di++;
       } 
     }
     // Age day midpoint for each site
-    std::vector<std::vector<double>> age_days_midpoint(site_n, std::vector<double>());
+    std::vector<std::vector<double>> age_days_midpoint = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < na[i]; ++j){
-        age_days_midpoint[i].push_back(x[di]);
+      for(int j = 0; j < ng[i]; ++j){
+        age_days_midpoint[i][j] = x[di];
         di++;
       } 
     }
     // Age psi for each site
-    std::vector<std::vector<double>> psi(site_n, std::vector<double>());
+    std::vector<std::vector<double>> psi = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < na[i]; ++j){
-        psi[i].push_back(x[di]);
+      for(int j = 0; j < ng[i]; ++j){
+        psi[i][j] = x[di];
         di++;
       } 
     }
@@ -103,18 +103,18 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       di++;
     }
     // Data denominators
-   // std::vector<std::vector<double>> denom(site_n, std::vector<double>());
+   // std::vector<std::vector<double>> denom = template_dbl;
   //  for(int i = 0; i < site_n; ++i){
-  //   for(int j = 0; j < site_group_n[i]; ++j){
-  //     denom[i].push_back(x[di]);
+  //   for(int j = 0; j < ng[i]; ++j){
+  //     denom[i][j] = x[di];
   //     di++;
   //   } 
   //  }
     // Data numerators
-  //  std::vector<std::vector<double>> numer(site_n, std::vector<double>());
+  //  std::vector<std::vector<double>> numer = template_dbl;
   //  for(int i = 0; i < site_n; ++i){
-  //    for(int j = 0; j < site_group_n[i]; ++j){
-  //      numer[i].push_back(x[di]);
+  //    for(int j = 0; j < ng[i]; ++j){
+  //      numer[i][j] = x[di];
    //     di++;
     //  } 
     //}
@@ -240,17 +240,32 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     }
   //////////////////////////////////////////////////////////////////////////////
   
-  // Initialise output variables ///////////////////////////////////////////////
-    std::vector<std::vector<double>> pos_M(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> pos_PCR(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> inc(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> inf(nh, std::vector<double>(na, 0)); 
-    std::vector<std::vector<double>> S(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> T(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> P(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> D(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> A(nh, std::vector<double>(na, 0));
-    std::vector<std::vector<double>> U(nh, std::vector<double>(na, 0));
+  // Initialise output variables for all sites /////////////////////////////////
+    std::vector<std::vector<double>> S_out = template_dbl;
+    std::vector<std::vector<double>> T_out = template_dbl;
+    std::vector<std::vector<double>> D_out = template_dbl;
+    std::vector<std::vector<double>> A_out = template_dbl;
+    std::vector<std::vector<double>> U_out = template_dbl;
+    std::vector<std::vector<double>> P_out = template_dbl;
+    std::vector<std::vector<double>> pos_M_out = template_dbl;
+    std::vector<std::vector<double>> pos_PCR_out = template_dbl;
+    std::vector<std::vector<double>> inf_out = template_dbl;
+    std::vector<std::vector<double>> inc_out = template_dbl;
+    std::vector<double> FOIM(site_n);
+  //////////////////////////////////////////////////////////////////////////////
+  
+  for(int s = 0; s < site_n; ++s){
+  // Initialise output variables for a single site /////////////////////////////
+    std::vector<std::vector<double>> pos_M(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> pos_PCR(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> inc(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> inf(nh, std::vector<double>(ng[s], 0)); 
+    std::vector<std::vector<double>> S(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> T(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> P(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> D(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> A(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double>> U(nh, std::vector<double>(ng[s], 0));
     double zeta;
     double rA;
     double rU;
@@ -261,43 +276,43 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // loop through all Gaussian quadrature nodes
     for(int n = 0; n < nh; ++n){
       zeta = exp(-s2 * 0.5 + std::sqrt(s2) * nodes[n]);
-      double EIR_cur = EIR / 365 * zeta;
+      double EIR_cur = EIR[s] / 365 * zeta;
       // Human EQ no-het:
       double IB = 0;
       double IC = 0;
       double ID = 0;
-      std::vector<double> ICA(na, 0);
-      std::vector<double> FOI(na, 0);
-      std::vector<double> q(na, 0);
-      std::vector<double> cA(na, 0);
+      std::vector<double> ICA(ng[s], 0);
+      std::vector<double> FOI(ng[s], 0);
+      std::vector<double> q(ng[s], 0);
+      std::vector<double> cA(ng[s], 0);
       double re;
       double eps;
       double b;
       double fd;
       double IM0;
-      std::vector<double> ICM(na, 0);
+      std::vector<double> ICM(ng[s], 0);
       double ICM_prev;
-      std::vector<double> phi(na, 0);
+      std::vector<double> phi(ng[s], 0);
       
       // Rcpp::Rcout << "Starting NA" << std::endl;
-      for(int a = 0; a < na; ++a){
-        re = r[a] + eta;
-        eps = EIR_cur * psi[a];
+      for(int a = 0; a < ng[s]; ++a){
+        re = r[s][a] + eta;
+        eps = EIR_cur * psi[s][a];
         IB = (eps / (eps * ub + 1) + re * IB) / (1 / db + re);
         b = b0 * (b1 + (1 - b1) / (1 + std::pow((IB / IB0), kb)));
         FOI[a] = b * eps;
         IC = (FOI[a] / (FOI[a] * uc + 1) + re * IC) / (1 / dc + re);
         ICA[a] = IC;
         ID = (FOI[a] / (FOI[a] * ud + 1) + re * ID) / (1 / dd + re);
-        fd = 1 - (1 - fd0) / (1 + std::pow((age_days_midpoint[a] / ad0), gd));
+        fd = 1 - (1 - fd0) / (1 + std::pow((age_days_midpoint[s][a] / ad0), gd));
         q[a] = d1 + (1 - d1) / (1 + std::pow((ID / ID0), kd) * fd);
         cA[a] = cU + (cD - cU) * std::pow(q[a], g_inf);
       }
       
       // Rcpp::Rcout << "Starting prev1" << std::endl;
-      IM0 = ICA[age20] * PM;
-      for(int a = 0; a < na; ++a){
-        re = r[a] + eta;
+      IM0 = ICA[age20[s]] * PM;
+      for(int a = 0; a < ng[s]; ++a){
+        re = r[s][a] + eta;
         if (a == 0) {
           ICM_prev = IM0;
         } else {
@@ -307,7 +322,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       }
       
       // Rcpp::Rcout << "Starting phi" << std::endl;
-      for(int a = 0; a < na; ++a){
+      for(int a = 0; a < ng[s]; ++a){
         phi[a] = phi0 * (phi1 + (1 - phi1) / (1 + (std::pow((ICA[a] + ICM[a]) / IC0, kc))));
       }
 
@@ -325,27 +340,27 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       double Y;
       
       // Rcpp::Rcout << "Starting states" << std::endl;
-      for(int a = 0; a < na; ++a){
-        re = r[a] + eta;
+      for(int a = 0; a < ng[s]; ++a){
+        re = r[s][a] + eta;
         betaT = prT + re;
         betaD = prD + re;
         betaA = FOI[a]*phi[a] + prA + re;
         if(a == 3) Rcpp::Rcout << "::: " << rA <<std::endl;
         betaU = FOI[a] + prU + re;
         betaP = prP + re;
-        aT = ft * phi[a] * FOI[a] / betaT;
+        aT = ft[s] * phi[a] * FOI[a] / betaT;
         aP = prT * aT / betaP;
-        aD = (1 - ft) * phi[a] * FOI[a] / betaD;
+        aD = (1 - ft[s]) * phi[a] * FOI[a] / betaD;
         if (a == 0){
           bT = 0;
           bD = 0;
           bP = 0;
         } else {
-          bT = r[a - 1] * T[n][a - 1] / betaT;
-          bD = r[a - 1] * D[n][a - 1] / betaD;
-          bP = prT * bT + r[a - 1] * P[n][a - 1] / betaP;
+          bT = r[s][a - 1] * T[n][a - 1] / betaT;
+          bD = r[s][a - 1] * D[n][a - 1] / betaD;
+          bP = prT * bT + r[s][a - 1] * P[n][a - 1] / betaP;
         }
-        Y = (prop[a] - (bT + bD + bP)) / (1 + aT + aD + aP);
+        Y = (prop[s][a] - (bT + bD + bP)) / (1 + aT + aD + aP);
 
         T[n][a] = aT * Y + bT;
         D[n][a] = aD * Y + bD;
@@ -354,8 +369,8 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
           rA = 0;
           rU = 0;
         } else {
-          rA = r[a - 1] * A[n][a - 1];
-          rU = r[a - 1] * U[n][a - 1];
+          rA = r[s][a - 1] * A[n][a - 1];
+          rU = r[s][a - 1] * U[n][a - 1];
         }
         A[n][a] = (rA + (1 - phi[a]) * Y * FOI[a] + prD * D[n][a]) / (betaA + (1 - phi[a]) * FOI[a]);
         U[n][a] = (rU + prA * A[n][a]) / betaU;
@@ -365,47 +380,36 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         inc[n][a] = Y * FOI[a] * phi[a];
       }
       
-      for(int a = 0; a < na; ++a){
+      for(int a = 0; a < ng[s]; ++a){
         inf[n][a] = cD * D[n][a] + cT * T[n][a] + cA[a] * A[n][a] + cU * U[n][a];
       }
     }
     
     // Average over nodes
-    std::vector<double> S_out(na, 0);
-    std::vector<double> T_out(na, 0);
-    std::vector<double> D_out(na, 0);
-    std::vector<double> A_out(na, 0);
-    std::vector<double> U_out(na, 0);
-    std::vector<double> P_out(na, 0);
-    std::vector<double> pos_M_out(na, 0);
-    std::vector<double> pos_PCR_out(na, 0);
-    std::vector<double> inf_out(na, 0);
-    std::vector<double> inc_out(na, 0);
-    double FOIM = 0;
-    
     for(int n = 0; n < nh; ++n){
       zeta = exp(-s2 * 0.5 + std::sqrt(s2) * nodes[n]);
-      for(int a = 0; a < na; ++a){
-        S_out[a] += S[n][a] * weights[n];
-        T_out[a] += T[n][a] * weights[n];
-        D_out[a] += D[n][a] * weights[n];
-        A_out[a] += A[n][a] * weights[n];
-        U_out[a] += U[n][a] * weights[n];
-        P_out[a] += P[n][a] * weights[n];
-        pos_M_out[a] += pos_M[n][a] * weights[n];
-        pos_PCR_out[a] += pos_PCR[n][a] * weights[n];
-        inf_out[a] += inf[n][a] * weights[n];
-        inc_out[a] += inc[n][a] * weights[n];
-        FOIM += inf[n][a] * psi[a] * weights[n] * zeta;
+      for(int a = 0; a < ng[s]; ++a){
+        S_out[s][a] += S[n][a] * weights[n];
+        T_out[s][a] += T[n][a] * weights[n];
+        D_out[s][a] += D[n][a] * weights[n];
+        A_out[s][a] += A[n][a] * weights[n];
+        U_out[s][a] += U[n][a] * weights[n];
+        P_out[s][a] += P[n][a] * weights[n];
+        pos_M_out[s][a] += pos_M[n][a] * weights[n];
+        pos_PCR_out[s][a] += pos_PCR[n][a] * weights[n];
+        inf_out[s][a] += inf[n][a] * weights[n];
+        inc_out[s][a] += inc[n][a] * weights[n];
+        FOIM[s] += inf[n][a] * psi[s][a] * weights[n] * zeta;
       }
     }
     
     double omega = 1 - rho * eta / (eta + 1 / a0);
     double alpha = f * Q0;
-    FOIM *= alpha/omega;
+    FOIM[s] *= alpha/omega;
+  }
     
     if(output_type == 1){
-       return Rcpp::List::create(Rcpp::Named("age") = age,
+       return Rcpp::List::create(
                          Rcpp::Named("S") = S_out,
                          Rcpp::Named("T") = T_out,
                          Rcpp::Named("D") = D_out,
