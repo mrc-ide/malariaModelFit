@@ -300,8 +300,25 @@ load_data <- function(project, data_df) {
 # perform checks on data format
 #' @noRd
 
-check_data <- function(dat) {
-  # TODO - some checks on data
+check_data <- function(x) {
+  
+  # check that dataframe with correct columns
+  assert_dataframe(x)
+  assert_in(c("study_index", "site_index", "numer", "denom", "type", "age0", "age1", "case_detection"), names(x), message = "data column names do not match required format. See ?load_data for details of required format")
+  
+  # check format of columns
+  assert_pos_int(x$study_index, zero_allowed = FALSE, name = "data$study_index")
+  assert_eq(unique(x$study_index), 1:length(unique(x$study_index)), message = "data$study_index must be a contiguous sequence of integers from 1 to the maximum number of studies")
+  assert_pos_int(x$site_index, zero_allowed = FALSE, name = "data$site_index")
+  assert_eq(unique(x$site_index), 1:length(unique(x$site_index)), message = "data$site_index must be a contiguous sequence of integers from 1 to the maximum number of sites")
+  assert_pos_int(x$numer, zero_allowed = TRUE, name = "data$numer")
+  assert_pos(x$denom, zero_allowed = FALSE, name = "data$denom")
+  assert_in(x$type, 1:2)
+  assert_pos(x$age0, zero_allowed = TRUE, name = "data$age0")
+  assert_pos(x$age1, zero_allowed = TRUE, name = "data$age1")
+  assert_gr(x$age1, x$age0, name_x = "data$age1", name_y = "data$age0")
+  assert_in(x$case_detection, 1:3)
+  
 }
 
 #------------------------------------------------

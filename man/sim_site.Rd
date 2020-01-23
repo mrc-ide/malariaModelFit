@@ -20,7 +20,7 @@ sim_site(
 )
 }
 \arguments{
-\item{p}{a parameters object of class "mmfit_params" (see
+\item{p}{a parameters object of class "model_params" (see
 \code{?load_parameter_set()}).}
 
 \item{EIR}{the entomological inoculation rate of the site, in units of
