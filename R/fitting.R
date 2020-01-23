@@ -366,3 +366,34 @@ double ret = 0;"
   return(s)
 }
 
+#------------------------------------------------
+# extract priors from a project and use to produce dataframe of parameters in
+# the format expected by drjacoby
+#' @noRd
+create_df_params <- function(project) {
+  
+  # combine model and fitting priors
+  priors <- rbind(project$model_priors, project$fitting_priors)
+  
+  # check that prior distributions are one of the defined list of allowed
+  # distributions
+  assert_in(priors$prior_dist, c("fixed", "beta", "norm", "lnorm", "gamma"))
+  
+  # extract ranges based on distribution
+  df_min_max <- t(apply(priors, 1, function(x) {
+    switch (x$prior_dist,
+            "fixed" = rep(x$prior_params[1], 2),
+            "beta" = c(0, 1),
+            "norm" = c(-Inf, Inf),
+            "lnorm" = c(0, Inf),
+            "gamma" = c(0, Inf)
+    )
+  }))
+  
+  # create final df_params dataframe and return
+  df_params <- data.frame(name = priors$name,
+                          min = df_min_max[,1],
+                          max = df_min_max[,2])
+  
+  return(df_params)
+}
