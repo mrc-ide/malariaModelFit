@@ -196,7 +196,9 @@ assert_single_pos_int <- function(x, zero_allowed = TRUE, name = paste(deparse(s
 assert_single_bounded <- function(x, left = 0, right = 1, inclusive_left = TRUE, inclusive_right = TRUE,
                                   name = paste(deparse(substitute(x)), collapse = "")) {
   assert_length(x, n = 1, name = name)
-  assert_bounded(x, left = left, right = right, inclusive_left = inclusive_left, inclusive_right = inclusive_right, name = name)
+  assert_bounded(x, left = left, right = right,
+                 inclusive_left = inclusive_left, inclusive_right = inclusive_right,
+                 name = name)
   return(TRUE)
 }
 
@@ -208,6 +210,44 @@ assert_vector <- function(x, message = "%s must be a non-recursive vector",
   if (!is.vector(x) || is.recursive(x)) {
     stop(sprintf(message, name), call. = FALSE)
   }
+  return(TRUE)
+}
+
+#------------------------------------------------
+# x is a numeric vector
+#' @noRd
+assert_vector_numeric <- function(x, message = "%s must be a non-recursive vector of numeric values",
+                                  name = paste(deparse(substitute(x)), collapse = "")) {
+  assert_numeric(x, message = message, name = name)
+  assert_vector(x, message = message, name = name)
+  return(TRUE)
+}
+
+#------------------------------------------------
+# x is a vector of positive values
+#' @noRd
+assert_vector_pos <- function(x, zero_allowed = TRUE,
+                              message1 = "%s must be a non-recursive vector of positive values or zero",
+                              message2 = "%s must be a non-recursive vector of positive values",
+                              name = paste(deparse(substitute(x)), collapse = "")) {
+  assert_pos(x, zero_allowed = zero_allowed, message1 = message1, message2 = message2, name = name)
+  if (zero_allowed) {
+    assert_vector(x, message = message1, name = name)
+  } else {
+    assert_vector(x, message = message2, name = name)
+  }
+  return(TRUE)
+}
+
+#------------------------------------------------
+# x is a vector of bounded values
+#' @noRd
+assert_vector_bounded <- function(x, left = 0, right = 1, inclusive_left = TRUE, inclusive_right = TRUE,
+                                  name = paste(deparse(substitute(x)), collapse = "")) {
+  assert_vector(x, name = name)
+  assert_bounded(x, left = left, right = right,
+                 inclusive_left = inclusive_left, inclusive_right = inclusive_right,
+                 name = name)
   return(TRUE)
 }
 

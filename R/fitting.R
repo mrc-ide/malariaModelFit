@@ -169,9 +169,8 @@ check_priors <- function(parameters) {
     p_sub <- subset(parameters, parameters$prior_dist == "norm")
     params_message <- "normal distribution must have two prior_params values specifying the mean and standard deviation of the distribution. The mean must be in the interval (-infinity,infinity), and the standard deviation must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_vector(x$prior_params, message = params_message)
+      assert_vector_numeric(x$prior_params, message = params_message)
       assert_length(x$prior_params, 2, message = params_message)
-      assert_numeric(x$prior_params, message = params_message)
       assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = params_message)
     })
   }
@@ -179,9 +178,8 @@ check_priors <- function(parameters) {
     p_sub <- subset(parameters, parameters$prior_dist == "lnorm")
     params_message <- "lognormal distribution must have two prior_params values specifying the mean and standard deviation of the normal distribution that is exponentiated to produce the lognormal distribution. The mean must be in the interval (-infinity,infinity), and the standard deviation must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_vector(x$prior_params, message = params_message)
+      assert_vector_numeric(x$prior_params, message = params_message)
       assert_length(x$prior_params, 2, message = params_message)
-      assert_numeric(x$prior_params, message = params_message)
       assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = params_message)
     })
   }
@@ -215,7 +213,7 @@ draw_model_prior <- function(project) {
   assert_non_null(project$model_priors)
   
   # draw from priors
-  draw_prior(project$model_priors)
+  draw_prior_general(project$model_priors)
 }
 
 #------------------------------------------------
@@ -236,7 +234,7 @@ draw_fitting_prior <- function(project) {
   assert_non_null(project$fitting_priors)
   
   # draw from priors
-  draw_prior(project$fitting_priors)
+  draw_prior_general(project$fitting_priors)
 }
 
 #------------------------------------------------
@@ -244,7 +242,7 @@ draw_fitting_prior <- function(project) {
 #' @importFrom stats rbeta rnorm rlnorm rgamma
 #' @noRd
 
-draw_prior <- function(x) {
+draw_prior_general <- function(x) {
   
   # draw from specified distributions
   ret <- apply(x, 1, function(y) {
@@ -264,10 +262,10 @@ draw_prior <- function(x) {
     }
   })
   
-  # return as mmfit_params class
+  # return as model_params class
   ret <- as.list(ret)
   names(ret) <- x$name
-  class(ret) <- "mmfit_params"
+  class(ret) <- "model_params"
   
   return(ret)
 }
@@ -275,26 +273,22 @@ draw_prior <- function(x) {
 #------------------------------------------------
 #' @title Load data into a project
 #'
-#' @description Data for use in model fitting is stored within the package
-#'   inst/extdata/data folder. Load a data object from this folder by name, and
-#'   attach to an existing project.
+#' @description Perform basic checks on data format (see details), and if
+#'   passed, load into an existing project.
+#'
+#' @details TODO.
 #'
 #' @param project an object of class "mmfit_project" (see
 #'   \code{?mmfit_project()}).
-#' @param file_name the name of a file within the inst/extdata/data folder.
+#' @param data_df a dataframe of fitting data, formatted as described in the
+#'   details section.
 #'
 #' @export
 
-load_data <- function(project, file_name = "refit2020_data.rds") {
+load_data <- function(project, data_df) {
   
   # check inputs
   assert_custom_class(project, "mmfit_project")
-  assert_single_string(file_name)
-  
-  # load data from inst/extdata/data folder
-  data_df <- mmfit_file(paste0("data/", file_name))
-  
-  # check data
   check_data(data_df)
   
   # add to project and return
@@ -306,8 +300,25 @@ load_data <- function(project, file_name = "refit2020_data.rds") {
 # perform checks on data format
 #' @noRd
 
-check_data <- function(dat) {
-  # TODO - some checks on data
+check_data <- function(x) {
+  
+  # check that dataframe with correct columns
+  assert_dataframe(x)
+  assert_in(c("study_index", "site_index", "numer", "denom", "type", "age0", "age1", "case_detection"), names(x), message = "data column names do not match required format. See ?load_data for details of required format")
+  
+  # check format of columns
+  assert_pos_int(x$study_index, zero_allowed = FALSE, name = "data$study_index")
+  assert_eq(unique(x$study_index), 1:length(unique(x$study_index)), message = "data$study_index must be a contiguous sequence of integers from 1 to the maximum number of studies")
+  assert_pos_int(x$site_index, zero_allowed = FALSE, name = "data$site_index")
+  assert_eq(unique(x$site_index), 1:length(unique(x$site_index)), message = "data$site_index must be a contiguous sequence of integers from 1 to the maximum number of sites")
+  assert_pos_int(x$numer, zero_allowed = TRUE, name = "data$numer")
+  assert_pos(x$denom, zero_allowed = FALSE, name = "data$denom")
+  assert_in(x$type, 1:2)
+  assert_pos(x$age0, zero_allowed = TRUE, name = "data$age0")
+  assert_pos(x$age1, zero_allowed = TRUE, name = "data$age1")
+  assert_gr(x$age1, x$age0, name_x = "data$age1", name_y = "data$age0")
+  assert_in(x$case_detection, 1:3)
+  
 }
 
 #------------------------------------------------

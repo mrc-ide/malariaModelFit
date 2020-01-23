@@ -4,16 +4,19 @@
 \alias{load_data}
 \title{Load data into a project}
 \usage{
-load_data(project, file_name = "refit2020_data.rds")
+load_data(project, data_df)
 }
 \arguments{
 \item{project}{an object of class "mmfit_project" (see
 \code{?mmfit_project()}).}
 
-\item{file_name}{the name of a file within the inst/extdata/data folder.}
+\item{data_df}{a dataframe of fitting data, formatted as described in the
+details section.}
 }
 \description{
-Data for use in model fitting is stored within the package
-  inst/extdata/data folder. Load a data object from this folder by name, and
-  attach to an existing project.
+Perform basic checks on data format (see details), and if
+  passed, load into an existing project.
+}
+\details{
+TODO.
 }

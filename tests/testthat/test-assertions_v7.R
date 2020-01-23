@@ -221,6 +221,44 @@ test_that("assert_vector working correctly", {
 })
 
 #------------------------------------------------
+test_that("assert_vector_numeric working correctly", {
+  expect_true(assert_vector_numeric(1))
+  expect_true(assert_vector_numeric(1:5))
+  
+  expect_error(assert_vector_numeric(NULL))
+  expect_error(assert_vector_numeric(c("a", "b")))
+  expect_error(assert_vector_numeric(matrix(5,3,3)))
+  expect_error(assert_vector_numeric(list(1:5, 1:10)))
+  expect_error(assert_vector_numeric(data.frame(1:5, 2:6)))
+})
+
+#------------------------------------------------
+test_that("assert_vector_pos working correctly", {
+  expect_true(assert_vector_pos(1))
+  expect_true(assert_vector_pos(1:5))
+  
+  expect_error(assert_vector_pos(NULL))
+  expect_error(assert_vector_pos(c("a", "b")))
+  expect_error(assert_vector_pos(-1))
+  expect_error(assert_vector_pos(matrix(5,3,3)))
+  expect_error(assert_vector_pos(list(1:5, 1:10)))
+  expect_error(assert_vector_pos(data.frame(1:5, 2:6)))
+})
+
+#------------------------------------------------
+test_that("assert_vector_bounded working correctly", {
+  expect_true(assert_vector_bounded(1))
+  expect_true(assert_vector_bounded(seq(0,1,0.1)))
+  
+  expect_error(assert_vector_bounded(NULL))
+  expect_error(assert_vector_bounded(c("a", "b")))
+  expect_error(assert_vector_bounded(-1))
+  expect_error(assert_vector_bounded(matrix(5,3,3)))
+  expect_error(assert_vector_bounded(list(1:5, 1:10)))
+  expect_error(assert_vector_bounded(data.frame(1:5, 2:6)))
+})
+
+#------------------------------------------------
 test_that("assert_matrix working correctly", {
   expect_true(assert_matrix(matrix(NA,1,1)))
   expect_true(assert_matrix(matrix(5,3,3)))
