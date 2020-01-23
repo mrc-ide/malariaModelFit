@@ -68,7 +68,55 @@ break_coverage <- function(breaks, range_min, range_max) {
 #' @export
 
 gq_normal <- function(n) {
-    statmod::gauss.quad.prob(n, dist = "normal")
+  statmod::gauss.quad.prob(n, dist = "normal")
 }
 
+# -----------------------------------
+#' @title Draw from inverse gamma distribution
+#'
+#' @description Draw from inverse gamma distribution with given shape and scale
+#'   parameters. This is equivalent to 1/X, where X is drawn from
+#'   \code{rgamma(1, shape = shape, rate = scale)} (note that the *rate* of the
+#'   gamma draw becomes the *scale* of the inverse gamma draw).
+#'
+#' @param n number of observations.
+#' @param shape,scale shape and scale parameters of the distribution.
+#'
+#' @export
+
+rinvgamma <- function(n, shape, scale) {
+  1/rgamma(n, shape = shape, rate = scale)
+}
+
+# -----------------------------------
+#' @title Logit transform
+#'
+#' @description Return logit transform of x, defined as log(x/(1 - x)).
+#'
+#' @param x single value or vector of values to transform.
+#'
+#' @export
+
+logit <- function(x) {
+  assert_numeric(x)
+  assert_vector(x)
+  assert_bounded(x)
+  return(log(x) - log(1 - x))
+}
+
+# -----------------------------------
+#' @title Logistic, i.e. inverse logit transform
+#'
+#' @description Return logistic transform of x, also known as the inverse-logit
+#'   transform, defined as 1/(1 + exp(-x)).
+#'
+#' @param x single value or vector of values to transform.
+#'
+#' @export
+
+logistic <- function(x) {
+  assert_numeric(x)
+  assert_vector(x)
+  return(1/(1 + exp(-x)))
+}
 

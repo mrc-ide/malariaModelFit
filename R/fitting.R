@@ -73,15 +73,12 @@ load_fitting_priors <- function(project, file_name = "refit2020_fitting_priors.r
 #'   \code{?mmfit_project()}).
 #' @param name the name of a parameter within the project model parameters or
 #'   fitting parameters.
-#' @param prior_dist the type of prior distribution to define. One of {"fixed",
-#'   "dbeta", "dnorm", "dlnorm", "dgamma"}.
+#' @param prior_dist the type of prior distribution to define.
 #' @param prior_params parameters associated with the prior distribution.
-#' @param range_min the minimum allowed parameter value.
-#' @param range_max the maximum allowed parameter value.
 #'
 #' @export
 
-define_prior <- function(project, name, prior_dist, prior_params, range_min = NULL, range_max = NULL) {
+define_prior <- function(project, name, prior_dist, prior_params) {
   
   # check inputs
   assert_custom_class(project, "mmfit_project")
@@ -106,25 +103,6 @@ define_prior <- function(project, name, prior_dist, prior_params, range_min = NU
     stop(sprintf("parameter %s found in both model priors and fitting priors; cannot continue", name))
   }
   assert_single_string(prior_dist)
-  assert_in(prior_dist, c("fixed", "dbeta", "dnorm", "dlnorm", "dgamma"))
-  
-  # define default ranges and perform checks on ranges
-  if (is.null(range_min)) {
-    if (prior_dist == "fixed") {
-      stop("range_min and range_max must be specified for fixed parameters")
-    } else if (prior_dist == "dbeta") {
-      range_min <- 0
-      range_max <- 1
-    } else if (prior_dist == "dnorm") {
-      range_min <- -Inf
-      range_max <- Inf
-    } else if (prior_dist %in% c("dlnorm", "dgamma")) {
-      range_min <- 0
-      range_max <- Inf
-    }
-  }
-  assert_single_numeric(range_min)
-  assert_single_numeric(range_max)
   
   # create copy of priors dataframe
   if (name_in_model_priors) {
@@ -135,8 +113,6 @@ define_prior <- function(project, name, prior_dist, prior_params, range_min = NU
   
   # update specified parameter
   w <- which(new_df$name == name)
-  new_df$range_min[w] <- range_min
-  new_df$range_max[w] <- range_max
   new_df$prior_dist[w] <- prior_dist
   new_df$prior_params[w] <- list(prior_params)
   
@@ -162,79 +138,58 @@ check_priors <- function(parameters) {
   
   # check that dataframe with the correct columns
   assert_dataframe(parameters)
-  assert_in(c("name", "definition", "range_min", "range_max", "prior_dist", "prior_params"), names(parameters),
-            message = "parameters dataframe must contain the following column names: {name, definition, range_min, range_max, prior_dist, prior_params}")
+  assert_in(c("name", "definition", "prior_dist", "prior_params"), names(parameters),
+            message = "parameters dataframe must contain the following column names: {name, definition, prior_dist, prior_params}")
   
   # check format of every column
   assert_string(parameters$name)
   assert_string(parameters$definition)
-  assert_numeric(parameters$range_min)
-  assert_numeric(parameters$range_max)
-  assert_in(parameters$prior_dist, c("fixed", "dbeta", "dnorm", "dlnorm", "dgamma"))
+  assert_in(parameters$prior_dist, c("fixed", "beta", "norm", "lnorm", "gamma"))
   assert_list(parameters$prior_params)
   
-  # check that range_max is greater than or equal to range_min
-  assert_greq(parameters$range_max, parameters$range_min,
-              message = "parameters$range_max must be greater than or equal to parameters$range_min")
-  
-  # check that all parameters have the correct range and correct set of prior
-  # parameters
+  # check that all parameters have the correct correct set of prior parameters
   if (any(parameters$prior_dist == "fixed")) {
     p_sub <- subset(parameters, parameters$prior_dist == "fixed")
+    params_message <- "for fixed parameters, prior_params must contain the value of the parameter"
     apply(p_sub, 1, function(x) {
-      assert_eq(x$range_min, x$range_max,
-                message = "fixed parameters must have the same value for range_min and range_max")
-      assert_null(x$prior_params, message = "prior_params must be NULL for fixed parameters")
+      assert_length(x$prior_params, 1, message = params_message)
+      assert_numeric(x$prior_params, message = params_message)
     })
   }
-  if (any(parameters$prior_dist == "dbeta")) {
-    p_sub <- subset(parameters, parameters$prior_dist == "dbeta")
-    dnorm_range_message <- "dbeta parameters must have range 0 to 1"
-    dnorm_params_message <- "dbeta parameters must have two prior_params values specifying the shape of the distribution"
+  if (any(parameters$prior_dist == "beta")) {
+    p_sub <- subset(parameters, parameters$prior_dist == "beta")
+    params_message <- "beta distribution must have two prior_params values specifying the shape of the distribution. Both parameters must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_eq(x$range_min, 0, message = dnorm_range_message)
-      assert_eq(x$range_max, 1, message = dnorm_range_message)
-      assert_vector(x$prior_params, message = dnorm_params_message)
-      assert_length(x$prior_params, 2, message = dnorm_params_message)
-      assert_pos(x$prior_params, zero_allowed = FALSE, message2 = dnorm_params_message)
+      assert_vector(x$prior_params, message = params_message)
+      assert_length(x$prior_params, 2, message = params_message)
+      assert_pos(x$prior_params, zero_allowed = FALSE, message2 = params_message)
     })
   }
-  if (any(parameters$prior_dist == "dnorm")) {
-    p_sub <- subset(parameters, parameters$prior_dist == "dnorm")
-    dnorm_range_message <- "dnorm parameters must have range -Inf to Inf"
-    dnorm_params_message <- "dnorm parameters must have two prior_params values specifying the mean and standard deviation of the distribution"
+  if (any(parameters$prior_dist == "norm")) {
+    p_sub <- subset(parameters, parameters$prior_dist == "norm")
+    params_message <- "normal distribution must have two prior_params values specifying the mean and standard deviation of the distribution. The mean must be in the interval (-infinity,infinity), and the standard deviation must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_eq(x$range_min, -Inf, message = dnorm_range_message)
-      assert_eq(x$range_max, Inf, message = dnorm_range_message)
-      assert_vector(x$prior_params, message = dnorm_params_message)
-      assert_length(x$prior_params, 2, message = dnorm_params_message)
-      assert_numeric(x$prior_params, message = dnorm_params_message)
-      assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = dnorm_params_message)
+      assert_vector_numeric(x$prior_params, message = params_message)
+      assert_length(x$prior_params, 2, message = params_message)
+      assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = params_message)
     })
   }
-  if (any(parameters$prior_dist == "dlnorm")) {
-    p_sub <- subset(parameters, parameters$prior_dist == "dlnorm")
-    dnorm_range_message <- "dlnorm parameters must have range 0 to Inf"
-    dnorm_params_message <- "dlnorm parameters must have two prior_params values specifying the mean and standard deviation of the distribution prior to exponentiating"
+  if (any(parameters$prior_dist == "lnorm")) {
+    p_sub <- subset(parameters, parameters$prior_dist == "lnorm")
+    params_message <- "lognormal distribution must have two prior_params values specifying the mean and standard deviation of the normal distribution that is exponentiated to produce the lognormal distribution. The mean must be in the interval (-infinity,infinity), and the standard deviation must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_eq(x$range_min, 0, message = dnorm_range_message)
-      assert_eq(x$range_max, Inf, message = dnorm_range_message)
-      assert_vector(x$prior_params, message = dnorm_params_message)
-      assert_length(x$prior_params, 2, message = dnorm_params_message)
-      assert_numeric(x$prior_params, message = dnorm_params_message)
-      assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = dnorm_params_message)
+      assert_vector_numeric(x$prior_params, message = params_message)
+      assert_length(x$prior_params, 2, message = params_message)
+      assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = params_message)
     })
   }
-  if (any(parameters$prior_dist == "dgamma")) {
-    p_sub <- subset(parameters, parameters$prior_dist == "dgamma")
-    dnorm_range_message <- "dgamma parameters must have range 0 to Inf"
-    dnorm_params_message <- "dgamma parameters must have two prior_params values specifying the shape and rate of the distribution"
+  if (any(parameters$prior_dist == "gamma")) {
+    p_sub <- subset(parameters, parameters$prior_dist == "gamma")
+    params_message <- "gamma distribution must have two prior_params values specifying the shape and scale of the distribution. Both parameters must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_eq(x$range_min, 0, message = dnorm_range_message)
-      assert_eq(x$range_max, Inf, message = dnorm_range_message)
-      assert_vector(x$prior_params, message = dnorm_params_message)
-      assert_length(x$prior_params, 2, message = dnorm_params_message)
-      assert_pos(x$prior_params, zero_allowed = FALSE, message2 = dnorm_params_message)
+      assert_vector(x$prior_params, message = params_message)
+      assert_length(x$prior_params, 2, message = params_message)
+      assert_pos(x$prior_params, zero_allowed = FALSE, message2 = params_message)
     })
   }
   
@@ -258,7 +213,7 @@ draw_model_prior <- function(project) {
   assert_non_null(project$model_priors)
   
   # draw from priors
-  draw_prior(project$model_priors)
+  draw_prior_general(project$model_priors)
 }
 
 #------------------------------------------------
@@ -279,7 +234,7 @@ draw_fitting_prior <- function(project) {
   assert_non_null(project$fitting_priors)
   
   # draw from priors
-  draw_prior(project$fitting_priors)
+  draw_prior_general(project$fitting_priors)
 }
 
 #------------------------------------------------
@@ -287,23 +242,30 @@ draw_fitting_prior <- function(project) {
 #' @importFrom stats rbeta rnorm rlnorm rgamma
 #' @noRd
 
-draw_prior <- function(x) {
+draw_prior_general <- function(x) {
   
   # draw from specified distributions
-  ret <- apply(x, 1, function(x) {
-    switch(x$prior_dist,
-           "fixed" = x$range_min,
-           "dbeta" = rbeta(1, x$prior_params[1], x$prior_params[2]),
-           "dnorm" = rnorm(1, x$prior_params[1], x$prior_params[2]),
-           "dlnorm" = rlnorm(1, x$prior_params[1], x$prior_params[2]),
-           "dgamma" = rgamma(1, x$prior_params[1], x$prior_params[2])
-           )
+  ret <- apply(x, 1, function(y) {
+    if (y$prior_dist == "fixed") {
+      return(y$prior_params)
+    } else {
+      
+      # gamma distribution is defined in terms of scale, but rgamma needs in terms of rate
+      if (y$prior_dist == "gamma") {
+        y$prior_params[2] <- 1/y$prior_params[2]
+      }
+      
+      # create expression string and evaluate
+      rand_expression <- sprintf("r%s(1, %s)", y$prior_dist, paste(unlist(y$prior_params), collapse = ", "))
+      ret <- eval(parse(text = rand_expression))
+      return(ret)
+    }
   })
   
-  # return as mmfit_params class
+  # return as model_params class
   ret <- as.list(ret)
   names(ret) <- x$name
-  class(ret) <- "mmfit_params"
+  class(ret) <- "model_params"
   
   return(ret)
 }
@@ -311,26 +273,22 @@ draw_prior <- function(x) {
 #------------------------------------------------
 #' @title Load data into a project
 #'
-#' @description Data for use in model fitting is stored within the package
-#'   inst/extdata/data folder. Load a data object from this folder by name, and
-#'   attach to an existing project.
+#' @description Perform basic checks on data format (see details), and if
+#'   passed, load into an existing project.
+#'
+#' @details TODO.
 #'
 #' @param project an object of class "mmfit_project" (see
 #'   \code{?mmfit_project()}).
-#' @param file_name the name of a file within the inst/extdata/data folder.
+#' @param data_df a dataframe of fitting data, formatted as described in the
+#'   details section.
 #'
 #' @export
 
-load_data <- function(project, file_name = "refit2020_data.rds") {
+load_data <- function(project, data_df) {
   
   # check inputs
   assert_custom_class(project, "mmfit_project")
-  assert_single_string(file_name)
-  
-  # load data from inst/extdata/data folder
-  data_df <- mmfit_file(paste0("data/", file_name))
-  
-  # check data
   check_data(data_df)
   
   # add to project and return
@@ -342,7 +300,69 @@ load_data <- function(project, file_name = "refit2020_data.rds") {
 # perform checks on data format
 #' @noRd
 
-check_data <- function(dat) {
-  # TODO - some checks on data
+check_data <- function(x) {
+  
+  # check that dataframe with correct columns
+  assert_dataframe(x)
+  assert_in(c("study_index", "site_index", "numer", "denom", "type", "age0", "age1", "case_detection"), names(x), message = "data column names do not match required format. See ?load_data for details of required format")
+  
+  # check format of columns
+  assert_pos_int(x$study_index, zero_allowed = FALSE, name = "data$study_index")
+  assert_eq(unique(x$study_index), 1:length(unique(x$study_index)), message = "data$study_index must be a contiguous sequence of integers from 1 to the maximum number of studies")
+  assert_pos_int(x$site_index, zero_allowed = FALSE, name = "data$site_index")
+  assert_eq(unique(x$site_index), 1:length(unique(x$site_index)), message = "data$site_index must be a contiguous sequence of integers from 1 to the maximum number of sites")
+  assert_pos_int(x$numer, zero_allowed = TRUE, name = "data$numer")
+  assert_pos(x$denom, zero_allowed = FALSE, name = "data$denom")
+  assert_in(x$type, 1:2)
+  assert_pos(x$age0, zero_allowed = TRUE, name = "data$age0")
+  assert_pos(x$age1, zero_allowed = TRUE, name = "data$age1")
+  assert_gr(x$age1, x$age0, name_x = "data$age1", name_y = "data$age0")
+  assert_in(x$case_detection, 1:3)
+  
+}
+
+#------------------------------------------------
+#' @title Create a C++ prior function string
+#'
+#' @description Given a project with model and fitting priors already defined,
+#'   creates a C++ function in the form of a string that will return the joint
+#'   density of these priors in log space. This string can then be passed to
+#'   \code{drjacoby} and used in MCMC.
+#'
+#' @param project an object of class "mmfit_project" (see
+#'   \code{?mmfit_project()}).
+#'
+#' @export
+
+create_prior_string <- function(project) {
+  
+  # check inputs
+  assert_custom_class(project, "mmfit_project")
+  assert_non_null(project$model_priors, message = "no model priors defined")
+  
+  # extract model and fitting priors and combine
+  prior_df <- rbind(project$model_priors, project$fitting_priors)
+  
+  # initialise first lines of function string
+  s_vec <- "SEXP logprior(std::vector<double> params) {
+double ret = 0;"
+  
+  # add all prior distributions into function string
+  for (i in 1:nrow(prior_df)) {
+    if (prior_df$prior_dist[i] != "fixed") {
+      prior_expression <- sprintf("ret += R::d%s(params[%s], %s, true);",
+                                  prior_df$prior_dist[i],
+                                  i-1,
+                                  paste(prior_df$prior_params[[i]], collapse = ", "))
+      s_vec <- c(s_vec, prior_expression)
+    }
+  }
+  
+  # finalise function string
+  s_vec <- c(s_vec, "return Rcpp::wrap(ret);\n}")
+  s <- paste(s_vec, collapse = "\n")
+  
+  # return string
+  return(s)
 }
 

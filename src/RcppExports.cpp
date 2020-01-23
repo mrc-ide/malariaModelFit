@@ -6,6 +6,7 @@
 
 using namespace Rcpp;
 
+<<<<<<< HEAD
 // loglikelihood
 SEXP loglikelihood(std::vector<double> params, std::vector<double> x);
 RcppExport SEXP _malariaModelFit_loglikelihood(SEXP paramsSEXP, SEXP xSEXP) {
@@ -18,6 +19,8 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+=======
+>>>>>>> master
 // human_equilibrium_cpp
 Rcpp::List human_equilibrium_cpp(double EIR, double ft, const Rcpp::List& p, const Rcpp::NumericVector& age_, const Rcpp::List& h);
 RcppExport SEXP _malariaModelFit_human_equilibrium_cpp(SEXP EIRSEXP, SEXP ftSEXP, SEXP pSEXP, SEXP age_SEXP, SEXP hSEXP) {
@@ -35,7 +38,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+<<<<<<< HEAD
     {"_malariaModelFit_loglikelihood", (DL_FUNC) &_malariaModelFit_loglikelihood, 2},
+=======
+>>>>>>> master
     {"_malariaModelFit_human_equilibrium_cpp", (DL_FUNC) &_malariaModelFit_human_equilibrium_cpp, 5},
     {NULL, NULL, 0}
 };
