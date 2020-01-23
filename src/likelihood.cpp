@@ -19,7 +19,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // List of site data denominators (Number of persons or person years)
       // List of site data numerators (Number +ve or cases)
 
-    // Rcpp::Rcout << "Unpacking data" << std::endl;
+    //Rcpp::Rcout << "Unpacking data" << std::endl;
     // Index of data vector
     int di = 0;
     
@@ -37,13 +37,13 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     }
 
     // Empty template site_n X group_n
-    std::vector<std::vector<double>> template_dbl(site_n);
+    std::vector<std::vector<double> > template_dbl(site_n);
     for(int i = 0; i < site_n; ++i){
       template_dbl[i].resize(ng[i]);
     }
 
     // Age prop for each site
-    std::vector<std::vector<double>> prop = template_dbl;
+    std::vector<std::vector<double> > prop = template_dbl;
     for(int i = 0; i < site_n; ++i){
       for(int j = 0; j < ng[i]; ++j){
         prop[i][j] = x[di];
@@ -51,7 +51,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       } 
     }
     // Age r for each site
-    std::vector<std::vector<double>> r = template_dbl;
+    std::vector<std::vector<double> > r = template_dbl;
     for(int i = 0; i < site_n; ++i){
       for(int j = 0; j < ng[i]; ++j){
         r[i][j] = x[di];
@@ -59,7 +59,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       } 
     }
     // Age day midpoint for each site
-    std::vector<std::vector<double>> age_days_midpoint = template_dbl;
+    std::vector<std::vector<double> > age_days_midpoint = template_dbl;
     for(int i = 0; i < site_n; ++i){
       for(int j = 0; j < ng[i]; ++j){
         age_days_midpoint[i][j] = x[di];
@@ -67,7 +67,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       } 
     }
     // Age psi for each site
-    std::vector<std::vector<double>> psi = template_dbl;
+    std::vector<std::vector<double> > psi = template_dbl;
     for(int i = 0; i < site_n; ++i){
       for(int j = 0; j < ng[i]; ++j){
         psi[i][j] = x[di];
@@ -94,7 +94,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       di++;
     }
     // Data denominators
-   // std::vector<std::vector<double>> denom = template_dbl;
+   // std::vector<std::vector<double> > denom = template_dbl;
   //  for(int i = 0; i < site_n; ++i){
   //   for(int j = 0; j < ng[i]; ++j){
   //     denom[i][j] = x[di];
@@ -102,7 +102,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   //   } 
   //  }
     // Data numerators
-  //  std::vector<std::vector<double>> numer = template_dbl;
+  //  std::vector<std::vector<double> > numer = template_dbl;
   //  for(int i = 0; i < site_n; ++i){
   //    for(int j = 0; j < ng[i]; ++j){
   //      numer[i][j] = x[di];
@@ -112,7 +112,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   //////////////////////////////////////////////////////////////////////////////
   
   // Unpack parameters /////////////////////////////////////////////////////////
-    // Rcpp::Rcout << "Unpacking parameters" << std::endl;
+     //Rcpp::Rcout << "Unpacking parameters" << std::endl;
     // Index of parameter vectors
     int pi = 0;
     // age, heterogeneity in exposure
@@ -232,38 +232,38 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   //////////////////////////////////////////////////////////////////////////////
   
   // Initialise output variables for all sites /////////////////////////////////
-    std::vector<std::vector<double>> S_out = template_dbl;
-    std::vector<std::vector<double>> T_out = template_dbl;
-    std::vector<std::vector<double>> D_out = template_dbl;
-    std::vector<std::vector<double>> A_out = template_dbl;
-    std::vector<std::vector<double>> U_out = template_dbl;
-    std::vector<std::vector<double>> P_out = template_dbl;
-    std::vector<std::vector<double>> pos_M_out = template_dbl;
-    std::vector<std::vector<double>> pos_PCR_out = template_dbl;
-    std::vector<std::vector<double>> inf_out = template_dbl;
-    std::vector<std::vector<double>> inc_out = template_dbl;
+    std::vector<std::vector<double> > S_out = template_dbl;
+    std::vector<std::vector<double> > T_out = template_dbl;
+    std::vector<std::vector<double> > D_out = template_dbl;
+    std::vector<std::vector<double> > A_out = template_dbl;
+    std::vector<std::vector<double> > U_out = template_dbl;
+    std::vector<std::vector<double> > P_out = template_dbl;
+    std::vector<std::vector<double> > pos_M_out = template_dbl;
+    std::vector<std::vector<double> > pos_PCR_out = template_dbl;
+    std::vector<std::vector<double> > inf_out = template_dbl;
+    std::vector<std::vector<double> > inc_out = template_dbl;
     std::vector<double> FOIM(site_n);
   //////////////////////////////////////////////////////////////////////////////
   
   for(int s = 0; s < site_n; ++s){
   // Initialise output variables for a single site /////////////////////////////
-    std::vector<std::vector<double>> pos_M(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> pos_PCR(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> inc(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> inf(nh, std::vector<double>(ng[s], 0)); 
-    std::vector<std::vector<double>> S(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> T(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> P(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> D(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> A(nh, std::vector<double>(ng[s], 0));
-    std::vector<std::vector<double>> U(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > pos_M(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > pos_PCR(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > inc(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > inf(nh, std::vector<double>(ng[s], 0)); 
+    std::vector<std::vector<double> > S(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > T(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > P(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > D(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > A(nh, std::vector<double>(ng[s], 0));
+    std::vector<std::vector<double> > U(nh, std::vector<double>(ng[s], 0));
     double zeta;
     double rA;
     double rU;
   //////////////////////////////////////////////////////////////////////////////
   
   // Equilbrium ////////////////////////////////////////////////////////////////
-    // Rcpp::Rcout << "Running EQ" << std::endl;
+     //Rcpp::Rcout << "Running EQ" << std::endl;
     // loop through all Gaussian quadrature nodes
     for(int n = 0; n < nh; ++n){
       zeta = exp(-s2 * 0.5 + std::sqrt(s2) * nodes[n]);
@@ -285,7 +285,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       double ICM_prev;
       std::vector<double> phi(ng[s], 0);
       
-      // Rcpp::Rcout << "Starting NA" << std::endl;
+       //Rcpp::Rcout << "Starting NA" << std::endl;
       for(int a = 0; a < ng[s]; ++a){
         re = r[s][a] + eta;
         eps = EIR_cur * psi[s][a];
@@ -397,7 +397,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     double alpha = f * Q0;
     FOIM[s] *= alpha/omega;
   }
-    
+  //Rcpp::Rcout << "Outer" << std::endl;
     if(output_type == 1){
        return Rcpp::List::create(
                          Rcpp::Named("S") = S_out,
@@ -415,11 +415,12 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
                          Rcpp::Named("FOIM") = FOIM);
     }
   //////////////////////////////////////////////////////////////////////////////
-  
+  //Rcpp::Rcout << "Likelihood" << std::endl;
   // Likelihood ////////////////////////////////////////////////////////////////
   //  NB for likelihhod calculation - ignore the last age-group estimates for each site as
     // these will be outside of the data age groups
   //////////////////////////////////////////////////////////////////////////////
-  return 0;
+  
+  return Rcpp::wrap(0);
 }
 // loglikelihood_end"
