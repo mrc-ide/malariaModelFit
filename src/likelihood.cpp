@@ -7,8 +7,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // Output type
       // Site number
       // Vector of site group number
-      // List of age groups for each site
-      // List of age prop for each site
+        // List of age prop for each site
       // List of age r for each site
       // List of age age days midpoint for each site
       // List of age psi for each site
@@ -42,15 +41,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     for(int i = 0; i < site_n; ++i){
       template_dbl[i].resize(ng[i]);
     }
-    
-    // Age groups for each site
-    std::vector<std::vector<double>> age = template_dbl;
-    for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < ng[i]; ++j){
-        age[i][j] = x[di];
-        di++;
-      } 
-    }
+
     // Age prop for each site
     std::vector<std::vector<double>> prop = template_dbl;
     for(int i = 0; i < site_n; ++i){
@@ -345,7 +336,6 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         betaT = prT + re;
         betaD = prD + re;
         betaA = FOI[a]*phi[a] + prA + re;
-        if(a == 3) Rcpp::Rcout << "::: " << rA <<std::endl;
         betaU = FOI[a] + prU + re;
         betaP = prP + re;
         aT = ft[s] * phi[a] * FOI[a] / betaT;
@@ -427,7 +417,8 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   //////////////////////////////////////////////////////////////////////////////
   
   // Likelihood ////////////////////////////////////////////////////////////////
-  
+  //  NB for likelihhod calculation - ignore the last age-group estimates for each site as
+    // these will be outside of the data age groups
   //////////////////////////////////////////////////////////////////////////////
   return 0;
 }
