@@ -4,17 +4,27 @@
 \alias{prepare_data}
 \title{Prepare data}
 \usage{
-prepare_data(data, eta = 0.0001304631, rho = 0.85, a0 = 2920,
-  output_type = "ll", nh = 5)
+prepare_data(
+  data,
+  eta = 0.0001304631,
+  rho = 0.85,
+  a0 = 2920,
+  output_type = "ll",
+  nh = 5
+)
 }
 \arguments{
 \item{data}{Standardised data input}
 
+\item{eta}{eta parameter}
+
+\item{rho}{rho parameter}
+
+\item{a0}{A0 parameter}
+
 \item{output_type}{Ouput type: "ll" = Log likelihood, "eq" = Equilibrium}
 
 \item{nh}{Number of heterogeneity groups}
-
-\item{p}{Parameter list}
 }
 \value{
 Vector of data in correct format

@@ -3,7 +3,9 @@
 #' Prepare (standardised) data inputs for use with Equilibrium/likelihood master function
 #'
 #' @param data Standardised data input
-#' @param p Parameter list
+#' @param eta eta parameter
+#' @param rho rho parameter
+#' @param a0 A0 parameter
 #' @param output_type Ouput type: "ll" = Log likelihood, "eq" = Equilibrium
 #' @param nh Number of heterogeneity groups
 #'
