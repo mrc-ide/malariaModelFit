@@ -1,7 +1,8 @@
 #------------------------------------------------
-# overload print() function for mmfit_params
+# overload print() function for model_params
+#' @method print model_params
 #' @noRd
-print.mmfit_params <- function(x, ...) {
+print.model_params <- function(x, ...) {
   
   # print summary
   summary(x)
@@ -11,9 +12,10 @@ print.mmfit_params <- function(x, ...) {
 }
 
 #------------------------------------------------
-# overload summary() function for mmfit_params
+# overload summary() function for model_params
+#' @method summary model_params
 #' @noRd
-summary.mmfit_params <- function(x, ...) {
+summary.model_params <- function(x, ...) {
   
   # print as dataframe
   x_print <- as.data.frame(cbind(unclass(x)))

@@ -43,7 +43,8 @@ mmfit_project <- function() {
                   data = NULL,
                   output_raw = NULL,
                   model_posteriors = NULL,
-                  fitting_posteriors = NULL)
+                  fitting_posteriors = NULL,
+                  plots = NULL)
   
   # return as custom class
   class(project) <- "mmfit_project"
@@ -52,6 +53,7 @@ mmfit_project <- function() {
 
 #------------------------------------------------
 # overload print() function for mmfit_project
+#' @method print mmfit_project
 #' @noRd
 print.mmfit_project <- function(x, ...) {
   
@@ -64,6 +66,7 @@ print.mmfit_project <- function(x, ...) {
 
 #------------------------------------------------
 # overload summary() function for mmfit_project
+#' @method summary mmfit_project
 #' @noRd
 summary.mmfit_project <- function(x, ...) {
   
