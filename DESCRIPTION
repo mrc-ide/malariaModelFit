@@ -13,7 +13,7 @@ Description: Contains functions for re-fitting the model of Griffin et al. 2014
 BugReports: https://github.com/mrc-ide/malariaModelFit/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 LinkingTo:
     Rcpp,
     RcppArmadillo

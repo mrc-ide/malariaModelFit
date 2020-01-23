@@ -169,9 +169,8 @@ check_priors <- function(parameters) {
     p_sub <- subset(parameters, parameters$prior_dist == "norm")
     params_message <- "normal distribution must have two prior_params values specifying the mean and standard deviation of the distribution. The mean must be in the interval (-infinity,infinity), and the standard deviation must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_vector(x$prior_params, message = params_message)
+      assert_vector_numeric(x$prior_params, message = params_message)
       assert_length(x$prior_params, 2, message = params_message)
-      assert_numeric(x$prior_params, message = params_message)
       assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = params_message)
     })
   }
@@ -179,9 +178,8 @@ check_priors <- function(parameters) {
     p_sub <- subset(parameters, parameters$prior_dist == "lnorm")
     params_message <- "lognormal distribution must have two prior_params values specifying the mean and standard deviation of the normal distribution that is exponentiated to produce the lognormal distribution. The mean must be in the interval (-infinity,infinity), and the standard deviation must be in the interval (0,infinity)"
     apply(p_sub, 1, function(x) {
-      assert_vector(x$prior_params, message = params_message)
+      assert_vector_numeric(x$prior_params, message = params_message)
       assert_length(x$prior_params, 2, message = params_message)
-      assert_numeric(x$prior_params, message = params_message)
       assert_pos(x$prior_params[2], zero_allowed = FALSE, message2 = params_message)
     })
   }

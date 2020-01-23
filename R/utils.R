@@ -88,4 +88,35 @@ rinvgamma <- function(n, shape, scale) {
   1/rgamma(n, shape = shape, rate = scale)
 }
 
+# -----------------------------------
+#' @title Logit transform
+#'
+#' @description Return logit transform of x, defined as log(x/(1 - x)).
+#'
+#' @param x single value or vector of values to transform.
+#'
+#' @export
+
+logit <- function(x) {
+  assert_numeric(x)
+  assert_vector(x)
+  assert_bounded(x)
+  return(log(x) - log(1 - x))
+}
+
+# -----------------------------------
+#' @title Logistic, i.e. inverse logit transform
+#'
+#' @description Return logistic transform of x, also known as the inverse-logit
+#'   transform, defined as 1/(1 + exp(-x)).
+#'
+#' @param x single value or vector of values to transform.
+#'
+#' @export
+
+logistic <- function(x) {
+  assert_numeric(x)
+  assert_vector(x)
+  return(1/(1 + exp(-x)))
+}
 

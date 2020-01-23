@@ -4,8 +4,7 @@
 \alias{define_prior}
 \title{Define a prior distribution over a parameter within a project}
 \usage{
-define_prior(project, name, prior_dist, prior_params, range_min = NULL,
-  range_max = NULL)
+define_prior(project, name, prior_dist, prior_params)
 }
 \arguments{
 \item{project}{an object of class "mmfit_project" (see
@@ -14,14 +13,9 @@ define_prior(project, name, prior_dist, prior_params, range_min = NULL,
 \item{name}{the name of a parameter within the project model parameters or
 fitting parameters.}
 
-\item{prior_dist}{the type of prior distribution to define. One of {"fixed",
-"dbeta", "dnorm", "dlnorm", "dgamma"}.}
+\item{prior_dist}{the type of prior distribution to define.}
 
 \item{prior_params}{parameters associated with the prior distribution.}
-
-\item{range_min}{the minimum allowed parameter value.}
-
-\item{range_max}{the maximum allowed parameter value.}
 }
 \description{
 Given a model fitting project with model parameters and/or
