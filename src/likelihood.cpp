@@ -5,20 +5,22 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   // Unpack data ///////////////////////////////////////////////////////////////
     // Data input vector format:
       // Output type
-      // Study number
-      // EIR
-      // Treatment coverage
-      // Number of age categories
-      // Vector of age groups
-      // Vector of age prop
-      // Vector of age r
-      // Vector of age days midpoint
-      // Vector of age psi
-      // Age 20 index
+      // Site number
+      // Vector of site group number
+      // Vector of number of age categories
+      // List of age groups for each site
+      // List of age prop for each site
+      // List of age r for each site
+      // List of age age days midpoint for each site
+      // List of age psi for each site
+      // Vector of age 20 year old for each site
       // Number of heterogeneity classes
       // Vector of Gaussian quadrature nodes
       // Vector of Gaussian quadrature weights
       
+      // List of site data denominators (Number of persons or person years)
+      // List of site data numerators (Number +ve or cases)
+
     // Rcpp::Rcout << "Unpacking data" << std::endl;
     // Index of data vector
     int di = 0;
@@ -26,45 +28,68 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // output_type
     int output_type = x[di];
     di++;
-    // Number of studies
-    int study_n = x[di];
+    // Number of sites
+    int site_n = x[di];
     di++;
-    // EIR
-    double EIR = x[di];
-    di++;
-    // Treatment coverage
-    double ft = x[di];
-    di++;
-    // Age
-    int na = x[di];
-    di++;
-    std::vector<double> age(na);
-    for(int i = 0; i < na; ++i){
-      age[i] = x[di];
+    // Site group number
+    std::vector<int> site_group_n(site_n);
+    for(int i = 0; i < site_n; ++i){
+      site_group_n[i] = x[di];
       di++;
     }
-    std::vector<double> prop(na);
-    for(int i = 0; i < na; ++i){
-      prop[i] = x[di];
+    // Number of age categories for each site
+    std::vector<int> na(site_n);
+    for(int i = 0; i < site_n; ++i){
+      na[i] = x[di];
       di++;
     }
-    std::vector<double> r(na);
-    for(int i = 0; i < na; ++i){
-      r[i] = x[di];
+    // Age groups for each site
+    std::vector<std::vector<double>> age(site_n, std::vector<double>());
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < na[i]; ++j){
+        age[i].push_back(x[di]);
+        di++;
+      } 
+    }
+    // Age prop for each site
+    std::vector<std::vector<double>> prop(site_n, std::vector<double>());
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < na[i]; ++j){
+        prop[i].push_back(x[di]);
+        di++;
+      } 
+    }
+    // Age r for each site
+    std::vector<std::vector<double>> r(site_n, std::vector<double>());
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < na[i]; ++j){
+        r[i].push_back(x[di]);
+        di++;
+      } 
+    }
+    // Age day midpoint for each site
+    std::vector<std::vector<double>> age_days_midpoint(site_n, std::vector<double>());
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < na[i]; ++j){
+        age_days_midpoint[i].push_back(x[di]);
+        di++;
+      } 
+    }
+    // Age psi for each site
+    std::vector<std::vector<double>> psi(site_n, std::vector<double>());
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < na[i]; ++j){
+        psi[i].push_back(x[di]);
+        di++;
+      } 
+    }
+    // Index of 20 year old age for each site
+    std::vector<int> age20(site_n);
+    for(int i = 0; i < site_n; ++i){
+      age20[i] = x[di];
       di++;
     }
-    std::vector<double> age_days_midpoint(na);
-    for(int i = 0; i < na; ++i){
-      age_days_midpoint[i] = x[di];
-      di++;
-    }
-    std::vector<double> psi(na);
-    for(int i = 0; i < na; ++i){
-      psi[i] = x[di];
-      di++;
-    }
-    int age20 = x[di++];
-    // Gaussian quadrature nodes
+    // Gaussian quadrature nodes and weights
     int nh = x[di];
     di++;
     std::vector<double> nodes(nh);
@@ -77,8 +102,22 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       weights[i] = x[di];
       di++;
     }
-  
-    // ETC
+    // Data denominators
+   // std::vector<std::vector<double>> denom(site_n, std::vector<double>());
+  //  for(int i = 0; i < site_n; ++i){
+  //   for(int j = 0; j < site_group_n[i]; ++j){
+  //     denom[i].push_back(x[di]);
+  //     di++;
+  //   } 
+  //  }
+    // Data numerators
+  //  std::vector<std::vector<double>> numer(site_n, std::vector<double>());
+  //  for(int i = 0; i < site_n; ++i){
+  //    for(int j = 0; j < site_group_n[i]; ++j){
+  //      numer[i].push_back(x[di]);
+   //     di++;
+    //  } 
+    //}
   //////////////////////////////////////////////////////////////////////////////
   
   // Unpack parameters /////////////////////////////////////////////////////////
@@ -186,6 +225,19 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     pi++;
     double Q0 = params[pi];
     pi++;
+    
+    // EIR
+    std::vector<double> EIR(site_n);
+    for(int i = 0; i < site_n; ++i){
+      EIR[i] = params[pi];
+      pi++;
+    }
+    // Treatment coverage
+    std::vector<double> ft(site_n);
+    for(int i = 0; i < site_n; ++i){
+      ft[i] = params[pi];
+      pi++;
+    }
   //////////////////////////////////////////////////////////////////////////////
   
   // Initialise output variables ///////////////////////////////////////////////
