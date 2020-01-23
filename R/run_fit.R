@@ -25,7 +25,7 @@ run_fit <- function(project, ...){
   lP <- create_prior_string(project)
   
   # Parameter dataframe
-  # df_params <-
+  df_params <- create_df_params(project)
     
   # Run DrJacoby
   project$output_raw <- drjacoby::run_mcmc(data = x,
