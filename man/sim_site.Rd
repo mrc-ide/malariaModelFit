@@ -6,42 +6,49 @@
 \usage{
 sim_site(
   p,
-  age0 = c(0, 1, 10),
-  age1 = c(1, 5, 20),
-  n = c(10, 10, 10),
-  clin_p_years = c(10, 10, 10),
   EIR = 5,
-  case_detection_method = 1,
   treatment = 0.2,
+  type = 1,
+  age0 = 0:4,
+  age1 = 1:5,
+  denom = rep(10, 5),
+  case_detection = 1,
   sigma_p = 0,
   theta = 0.1,
   sigma_c = 0,
-  alpha_c = 1,
-  slide_on = TRUE,
-  PCR_on = TRUE,
-  clin_on = TRUE
+  alpha_c = 1
 )
 }
 \arguments{
 \item{p}{a parameters object of class "mmfit_params" (see
 \code{?load_parameter_set()}).}
 
-\item{age0, age1}{lower and upper bounds on observed age ranges.}
-
-\item{n}{when simulating prevalence, the number of individuals tested in each
-age group.}
-
-\item{clin_p_years}{when simulating incidence, the time at risk of
-individuals in each age group.}
-
 \item{EIR}{the entomological inoculation rate of the site, in units of
 infectious bites per person per year.}
 
-\item{case_detection_method}{code for case detection method: \itemize{ \item
-1 Daily active case detection (ACD) \item 2 Weekly ACD \item 3 Passive case
-detection (PCD) }}
-
 \item{treatment}{treatment rate in population.}
+
+\item{type}{the data type to be simulated:
+\itemize{
+  \item 1 clinical incidence, where \code{denom} is the person-years at risk
+  and \code{numer} becomes the number of cases in that period.
+  \item 2 prevalence by microscopy, where \code{denom} is the number of
+  people tested and \code{numer} becomes the number of positive tests.
+}}
+
+\item{age0, age1}{lower and upper bounds on observed age ranges.}
+
+\item{denom}{the denominator used in simulation. When simulating prevalence
+this represents the number of individuals tested in each age group, when
+simulating incidence this represents the time at risk of individuals in
+each age group.}
+
+\item{case_detection}{code for case detection method:
+\itemize{
+  \item 1 Daily active case detection (ACD), detection probability 1.0.
+  \item 2 Weekly ACD, detection probability 0.5.
+  \item 3 Passive case detection (PCD), detection probability 0.2.
+}}
 
 \item{sigma_p}{standard deviation of the normally-distributed study-level
 random effect on prevalence.}
@@ -54,12 +61,6 @@ random effect on incidence.}
 
 \item{alpha_c}{standard deviation of the gamma-distributed site- and
 age-level random effect on incidence.}
-
-\item{slide_on}{whether to report results of slide prevalence.}
-
-\item{PCR_on}{whether to report results of PCR prevalence.}
-
-\item{clin_on}{whether to report results of clinical incidence.}
 }
 \description{
 Simulate data in the same format as real world data by drawing

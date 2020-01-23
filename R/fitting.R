@@ -213,7 +213,7 @@ draw_model_prior <- function(project) {
   assert_non_null(project$model_priors)
   
   # draw from priors
-  draw_prior(project$model_priors)
+  draw_prior_general(project$model_priors)
 }
 
 #------------------------------------------------
@@ -234,7 +234,7 @@ draw_fitting_prior <- function(project) {
   assert_non_null(project$fitting_priors)
   
   # draw from priors
-  draw_prior(project$fitting_priors)
+  draw_prior_general(project$fitting_priors)
 }
 
 #------------------------------------------------
@@ -242,7 +242,7 @@ draw_fitting_prior <- function(project) {
 #' @importFrom stats rbeta rnorm rlnorm rgamma
 #' @noRd
 
-draw_prior <- function(x) {
+draw_prior_general <- function(x) {
   
   # draw from specified distributions
   ret <- apply(x, 1, function(y) {
@@ -262,10 +262,10 @@ draw_prior <- function(x) {
     }
   })
   
-  # return as mmfit_params class
+  # return as model_params class
   ret <- as.list(ret)
   names(ret) <- x$name
-  class(ret) <- "mmfit_params"
+  class(ret) <- "model_params"
   
   return(ret)
 }
@@ -273,26 +273,22 @@ draw_prior <- function(x) {
 #------------------------------------------------
 #' @title Load data into a project
 #'
-#' @description Data for use in model fitting is stored within the package
-#'   inst/extdata/data folder. Load a data object from this folder by name, and
-#'   attach to an existing project.
+#' @description Perform basic checks on data format (see details), and if
+#'   passed, load into an existing project.
+#'
+#' @details TODO.
 #'
 #' @param project an object of class "mmfit_project" (see
 #'   \code{?mmfit_project()}).
-#' @param file_name the name of a file within the inst/extdata/data folder.
+#' @param data_df a dataframe of fitting data, formatted as described in the
+#'   details section.
 #'
 #' @export
 
-load_data <- function(project, file_name = "refit2020_data.rds") {
+load_data <- function(project, data_df) {
   
   # check inputs
   assert_custom_class(project, "mmfit_project")
-  assert_single_string(file_name)
-  
-  # load data from inst/extdata/data folder
-  data_df <- mmfit_file(paste0("data/", file_name))
-  
-  # check data
   check_data(data_df)
   
   # add to project and return
