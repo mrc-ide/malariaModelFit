@@ -4,7 +4,7 @@
 \name{study_data_2014}
 \alias{study_data_2014}
 \title{Details of data from Griffin et al 2014 refit}
-\format{An object of class \code{data.frame} with 405 rows and 19 columns.}
+\format{An object of class \code{data.frame} with 262 rows and 11 columns.}
 \usage{
 study_data_2014
 }

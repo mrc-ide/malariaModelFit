@@ -21,35 +21,40 @@ data[data == -1] <- NA
 
 # Link with study meta data
 key <- read.csv("data-raw/Griffin-et-al-2014-data/study_info.csv", stringsAsFactors = FALSE)
-study_data_2014 <- left_join(data, key, by = "study")
+data <- left_join(data, key, by = "study")
 
-# Visualise data to check
-pd_prev <- study_data_2014 %>%
-  filter(!is.na(slide_k)) %>%
-  mutate(prev = slide_k / n,
-         age = age0 + ((age1 - age0) / 2))
-pd_clin <- study_data_2014 %>%
-  filter(!is.na(clin_k)) %>%
-  mutate(inc = clin_k / clin_p_years,
-         age = age0 + ((age1 - age0) / 2))
+# Extract Incidence datasets
+inc_data <- filter(data, !is.na(clin_k)) %>%
+  mutate(numer = clin_k, denom = clin_p_years, case_detection = clinical_case_detection) %>%
+  mutate(type = 1)
+prev_data <- filter(data, !is.na(slide_k)) %>%
+  mutate(numer = slide_k, denom = n, case_detection = clinical_case_detection) %>%
+  mutate(type = 2)
 
-p_prev <- ggplot(pd_prev, aes(x = age, y = prev, col = factor(study_index), group = 1)) +
+study_data_2014 <- bind_rows(inc_data, prev_data) %>%
+  filter(case_detection != -1) %>%
+  rename(country_name = country, site_name = study) %>%
+  mutate(reference = "TODO",
+         study_index = study_index + 1,
+         site_index = as.numeric(as.factor(paste(country_name, site_name, type)))) %>%
+  select(country_name, site_name, reference, study_index, site_index, numer, denom, type,
+         age0, age1, case_detection)
+
+# Plot
+pd <- ggplot(study_data_2014, aes(x = age0 + 0.5 * (age1 = age0),
+                 y = numer / denom, shape = factor(type),
+                 colour = country_name)) + 
   geom_line(alpha = 0.5, col = "black") +
   geom_point() + 
-  facet_wrap(~ study) +
+  xlab("Age") + 
+  ylab("Y") + 
+  ylim(0, NA) +
+  scale_shape_discrete(labels = c("Inc", "Prev"), name = "Data type") + 
+  facet_wrap(~ site_index, scales = "free_y") +
   theme_bw() +
-  theme(legend.position="none",
-        strip.text = element_text(size = 6))
-p_inc <- ggplot(pd_clin, aes(x = age, y = inc, col = factor(study_index), group = 1)) +
-  geom_line(alpha = 0.5, col = "black") +
-  geom_point() + 
-  facet_wrap(~ study) +
-  theme_bw() +
-  theme(legend.position="none",
-        strip.text = element_text(size = 6))
-ggsave("data-raw/Griffin-et-al-2014-data/plot_prev.png", p_prev, width = 10, height = 6)
-ggsave("data-raw/Griffin-et-al-2014-data/plot_inc.png", p_inc, width = 8, height = 6)
-
+  theme(strip.text = element_text(size = 6))
+pd
+ggsave("data-raw/Griffin-et-al-2014-data/plot_data.png", pd, width = 11, height = 6)
 
 # Add data to package
 usethis::use_data(study_data_2014, overwrite = TRUE)
