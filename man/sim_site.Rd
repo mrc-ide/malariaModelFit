@@ -4,20 +4,9 @@
 \alias{sim_site}
 \title{Simulate data at a single site}
 \usage{
-sim_site(
-  p,
-  EIR = 5,
-  treatment = 0.2,
-  type = 1,
-  age0 = 0:4,
-  age1 = 1:5,
-  denom = rep(10, 5),
-  case_detection = 1,
-  sigma_p = 0,
-  theta = 0.1,
-  sigma_c = 0,
-  alpha_c = 1
-)
+sim_site(p, EIR = 5, treatment = 0.2, type = 1, age0 = 0:4,
+  age1 = 1:5, denom = rep(10, 5), case_detection = 1, sigma_p = 0,
+  theta = 0.1, sigma_c = 0, alpha_c = 1)
 }
 \arguments{
 \item{p}{a parameters object of class "model_params" (see

@@ -3,6 +3,7 @@
 \docType{package}
 \name{malariaModelFit}
 \alias{malariaModelFit}
+\alias{malariaModelFit-package}
 \title{Fits the Griffin et. al. (2014) malaria transmission model}
 \description{
 Contains functions for re-fitting the Griffin et al. (2014)
