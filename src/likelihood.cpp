@@ -3,6 +3,22 @@
 SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   
   // Unpack data ///////////////////////////////////////////////////////////////
+    // Data input vector format:
+      // Output type
+      // Study number
+      // EIR
+      // Treatment coverage
+      // Number of age categories
+      // Vector of age groups
+      // Vector of age prop
+      // Vector of age r
+      // Vector of age days midpoint
+      // Vector of age psi
+      // Age 20 index
+      // Number of heterogeneity classes
+      // Vector of Gaussian quadrature nodes
+      // Vector of Gaussian quadrature weights
+      
     // Rcpp::Rcout << "Unpacking data" << std::endl;
     // Index of data vector
     int di = 0;
@@ -16,6 +32,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // EIR
     double EIR = x[di];
     di++;
+    // Treatment coverage
     double ft = x[di];
     di++;
     // Age
