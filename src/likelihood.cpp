@@ -260,16 +260,16 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       pi++;
     }
     // Treatment coverage
-    std::vector<double> ft(site_n);
-    for(int i = 0; i < site_n; ++i){
+    std::vector<double> ft(study_n);
+    for(int i = 0; i < study_n; ++i){
       ft[i] = params[pi];
       pi++;
     }
     
     // Fitting hyper-parameters
-    //double sigma_c = params[pi++];
+    double sigma_c = params[pi++];
     double alpha_c = params[pi++];
-    //double sigma_p = params[pi++];
+    double sigma_p = params[pi++];
     double theta = params[pi++];
     
     // Study-level random effects (either u or w, depending on data)
@@ -387,9 +387,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         betaA = FOI[a]*phi[a] + prA + re;
         betaU = FOI[a] + prU + re;
         betaP = prP + re;
-        aT = ft[s] * phi[a] * FOI[a] / betaT;
+        aT = ft[study[s]-1] * phi[a] * FOI[a] / betaT;
         aP = prT * aT / betaP;
-        aD = (1 - ft[s]) * phi[a] * FOI[a] / betaD;
+        aD = (1 - ft[study[s]-1]) * phi[a] * FOI[a] / betaD;
         if (a == 0){
           bT = 0;
           bD = 0;
