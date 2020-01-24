@@ -13,9 +13,7 @@ sim_site(
   age1 = 1:5,
   denom = rep(10, 5),
   case_detection = 1,
-  sigma_p = 0,
   theta = 0.1,
-  sigma_c = 0,
   alpha_c = 1
 )
 }
@@ -50,17 +48,11 @@ each age group.}
   \item 3 Passive case detection (PCD), detection probability 0.2.
 }}
 
-\item{sigma_p}{standard deviation of the normally-distributed study-level
-random effect on prevalence.}
-
 \item{theta}{overdispersion parameter of the beta-binomial distribution on
 prevalence. 0 = standard binomial, and theta must be <1.}
 
-\item{sigma_c}{standard deviation of the normally-distributed study-level
-random effect on incidence.}
-
-\item{alpha_c}{standard deviation of the gamma-distributed site- and
-age-level random effect on incidence.}
+\item{alpha_c}{variance of the gamma-distributed site- and age-level random
+effect on incidence.}
 }
 \description{
 Simulate data in the same format as real world data by drawing

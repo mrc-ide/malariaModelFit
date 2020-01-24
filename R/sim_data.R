@@ -29,14 +29,10 @@
 #'   \item 2 Weekly ACD, detection probability 0.5.
 #'   \item 3 Passive case detection (PCD), detection probability 0.2.
 #' }
-#' @param sigma_p standard deviation of the normally-distributed study-level
-#'   random effect on prevalence.
 #' @param theta overdispersion parameter of the beta-binomial distribution on
 #'   prevalence. 0 = standard binomial, and theta must be <1.
-#' @param sigma_c standard deviation of the normally-distributed study-level
-#'   random effect on incidence.
-#' @param alpha_c standard deviation of the gamma-distributed site- and
-#'   age-level random effect on incidence.
+#' @param alpha_c variance of the gamma-distributed site- and age-level random
+#'   effect on incidence.
 #'
 #' @importFrom malariaEquilibrium human_equilibrium
 #' @importFrom  stats rbinom rpois
@@ -50,9 +46,7 @@ sim_site <- function(p,
                      age1 = 1:5,
                      denom = rep(10,5),
                      case_detection = 1,
-                     sigma_p = 0,
                      theta = 0.1,
-                     sigma_c = 0,
                      alpha_c = 1) {
   
   # check inputs
@@ -68,9 +62,7 @@ sim_site <- function(p,
   assert_pos(denom, zero_allowed = FALSE)
   assert_same_length(denom, age0)
   assert_in(case_detection, 1:3)
-  assert_single_pos(sigma_p, zero_allowed = TRUE)
   assert_single_bounded(theta, inclusive_right = FALSE)
-  assert_single_pos(sigma_c, zero_allowed = TRUE)
   assert_single_pos(alpha_c, zero_allowed = TRUE)
   
   # get total number of age categories
@@ -83,12 +75,11 @@ sim_site <- function(p,
   eq <- malariaEquilibrium::human_equilibrium(EIR = EIR, ft = treatment, p = p, age = age_vec)
   
   # subset to defined age intervals
-  eq$states <- eq$states[match(age0, age_vec),]
+  eq$states <- eq$states[match(age0, age_vec), , drop = FALSE]
   
   # simulate random effects
-  w <- rnorm(1, mean = 0, sd = sigma_p)
-  u <- rnorm(1, mean = 0, sd = sigma_c)
   v <- rgamma(n_age, shape = 1/alpha_c, rate = 1/alpha_c)
+  
   
   # simulate incidence (type = 1) or prevalence (type = 2)
   if (type == 1) {
@@ -138,4 +129,26 @@ sim_site <- function(p,
                        case_detection = case_detection)
   
   return(df_out)
+}
+
+#------------------------------------------------
+#' @title TODO - title
+#'
+#' @description TODO - description
+#'
+#' @details TODO - details
+#'
+#' @param sigma_c standard deviation of the normally-distributed study-level
+#'   random effect on incidence.
+#' @param sigma_p standard deviation of the normally-distributed study-level
+#'   random effect on prevalence.
+#'
+#' @export
+
+sim_study <- function() {
+  
+  
+  w <- rnorm(1, mean = 0, sd = sigma_p)
+  u <- rnorm(1, mean = -sigma_c^2/2, sd = sigma_c)
+  
 }
