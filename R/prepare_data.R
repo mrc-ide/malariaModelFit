@@ -21,21 +21,15 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   # Site N and size
   site_n <- length(site_list)
   group_n <- sapply(site_list, nrow) + 1
-  names(group_n) <- paste0("group_n_", 1:site_n)
   # Age inputs
   ages <- lapply(site_list, function(x){
     age_prep(c(x$age0[1], x$age1), eta = eta, rho = rho, a0 = a0)
   })
   prop <- unlist(lapply(ages, "[[", "prop"))
-  names(prop) <- paste0("prop", 1:length(prop))
   r <- unlist(lapply(ages, "[[", "r"))
-  names(r) <- paste0("r", 1:length(r))
   age_days_midpoint <- unlist(lapply(ages, "[[", "age_days_midpoint"))
-  names(age_days_midpoint) <- paste0("age_days_midpoint", 1:length(r))
   psi <- unlist(lapply(ages, "[[", "psi"))
-  names(psi) <- paste0("psi", 1:length(psi))
   age20 <- unlist(lapply(ages, "[[", "age20"))
-  names(age20) <- paste0("age20_", 1:length(age20))
   # Gaussian quandrature nodes and weights
   het_d <- c(nh, unlist(gq_normal(nh)))
   # Numerator
@@ -48,9 +42,11 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   case_detection <- data$case_detection
   
   # Return output vector in specific format
-  return(c(output_type = ot, site_n = site_n, group_n, prop, r,
-           age_days_midpoint, psi, age20, het_d, numer, denom,
-           type, case_detection))
+  return(list(output_type = ot, site_n = site_n, group_n = group_n,
+              prop = prop, r = r, age_days_midpoint = age_days_midpoint,
+              psi = psi, age20 = age20, het_d = het_d, 
+              numer = numer, denom = denom, type = type,
+              case_detection = case_detection))
 }
 
 #' Pre-calculation of equilibrium age-related values
