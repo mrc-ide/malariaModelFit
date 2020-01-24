@@ -26,6 +26,7 @@ run_fit <- function(project, ...){
 
   # Parameter dataframe
   df_params <- create_df_params(project)
+  df_params[is.infinite(df_params$max), "max"] <- 1000
   
   # Hacks !!
   #df_params[df_params$name == "rD", "max"] <- 50 
