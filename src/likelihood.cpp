@@ -9,7 +9,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // Number of sites
       // Vector of site study index
       // Vector of site group number
-        // List of age prop for each site
+      // List of age prop for each site
       // List of age r for each site
       // List of age age days midpoint for each site
       // List of age psi for each site
@@ -17,9 +17,11 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // Number of heterogeneity classes
       // Vector of Gaussian quadrature nodes
       // Vector of Gaussian quadrature weights
-      
       // List of site data denominators (Number of persons or person years)
       // List of site data numerators (Number +ve or cases)
+      // Vector of prevalence or incidence indicator
+      // Vector of case detection indices
+      // List of age brackets
 
     //Rcpp::Rcout << "Unpacking data" << std::endl;
     // Index of data vector
@@ -131,6 +133,14 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       case_detection[i] = x[di];
       di++;
     }
+    // Age bracket (random effect group)
+    std::vector<std::vector<double> > age_bracket = template_dbl;
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < ng[i]; ++j){
+        age_bracket[i][j] = x[di];
+        di++;
+      } 
+    }
   //////////////////////////////////////////////////////////////////////////////
   
   // Unpack parameters /////////////////////////////////////////////////////////
@@ -160,9 +170,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     pi++;
     
     // human latent period and time lag from asexual parasites to infectiousness
-    double dE = params[pi];
+    // double dE = params[pi]; Unused (but input)
     pi++;
-    double tl = params[pi];
+    // double tl = params[pi]; Unused (but input)
     pi++;
     
     // infectiousness to mosquitoes
@@ -230,9 +240,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     pi++;
     
     // mosquito parameters
-    double tau = params[pi];
+    // double tau = params[pi]; Unused (but input)
     pi++;
-    double mu = params[pi];
+    // double mu = params[pi] ; Unused (but input)
     pi++;
     double f = params[pi];
     pi++;
@@ -250,8 +260,8 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       pi++;
     }
     // Treatment coverage
-    std::vector<double> ft(site_n);
-    for(int i = 0; i < site_n; ++i){
+    std::vector<double> ft(study_n);
+    for(int i = 0; i < study_n; ++i){
       ft[i] = params[pi];
       pi++;
     }
@@ -268,7 +278,6 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       study_re[i] = params[pi];
       pi++;
     }
-    
   //////////////////////////////////////////////////////////////////////////////
   
   // Initialise output variables for all sites /////////////////////////////////
@@ -378,9 +387,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         betaA = FOI[a]*phi[a] + prA + re;
         betaU = FOI[a] + prU + re;
         betaP = prP + re;
-        aT = ft[s] * phi[a] * FOI[a] / betaT;
+        aT = ft[study[s]-1] * phi[a] * FOI[a] / betaT;
         aP = prT * aT / betaP;
-        aD = (1 - ft[s]) * phi[a] * FOI[a] / betaD;
+        aD = (1 - ft[study[s]-1]) * phi[a] * FOI[a] / betaD;
         if (a == 0){
           bT = 0;
           bD = 0;
@@ -458,8 +467,11 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
  
   // Likelihood ////////////////////////////////////////////////////////////////
   //Rcpp::Rcout << "Likelihood" << std::endl;
-  double lL = 0;
-  // For each site
+  std::vector<std::vector<double> > case_matrix(site_n, std::vector<double>(4));
+  std::vector<std::vector<double> > inc_matrix(site_n, std::vector<double>(4));
+  std::vector< std::vector<double> > const_matrix(site_n, std::vector<double>(4));  
+  
+  // Pre calculate value for likelihood function
   for(int s = 0; s < site_n; ++s){
     // define case detection rate for this site
     double cd_rate;
@@ -482,21 +494,32 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       switch(type[s]) {
       // Incidence calculation
       case 1:{
-        double scale_factor = cd_rate*exp(study_re[study[s]-1])*denom[s][a]*inc_out[s][a];
-        lL += -(1/alpha_c)*log(alpha_c) - (1/alpha_c + numer[s][a])*log(1/alpha_c + scale_factor) +
-          lgamma(1/alpha_c + numer[s][a]) - lgamma(1/alpha_c) +
-          numer[s][a]*log(scale_factor) - lgamma(numer[s][a] + 1);
+        int k = age_bracket[s][a] - 1;
+        case_matrix[s][k] += numer[s][a];
+        double temp_inc = cd_rate * exp(study_re[study[s]-1]) * denom[s][a] * inc_out[s][a];
+        inc_matrix[s][k] += temp_inc;
+        const_matrix[s][k] += numer[s][a] * log(temp_inc) - lgamma(numer[s][a] + 1);
       }
         break;
       // Prevalence calculation
       case 2:
-        lL += 0;
         break;
       default:
         break;
       }
     }
   }
+  
+  // Calculate likelihood (currently incidence for all sites as sites with no likelihood data = 1)
+  double lL = 0;
+  double alpha_c_inv = 1 / alpha_c;
+  for(int s = 0; s < site_n; ++s){
+    for(int k = 0; k < 4; ++k){
+      lL += (alpha_c_inv) * log(alpha_c_inv) - (alpha_c_inv + case_matrix[s][k]) * log(alpha_c_inv + inc_matrix[s][k]) +
+        lgamma(alpha_c_inv + case_matrix[s][k]) - lgamma(alpha_c_inv) + const_matrix[s][k];
+    }
+  }
+  
   //////////////////////////////////////////////////////////////////////////////
   
   return Rcpp::wrap(lL);

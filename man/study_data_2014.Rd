@@ -4,7 +4,7 @@
 \name{study_data_2014}
 \alias{study_data_2014}
 \title{Details of data from Griffin et al 2014 refit}
-\format{An object of class \code{data.frame} with 262 rows and 11 columns.}
+\format{An object of class \code{data.frame} with 262 rows and 12 columns.}
 \usage{
 study_data_2014
 }
@@ -29,6 +29,15 @@ study_data_2014
       \item{1}{ Daily active case detection (ACD)}
       \item{2}{ Weekly ACD}
       \item{3}{ Passive case detection (PCD)}
+    }
+  }
+  \item{age_bracket}{Age bracket:  used to calculated age-group random effects. Where the index
+  indicated that the mid point of the study age group falls in
+    \itemize{
+      \item{1}{ 0 - 2 years old}
+      \item{2}{ 2 - 5 years old}
+      \item{3}{ 5 - 15 years old}
+      \item{4}{ 15+  years old}
     }
   }
 }

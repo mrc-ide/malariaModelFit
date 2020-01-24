@@ -352,7 +352,7 @@ double ret = 0;"
   
   # define actual parameter names of all parameters
   for (i in 1:nrow(prior_df)) {
-    prior_expression <- sprintf("%s = params[%s];",
+    prior_expression <- sprintf("double %s = params[%s];",
                                 prior_df$name[i],
                                 i-1)
     s_vec <- c(s_vec, prior_expression)

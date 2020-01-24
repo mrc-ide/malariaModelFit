@@ -4,7 +4,7 @@ Title: Fits the Griffin malaria transmission model
 Version: 0.1.0
 Authors@R: as.person(c(
     "Bob Verity <r.verity@imperial.ac.uk> [aut, cre]", 
-    "Xiaoyu Liu [aut]"
+    "Peter Winskill <p.winskill@imperial.ac.uk> [aut]"
   ))
 Description: Contains functions for re-fitting the model of Griffin et al. 2014
     to data using MCMC. (Griffin et al. 2014, Nature Communications 5. "Estimates
@@ -26,10 +26,13 @@ Imports:
     readr,
     ggplot2,
     dplyr,
-    malariaEquilibrium
+    malariaEquilibrium,
+    drjacoby
 SystemRequirements: C++11
 Suggests: 
     testthat
 VignetteBuilder: knitr
-Remotes: mrc-ide/malariaEquilibrium
+Remotes: 
+    mrc-ide/malariaEquilibrium,
+    mrc-ide/drjacoby
 LazyData: true
