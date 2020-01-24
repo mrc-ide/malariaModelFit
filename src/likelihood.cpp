@@ -94,21 +94,27 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       di++;
     }
     // Data denominators
-   // std::vector<std::vector<double> > denom = template_dbl;
-  //  for(int i = 0; i < site_n; ++i){
-  //   for(int j = 0; j < ng[i]; ++j){
-  //     denom[i][j] = x[di];
-  //     di++;
-  //   } 
-  //  }
+    std::vector<std::vector<double> > denom = template_dbl;
+    for(int i = 0; i < site_n; ++i){
+     for(int j = 0; j < ng[i]; ++j){
+       denom[i][j] = x[di];
+       di++;
+     } 
+    }
     // Data numerators
-  //  std::vector<std::vector<double> > numer = template_dbl;
-  //  for(int i = 0; i < site_n; ++i){
-  //    for(int j = 0; j < ng[i]; ++j){
-  //      numer[i][j] = x[di];
-   //     di++;
-    //  } 
-    //}
+    std::vector<std::vector<double> > numer = template_dbl;
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < ng[i]; ++j){
+        numer[i][j] = x[di];
+        di++;
+      } 
+    }
+    // Case detection
+    std::vector<int> case_detection(site_n);
+    for(int i = 0; i < site_n; ++i){
+      case_detection[i] = x[di];
+      di++;
+    }
   //////////////////////////////////////////////////////////////////////////////
   
   // Unpack parameters /////////////////////////////////////////////////////////
@@ -227,6 +233,17 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     std::vector<double> ft(site_n);
     for(int i = 0; i < site_n; ++i){
       ft[i] = params[pi];
+      pi++;
+    }
+    // Hyper parameters
+    std::vector<double> alpha_hyper(site_n);
+    for(int i = 0; i < site_n; ++i){
+      alpha_hyper[i] = params[pi];
+      pi++;
+    }
+    std::vector<double> beta_hyper(site_n);
+    for(int i = 0; i < site_n; ++i){
+      beta_hyper[i] = params[pi];
       pi++;
     }
   //////////////////////////////////////////////////////////////////////////////

@@ -23,12 +23,7 @@ run_fit <- function(project, ...){
   
   # logPrior string for use in DrJacoby
   lP <- create_prior_string(project)
-  #lP <- "SEXP logprior(std::vector<double> params){
-  #int out = 0;
-  #// return as SEXP
-  #return Rcpp::wrap(out);
-#}"
-  
+
   # Parameter dataframe
   df_params <- create_df_params(project)
   df_params[df_params$name == "rD", "max"] <- 1000  
