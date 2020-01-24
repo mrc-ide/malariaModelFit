@@ -36,7 +36,7 @@ study_data_2014 <- bind_rows(inc_data, prev_data) %>%
   rename(country_name = country, site_name = study) %>%
   mutate(reference = "TODO",
          study_index = study_index + 1,
-         site_index = as.numeric(as.factor(paste(country_name, site_name, type)))) %>%
+         site_index = as.numeric(as.factor(paste(type, site_name, country_name)))) %>%
   select(country_name, site_name, reference, study_index, site_index, numer, denom, type,
          age0, age1, case_detection)
 
