@@ -24,3 +24,6 @@
 #'   }
 #' }
 "study_data_2014"
+
+#' Extracted string version of the c++ loglikelihood functon for use in drjacoby
+"likelihood_string"
