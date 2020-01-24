@@ -508,7 +508,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     }
   }
   
-  // Calculate likelihood (currently for all sites as sites with no likelihood data = 1)
+  // Calculate likelihood (currently incidence for all sites as sites with no likelihood data = 1)
   double lL = 0;
   double alpha_c_inv = 1 / alpha_c;
   for(int s = 0; s < site_n; ++s){
