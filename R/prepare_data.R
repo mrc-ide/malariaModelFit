@@ -45,6 +45,8 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   type = data$type
   # Case detection type
   case_detection <- data$case_detection
+  # Age random effect group
+  age_bracket <- data$age_bracket
   
   # Return output vector in specific format
   return(list(output_type = ot,
@@ -54,7 +56,8 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
               prop = prop, r = r, age_days_midpoint = age_days_midpoint,
               psi = psi, age20 = age20, het_d = het_d, 
               numer = numer, denom = denom, type = type,
-              case_detection = case_detection))
+              case_detection = case_detection,
+              age_bracket = age_bracket))
 }
 
 #' Pre-calculation of equilibrium age-related values

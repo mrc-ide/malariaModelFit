@@ -36,9 +36,14 @@ study_data_2014 <- bind_rows(inc_data, prev_data) %>%
   rename(country_name = country, site_name = study) %>%
   mutate(reference = "TODO",
          study_index = study_index + 1,
-         site_index = as.numeric(as.factor(paste(type, site_name, country_name)))) %>%
+         site_index = as.numeric(as.factor(paste(type, site_name, country_name))),
+         age_mid = age0 + (age1 - age0) / 2,
+         age_bracket = case_when(age_mid < 2 ~ 1,
+                                  age_mid >= 2 & age_mid < 5 ~ 2,
+                                  age_mid >=5 & age_mid < 15 ~ 3,
+                                  age_mid >= 15 ~ 4)) %>%
   select(country_name, site_name, reference, study_index, site_index, numer, denom, type,
-         age0, age1, case_detection)
+         age0, age1, case_detection, age_brackets)
 
 # Plot
 pd <- ggplot(study_data_2014, aes(x = age0 + 0.5 * (age1 = age0),

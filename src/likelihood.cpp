@@ -131,6 +131,12 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       case_detection[i] = x[di];
       di++;
     }
+    // Age random effect group (1-4)
+    std::vector<int> age_bracket(site_n);
+    for(int i = 0; i < site_n; ++i){
+      age_bracket[i] = x[di];
+      di++;
+    }
   //////////////////////////////////////////////////////////////////////////////
   
   // Unpack parameters /////////////////////////////////////////////////////////
@@ -257,9 +263,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     }
     
     // Fitting hyper-parameters
-    double sigma_c = params[pi++];
+    //double sigma_c = params[pi++];
     double alpha_c = params[pi++];
-    double sigma_p = params[pi++];
+    //double sigma_p = params[pi++];
     double theta = params[pi++];
     
     // Study-level random effects (either u or w, depending on data)
@@ -268,7 +274,6 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       study_re[i] = params[pi];
       pi++;
     }
-    
   //////////////////////////////////////////////////////////////////////////////
   
   // Initialise output variables for all sites /////////////////////////////////
