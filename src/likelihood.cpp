@@ -5,7 +5,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   // Unpack data ///////////////////////////////////////////////////////////////
     // Data input vector format:
       // Output type
-      // Site number
+      // Number of studies
+      // Number of sites
+      // Vector of site study index
       // Vector of site group number
         // List of age prop for each site
       // List of age r for each site
@@ -26,16 +28,24 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // output_type
     int output_type = x[di];
     di++;
+    // Number of studies
+    int study_n = x[di];
+    di++;
     // Number of sites
     int site_n = x[di];
     di++;
+    // Study index for each site
+    std::vector<int> study(site_n);
+    for(int i = 0; i < site_n; ++i){
+      study[i] = x[di];
+      di++;
+    }
     // Site group number
     std::vector<int> ng(site_n);
     for(int i = 0; i < site_n; ++i){
       ng[i] = x[di];
       di++;
     }
-
     // Empty template site_n X group_n
     std::vector<std::vector<double> > template_dbl(site_n);
     for(int i = 0; i < site_n; ++i){
@@ -471,11 +481,12 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     for(int a = 0; a < ng[s]; ++a){
       switch(type[s]) {
       // Incidence calculation
-      case 1:
+      case 1:{
         double scale_factor = cd_rate*exp(study_re[study[s]-1])*denom[s][a]*inc_out[s][a];
         lL += -(1/alpha_c)*log(alpha_c) - (1/alpha_c + numer[s][a])*log(1/alpha_c + scale_factor) +
           lgamma(1/alpha_c + numer[s][a]) - lgamma(1/alpha_c) +
           numer[s][a]*log(scale_factor) - lgamma(numer[s][a] + 1);
+      }
         break;
       // Prevalence calculation
       case 2:

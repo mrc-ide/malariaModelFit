@@ -18,6 +18,11 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   }
   # Split data by site
   site_list <- split(data, data$site_index)
+  # Study N
+  study_n <- length(unqiue(study_index))
+  study <- sapply(site_list, function(x){
+    x$study_index[1]
+  })
   # Site N and size
   site_n <- length(site_list)
   group_n <- sapply(site_list, nrow) + 1
@@ -42,7 +47,10 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   case_detection <- data$case_detection
   
   # Return output vector in specific format
-  return(list(output_type = ot, site_n = site_n, group_n = group_n,
+  return(list(output_type = ot,
+              study_n = study_n,
+              study = study, 
+              site_n = site_n, group_n = group_n,
               prop = prop, r = r, age_days_midpoint = age_days_midpoint,
               psi = psi, age20 = age20, het_d = het_d, 
               numer = numer, denom = denom, type = type,

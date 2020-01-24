@@ -28,9 +28,9 @@ run_fit <- function(project, ...){
   df_params <- create_df_params(project)
   
   # Hacks !!
-  df_params[df_params$name == "rD", "max"] <- 50 
-  additional <- data.frame(name = c("EIR", "ft"), min = c(10, 0.5), max = c(10, 0.5))
-  df_params <- dplyr::bind_rows(df_params, additional)
+  #df_params[df_params$name == "rD", "max"] <- 50 
+  #additional <- data.frame(name = c("EIR", "ft"), min = c(10, 0.5), max = c(10, 0.5))
+  #df_params <- dplyr::bind_rows(df_params, additional)
 
   # Run DrJacoby
   project$output_raw <- drjacoby::run_mcmc(data = x,
