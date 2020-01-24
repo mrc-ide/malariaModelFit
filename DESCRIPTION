@@ -32,3 +32,4 @@ Suggests:
     testthat
 VignetteBuilder: knitr
 Remotes: mrc-ide/malariaEquilibrium
+LazyData: true
