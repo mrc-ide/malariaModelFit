@@ -19,7 +19,7 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   # Split data by site
   site_list <- split(data, data$site_index)
   # Study N
-  study_n <- length(unqiue(study_index))
+  study_n <- length(unique(data$study_index))
   study <- sapply(site_list, function(x){
     x$study_index[1]
   })

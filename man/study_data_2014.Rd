@@ -31,6 +31,15 @@ study_data_2014
       \item{3}{ Passive case detection (PCD)}
     }
   }
+  \item{age_bracket}{Age bracket:  used to calculated age-group random effects. Where the index
+  indicated that the mid point of the study age group falls in
+    \itemize{
+      \item{1}{ 0 - 2 years old}
+      \item{2}{ 2 - 5 years old}
+      \item{3}{ 5 - 15 years old}
+      \item{4}{ 15+  years old}
+    }
+  }
 }
 }
 \keyword{datasets}

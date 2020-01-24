@@ -31,5 +31,7 @@ SystemRequirements: C++11
 Suggests: 
     testthat
 VignetteBuilder: knitr
-Remotes: mrc-ide/malariaEquilibrium
+Remotes: 
+    mrc-ide/malariaEquilibrium,
+    mrc-ide/drjacoby
 LazyData: true
