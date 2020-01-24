@@ -43,7 +43,7 @@ study_data_2014 <- bind_rows(inc_data, prev_data) %>%
                                   age_mid >=5 & age_mid < 15 ~ 3,
                                   age_mid >= 15 ~ 4)) %>%
   select(country_name, site_name, reference, study_index, site_index, numer, denom, type,
-         age0, age1, case_detection, age_brackets)
+         age0, age1, case_detection, age_bracket)
 
 # Plot
 pd <- ggplot(study_data_2014, aes(x = age0 + 0.5 * (age1 = age0),

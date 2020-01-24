@@ -131,7 +131,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       case_detection[i] = x[di];
       di++;
     }
-    // Age random effect group (1-4)
+    // Age bracket (random effect group)
     std::vector<int> age_bracket(site_n);
     for(int i = 0; i < site_n; ++i){
       age_bracket[i] = x[di];
@@ -166,9 +166,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     pi++;
     
     // human latent period and time lag from asexual parasites to infectiousness
-    double dE = params[pi];
+    // double dE = params[pi]; Unused (but input)
     pi++;
-    double tl = params[pi];
+    // double tl = params[pi]; Unused (but input)
     pi++;
     
     // infectiousness to mosquitoes
@@ -236,9 +236,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     pi++;
     
     // mosquito parameters
-    double tau = params[pi];
+    // double tau = params[pi]; Unused (but input)
     pi++;
-    double mu = params[pi];
+    // double mu = params[pi] ; Unused (but input)
     pi++;
     double f = params[pi];
     pi++;
