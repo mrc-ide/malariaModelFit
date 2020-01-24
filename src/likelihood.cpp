@@ -132,10 +132,12 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       di++;
     }
     // Age bracket (random effect group)
-    std::vector<int> age_bracket(site_n);
+    std::vector<std::vector<double> > age_bracket = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      age_bracket[i] = x[di];
-      di++;
+      for(int j = 0; j < ng[i]; ++j){
+        age_bracket[i][j] = x[di];
+        di++;
+      } 
     }
   //////////////////////////////////////////////////////////////////////////////
   
@@ -463,7 +465,10 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
  
   // Likelihood ////////////////////////////////////////////////////////////////
   //Rcpp::Rcout << "Likelihood" << std::endl;
-  double lL = 0;
+  std::vector<std::vector<double> > case_matrix(site_n, std::vector<double>(4));
+  std::vector<std::vector<double> > inc_matrix(site_n, std::vector<double>(4));
+  std::vector< std::vector<double> > const_matrix(site_n, std::vector<double>(4));  
+  
   // For each site
   for(int s = 0; s < site_n; ++s){
     // define case detection rate for this site
@@ -487,21 +492,31 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       switch(type[s]) {
       // Incidence calculation
       case 1:{
-        double scale_factor = cd_rate*exp(study_re[study[s]-1])*denom[s][a]*inc_out[s][a];
-        lL += -(1/alpha_c)*log(alpha_c) - (1/alpha_c + numer[s][a])*log(1/alpha_c + scale_factor) +
-          lgamma(1/alpha_c + numer[s][a]) - lgamma(1/alpha_c) +
-          numer[s][a]*log(scale_factor) - lgamma(numer[s][a] + 1);
+        int k = age_bracket[s][a] - 1;
+        case_matrix[s][k] += numer[s][a];
+        double temp_inc = cd_rate * exp(study_re[study[s]-1]) * denom[s][a] * inc_out[s][a];
+        inc_matrix[s][k] += temp_inc;
+        const_matrix[s][k] += numer[s][a] * log(temp_inc) - lgamma(numer[s][a] + 1);
       }
         break;
       // Prevalence calculation
       case 2:
-        lL += 0;
         break;
       default:
         break;
       }
     }
   }
+  
+  double lL = 0;
+  double alpha_c_inv = 1 / alpha_c;
+  for(int s = 0; s < site_n; ++s){
+    for(int k = 0; k < 4; ++k){
+      lL += (alpha_c_inv) * log(alpha_c_inv) - (alpha_c_inv + case_matrix[s][k]) * log(alpha_c_inv + inc_matrix[s][k]) +
+        lgamma(alpha_c_inv + case_matrix[s][k]) - lgamma(alpha_c_inv) + const_matrix[s][k];
+    }
+  }
+  
   //////////////////////////////////////////////////////////////////////////////
   
   return Rcpp::wrap(lL);
