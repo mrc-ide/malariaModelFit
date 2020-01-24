@@ -229,6 +229,10 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     double Q0 = params[pi];
     pi++;
     
+    // case detection parameters
+    double cd_w = params[pi++];
+    double cd_p = params[pi++];
+    
     // EIR
     std::vector<double> EIR(site_n);
     for(int i = 0; i < site_n; ++i){
@@ -241,17 +245,20 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       ft[i] = params[pi];
       pi++;
     }
-    // Hyper parameters
-    std::vector<double> alpha_hyper(site_n);
-    for(int i = 0; i < site_n; ++i){
-      alpha_hyper[i] = params[pi];
+    
+    // Fitting hyper-parameters
+    double sigma_c = params[pi++];
+    double alpha_c = params[pi++];
+    double sigma_p = params[pi++];
+    double theta = params[pi++];
+    
+    // Study-level random effects (either u or w, depending on data)
+    std::vector<double> study_re(study_n);
+    for(int i = 0; i < study_n; ++i){
+      study_re[i] = params[pi];
       pi++;
     }
-    std::vector<double> beta_hyper(site_n);
-    for(int i = 0; i < site_n; ++i){
-      beta_hyper[i] = params[pi];
-      pi++;
-    }
+    
   //////////////////////////////////////////////////////////////////////////////
   
   // Initialise output variables for all sites /////////////////////////////////
@@ -444,12 +451,31 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   double lL = 0;
   // For each site
   for(int s = 0; s < site_n; ++s){
+    // define case detection rate for this site
+    double cd_rate;
+    switch(case_detection[s]) {
+    case 1:
+      cd_rate = 1.0;
+      break;
+    case 2:
+      cd_rate = cd_w;
+      break;
+    case 3:
+      cd_rate = cd_p;
+      break;
+    default:
+      break;
+    }
+    
     // For each age group
     for(int a = 0; a < ng[s]; ++a){
       switch(type[s]) {
       // Incidence calculation
       case 1:
-        lL += 0;
+        double scale_factor = cd_rate*exp(study_re[study[s]-1])*denom[s][a]*inc_out[s][a];
+        lL += -(1/alpha_c)*log(alpha_c) - (1/alpha_c + numer[s][a])*log(1/alpha_c + scale_factor) +
+          lgamma(1/alpha_c + numer[s][a]) - lgamma(1/alpha_c) +
+          numer[s][a]*log(scale_factor) - lgamma(numer[s][a] + 1);
         break;
       // Prevalence calculation
       case 2:
