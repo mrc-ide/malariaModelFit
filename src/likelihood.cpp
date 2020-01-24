@@ -93,6 +93,14 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       weights[i] = x[di];
       di++;
     }
+    // Data numerators
+    std::vector<std::vector<double> > numer = template_dbl;
+    for(int i = 0; i < site_n; ++i){
+      for(int j = 0; j < ng[i]; ++j){
+        numer[i][j] = x[di];
+        di++;
+      } 
+    }
     // Data denominators
     std::vector<std::vector<double> > denom = template_dbl;
     for(int i = 0; i < site_n; ++i){
@@ -101,13 +109,11 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
        di++;
      } 
     }
-    // Data numerators
-    std::vector<std::vector<double> > numer = template_dbl;
+    // Prevalence or incidence
+    std::vector<int> type(site_n);
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < ng[i]; ++j){
-        numer[i][j] = x[di];
-        di++;
-      } 
+      type[i] = x[di];
+      di++;
     }
     // Case detection
     std::vector<int> case_detection(site_n);
@@ -432,12 +438,30 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
                          Rcpp::Named("FOIM") = FOIM);
     }
   //////////////////////////////////////////////////////////////////////////////
-  //Rcpp::Rcout << "Likelihood" << std::endl;
+ 
   // Likelihood ////////////////////////////////////////////////////////////////
-  //  NB for likelihhod calculation - ignore the last age-group estimates for each site as
-    // these will be outside of the data age groups
+  //Rcpp::Rcout << "Likelihood" << std::endl;
+  double lL = 0;
+  // For each site
+  for(int s = 0; s < site_n; ++s){
+    // For each age group
+    for(int a = 0; a < ng[s]; ++a){
+      switch(type[s]) {
+      // Incidence calculation
+      case 1:
+        lL += 0;
+        break;
+      // Prevalence calculation
+      case 2:
+        lL += 0;
+        break;
+      default:
+        break;
+      }
+    }
+  }
   //////////////////////////////////////////////////////////////////////////////
   
-  return Rcpp::wrap(0);
+  return Rcpp::wrap(lL);
 }
 // loglikelihood_end"

@@ -38,9 +38,19 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   names(age20) <- paste0("age20_", 1:length(age20))
   # Gaussian quandrature nodes and weights
   het_d <- c(nh, unlist(gq_normal(nh)))
+  # Numerator
+  numer <- data$numer
+  # Denominator
+  denom <- data$denom
+  # Prevalence or incidence
+  type = data$type
+  # Case detection type
+  case_detection <- data$case_detection
   
   # Return output vector in specific format
-  return(c(output_type = ot, site_n = site_n, group_n, prop, r, age_days_midpoint, psi, age20, het_d))
+  return(c(output_type = ot, site_n = site_n, group_n, prop, r,
+           age_days_midpoint, psi, age20, het_d, numer, denom,
+           type, case_detection))
 }
 
 #' Pre-calculation of equilibrium age-related values
