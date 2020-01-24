@@ -9,7 +9,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // Number of sites
       // Vector of site study index
       // Vector of site group number
-        // List of age prop for each site
+      // List of age prop for each site
       // List of age r for each site
       // List of age age days midpoint for each site
       // List of age psi for each site
@@ -17,9 +17,11 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
       // Number of heterogeneity classes
       // Vector of Gaussian quadrature nodes
       // Vector of Gaussian quadrature weights
-      
       // List of site data denominators (Number of persons or person years)
       // List of site data numerators (Number +ve or cases)
+      // Vector of prevalence or incidence indicator
+      // Vector of case detection indices
+      // List of age brackets
 
     //Rcpp::Rcout << "Unpacking data" << std::endl;
     // Index of data vector
