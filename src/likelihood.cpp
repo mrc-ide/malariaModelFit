@@ -469,7 +469,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
   std::vector<std::vector<double> > inc_matrix(site_n, std::vector<double>(4));
   std::vector< std::vector<double> > const_matrix(site_n, std::vector<double>(4));  
   
-  // For each site
+  // Pre calculate value for likelihood function
   for(int s = 0; s < site_n; ++s){
     // define case detection rate for this site
     double cd_rate;
@@ -508,6 +508,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     }
   }
   
+  // Calculate likelihood (currently for all sites as sites with no likelihood data = 1)
   double lL = 0;
   double alpha_c_inv = 1 / alpha_c;
   for(int s = 0; s < site_n; ++s){
