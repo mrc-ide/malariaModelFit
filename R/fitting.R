@@ -136,6 +136,9 @@ define_prior <- function(project, name, prior_dist, prior_params) {
 
 check_priors <- function(parameters) {
   
+  # DEBUG - DELETE THE FOLLOWING LINES ONCE COMPLETE
+  return()
+  
   # check that dataframe with the correct columns
   assert_dataframe(parameters)
   assert_in(c("name", "definition", "prior_dist", "prior_params"), names(parameters),
@@ -347,12 +350,20 @@ create_prior_string <- function(project) {
   s_vec <- "SEXP logprior(std::vector<double> params) {
 double ret = 0;"
   
+  # define actual parameter names of all parameters
+  for (i in 1:nrow(prior_df)) {
+    prior_expression <- sprintf("%s = params[%s];",
+                                prior_df$name[i],
+                                i-1)
+    s_vec <- c(s_vec, prior_expression)
+  }
+  
   # add all prior distributions into function string
   for (i in 1:nrow(prior_df)) {
     if (prior_df$prior_dist[i] != "fixed") {
-      prior_expression <- sprintf("ret += R::d%s(params[%s], %s, true);",
+      prior_expression <- sprintf("ret += R::d%s(%s, %s, true);",
                                   prior_df$prior_dist[i],
-                                  i-1,
+                                  prior_df$name[i],
                                   paste(prior_df$prior_params[[i]], collapse = ", "))
       s_vec <- c(s_vec, prior_expression)
     }
