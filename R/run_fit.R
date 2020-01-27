@@ -5,6 +5,7 @@
 #' @param ... Additional named parameters passed to the \code{\link[drjacoby]{run_mcmc}} function
 #'
 #' @return Project with fitting output
+#' @importFrom utils data
 #' @export
 run_fit <- function(project, ...){
   
@@ -17,6 +18,10 @@ run_fit <- function(project, ...){
   # Prepare vector of data for use in DrJacoby
   pd <- prepare_data(project$data)
   x <- unlist(pd)
+  
+  # avoid 'no visible binding' note for likelihood_string
+  likelihood_string <- NULL
+  data(likelihood_string, envir = environment())
   
   # logLikelihood string for use in DrJacoby
   lL <- likelihood_string

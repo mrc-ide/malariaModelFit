@@ -14,7 +14,9 @@ sim_site(
   denom = rep(10, 5),
   case_detection = 1,
   theta = 0.1,
-  alpha_c = 1
+  alpha_c = 1,
+  u = 0,
+  w = 1
 )
 }
 \arguments{
@@ -51,8 +53,11 @@ each age group.}
 \item{theta}{overdispersion parameter of the beta-binomial distribution on
 prevalence. 0 = standard binomial, and theta must be <1.}
 
-\item{alpha_c}{variance of the gamma-distributed site- and age-level random
-effect on incidence.}
+\item{alpha_c}{variance of the gamma-distributed age-level random effect on
+incidence for this site.}
+
+\item{u, w}{study-level random effect on incidence and prevalence,
+respectively. Leave at 0 when simulating a single site.}
 }
 \description{
 Simulate data in the same format as real world data by drawing
