@@ -30,30 +30,36 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // output_type
     int output_type = x[di];
     di++;
+    // Rcpp::Rcout << "output_type " << output_type << std::endl;
     // Number of studies
     int study_n = x[di];
     di++;
+    // Rcpp::Rcout << "study_n " << study_n << std::endl;
     // Number of sites
     int site_n = x[di];
     di++;
+    // Rcpp::Rcout << "site_n " << site_n << std::endl;
     // Study index for each site
     std::vector<int> study(site_n);
     for(int i = 0; i < site_n; ++i){
       study[i] = x[di];
       di++;
     }
+    // Rcpp::Rcout << "study 1 " << study[0] << std::endl;
     // Site group number
     std::vector<int> ng(site_n);
     for(int i = 0; i < site_n; ++i){
       ng[i] = x[di];
       di++;
     }
+    // Rcpp::Rcout << "ng 1 " << ng[0] << std::endl;
+    
     // Empty template site_n X group_n
     std::vector<std::vector<double> > template_dbl(site_n);
     for(int i = 0; i < site_n; ++i){
       template_dbl[i].resize(ng[i]);
     }
-
+    
     // Age prop for each site
     std::vector<std::vector<double> > prop = template_dbl;
     for(int i = 0; i < site_n; ++i){
@@ -62,6 +68,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         di++;
       } 
     }
+    // Rcpp::Rcout << "prop 1 " << prop[0][0] << std::endl;
     // Age r for each site
     std::vector<std::vector<double> > r = template_dbl;
     for(int i = 0; i < site_n; ++i){
@@ -70,6 +77,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         di++;
       } 
     }
+    // Rcpp::Rcout << "r 1 " << r[0][0] << std::endl;
     // Age day midpoint for each site
     std::vector<std::vector<double> > age_days_midpoint = template_dbl;
     for(int i = 0; i < site_n; ++i){
@@ -78,6 +86,7 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         di++;
       } 
     }
+    // Rcpp::Rcout << "age_days_midpoint 1 " << age_days_midpoint[0][0] << std::endl;
     // Age psi for each site
     std::vector<std::vector<double> > psi = template_dbl;
     for(int i = 0; i < site_n; ++i){
@@ -86,12 +95,14 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
         di++;
       } 
     }
+    // Rcpp::Rcout << "psi 1 " << psi[0][0] << std::endl;
     // Index of 20 year old age for each site
     std::vector<int> age20(site_n);
     for(int i = 0; i < site_n; ++i){
       age20[i] = x[di];
       di++;
     }
+    // Rcpp::Rcout << "age20 1 " << age20[0] << std::endl;
     // Gaussian quadrature nodes and weights
     int nh = x[di];
     di++;
@@ -108,23 +119,27 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // Data numerators
     std::vector<std::vector<double> > numer = template_dbl;
     for(int i = 0; i < site_n; ++i){
-      for(int j = 0; j < ng[i]; ++j){
+      for(int j = 0; j < (ng[i] - 1); ++j){
         numer[i][j] = x[di];
         di++;
       } 
     }
+    // Rcpp::Rcout << "numer 1 " << numer[0][0] << std::endl;
     // Data denominators
     std::vector<std::vector<double> > denom = template_dbl;
     for(int i = 0; i < site_n; ++i){
-     for(int j = 0; j < ng[i]; ++j){
+     for(int j = 0; j < (ng[i] - 1); ++j){
        denom[i][j] = x[di];
+       // Rcpp::Rcout << "denom in " << denom[i][j] << std::endl;
        di++;
      } 
     }
+    // Rcpp::Rcout << "denom 1 " << denom[0][0] << std::endl;
     // Prevalence or incidence
     std::vector<int> type(site_n);
     for(int i = 0; i < site_n; ++i){
       type[i] = x[di];
+      // Rcpp::Rcout << "Type in " << type[i] << std::endl;
       di++;
     }
     // Case detection
@@ -275,7 +290,9 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     // Study-level random effects (either u or w, depending on data)
     std::vector<double> study_re(study_n);
     for(int i = 0; i < study_n; ++i){
-      study_re[i] = params[pi];
+      study_re[i] = 0;
+      //study_re[i] = params[pi];
+      //Rcpp::Rcout << "RE " << study_re[i] << std::endl;
       pi++;
     }
   //////////////////////////////////////////////////////////////////////////////
@@ -490,15 +507,25 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     }
     
     // For each age group
-    for(int a = 0; a < ng[s]; ++a){
+    for(int a = 0; a < (ng[s] -1); ++a){
+      // Rcpp::Rcout << "type " << type[s] << std::endl;
       switch(type[s]) {
       // Incidence calculation
       case 1:{
         int k = age_bracket[s][a] - 1;
         case_matrix[s][k] += numer[s][a];
         double temp_inc = cd_rate * exp(study_re[study[s]-1]) * denom[s][a] * inc_out[s][a];
+        //Rcpp::Rcout << "A " << cd_rate << std::endl;
+        //Rcpp::Rcout << "B " << exp(study_re[study[s]-1]) << std::endl;
+        //Rcpp::Rcout << "C " << denom[s][a] << std::endl;
+        //Rcpp::Rcout << "D " << inc_out[s][a] << std::endl;
+        
+        //Rcpp::Rcout << "temp_inc " << temp_inc << std::endl;
         inc_matrix[s][k] += temp_inc;
         const_matrix[s][k] += numer[s][a] * log(temp_inc) - lgamma(numer[s][a] + 1);
+        //Rcpp::Rcout << "numer " << numer[s][a] << std::endl;
+        //Rcpp::Rcout << "case_matrix " << case_matrix[s][k] << std::endl;
+        //Rcpp::Rcout << "const_matrix " << const_matrix[s][k] << std::endl;
       }
         break;
       // Prevalence calculation
