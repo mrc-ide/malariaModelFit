@@ -4,7 +4,7 @@
 \alias{sim_study}
 \title{TODO - title}
 \usage{
-sim_study()
+sim_study(sigma_c = 1, sigma_p = 1)
 }
 \arguments{
 \item{sigma_c}{standard deviation of the normally-distributed study-level

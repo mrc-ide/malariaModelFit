@@ -31,8 +31,10 @@
 #' }
 #' @param theta overdispersion parameter of the beta-binomial distribution on
 #'   prevalence. 0 = standard binomial, and theta must be <1.
-#' @param alpha_c variance of the gamma-distributed site- and age-level random
-#'   effect on incidence.
+#' @param alpha_c variance of the gamma-distributed age-level random effect on
+#'   incidence for this site.
+#' @param u,w study-level random effect on incidence and prevalence,
+#'   respectively. Leave at 0 when simulating a single site.
 #'
 #' @importFrom malariaEquilibrium human_equilibrium
 #' @importFrom  stats rbinom rpois
@@ -47,7 +49,9 @@ sim_site <- function(p,
                      denom = rep(10,5),
                      case_detection = 1,
                      theta = 0.1,
-                     alpha_c = 1) {
+                     alpha_c = 1,
+                     u = 0,
+                     w = 1) {
   
   # check inputs
   assert_custom_class(p, "model_params")
@@ -64,6 +68,8 @@ sim_site <- function(p,
   assert_in(case_detection, 1:3)
   assert_single_bounded(theta, inclusive_right = FALSE)
   assert_single_pos(alpha_c, zero_allowed = TRUE)
+  assert_single_numeric(u)
+  assert_single_numeric(w)
   
   # get total number of age categories
   n_age <- length(age0)
@@ -77,9 +83,8 @@ sim_site <- function(p,
   # subset to defined age intervals
   eq$states <- eq$states[match(age0, age_vec), , drop = FALSE]
   
-  # simulate random effects
+  # simulate age-level random effects for this site
   v <- rgamma(n_age, shape = 1/alpha_c, rate = 1/alpha_c)
-  
   
   # simulate incidence (type = 1) or prevalence (type = 2)
   if (type == 1) {
@@ -88,7 +93,7 @@ sim_site <- function(p,
     inc_raw <- eq$states[,"inc"] * 365
     
     # define case detection probability
-    r <- c(1, 0.5, 0.2)[case_detection]
+    r <- c(1, p$cd_w, p$cd_p)[case_detection]
     
     # draw from Poisson distribution
     lambda <- r*exp(u)*v*denom*inc_raw
@@ -145,7 +150,8 @@ sim_site <- function(p,
 #'
 #' @export
 
-sim_study <- function() {
+sim_study <- function(sigma_c = 1.0,
+                      sigma_p = 1.0) {
   
   
   w <- rnorm(1, mean = 0, sd = sigma_p)
