@@ -265,19 +265,21 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     pi++;
     
     // case detection parameters
-    double cd_w = params[pi++];
-    double cd_p = params[pi++];
+    double cd_w = 1.0;//= params[pi++];
+    double cd_p = 1.0; //params[pi++];
     
     // EIR
     std::vector<double> EIR(site_n);
     for(int i = 0; i < site_n; ++i){
       EIR[i] = params[pi];
+      //Rcpp::Rcout << "EIR " << EIR[i] << std::endl;
       pi++;
     }
     // Treatment coverage
     std::vector<double> ft(study_n);
     for(int i = 0; i < study_n; ++i){
       ft[i] = params[pi];
+      //Rcpp::Rcout << "ft " << ft[i] << std::endl;
       pi++;
     }
     
@@ -286,12 +288,17 @@ SEXP loglikelihood(std::vector<double> params, std::vector<double> x){
     double alpha_c = params[pi++];
     double sigma_p = params[pi++];
     double theta = params[pi++];
+    //Rcpp::Rcout << "sigma_c " << sigma_c << std::endl;
+    //Rcpp::Rcout << "alpha_c " << alpha_c << std::endl;
+    //Rcpp::Rcout << "sigma_p " << sigma_p << std::endl;
+    //Rcpp::Rcout << "theta " << theta << std::endl;
+    
     
     // Study-level random effects (either u or w, depending on data)
     std::vector<double> study_re(study_n);
     for(int i = 0; i < study_n; ++i){
-      study_re[i] = 0;
-      //study_re[i] = params[pi];
+      //study_re[i] = 0;
+      study_re[i] = params[pi];
       //Rcpp::Rcout << "RE " << study_re[i] << std::endl;
       pi++;
     }
