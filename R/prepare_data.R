@@ -51,8 +51,9 @@ prepare_data <- function(data, eta = 0.0001304631, rho = 0.85, a0 = 2920, output
   # Return output vector in specific format
   return(list(output_type = ot,
               study_n = study_n,
+              site_n = site_n,
               study = study, 
-              site_n = site_n, group_n = group_n,
+              group_n = group_n,
               prop = prop, r = r, age_days_midpoint = age_days_midpoint,
               psi = psi, age20 = age20, het_d = het_d, 
               numer = numer, denom = denom, type = type,
