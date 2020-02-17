@@ -32,12 +32,12 @@ run_fit <- function(project, ...){
   # Parameter dataframe
   df_params <- create_df_params(project)
   df_params[is.infinite(df_params$max), "max"] <- 1000
-  
+  df_params[103:116, "max"] <- 10
   # Hacks !!
   #df_params[df_params$name == "rD", "max"] <- 50 
   #additional <- data.frame(name = c("EIR", "ft"), min = c(10, 0.5), max = c(10, 0.5))
   #df_params <- dplyr::bind_rows(df_params, additional)
-
+  #browser()
   # Run DrJacoby
   project$output_raw <- drjacoby::run_mcmc(data = x,
                                  df_params = df_params,
